@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "132412844055",
+    "firebase_url": "https://ionce-9e4c3.firebaseio.com",
+    "project_id": "ionce-9e4c3",
+    "storage_bucket": "ionce-9e4c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132412844055:android:01f81cba3c8eb6ffe91452",
+        "android_client_info": {
+          "package_name": "com.ojomono.ionce"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "132412844055-6kokoeb2kv764t4940nhfbrlfnu3g227.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ojomono.ionce",
+            "certificate_hash": "b43ef515a590651ce761c5570d8a2e9da92fedbc"
+          }
+        },
+        {
+          "client_id": "132412844055-9onkqrvlecr0g84egp7764les2l9gbub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPDI8iVan9axUyEQOWmnH73V967jFSsds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "132412844055-9onkqrvlecr0g84egp7764les2l9gbub.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

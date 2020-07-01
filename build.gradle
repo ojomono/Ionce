@@ -9,6 +9,11 @@ buildscript {
         classpath "com.android.tools.build:gradle:4.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
+        // "Add Firebase SDK:
+        // The Google services plugin for Gradle loads the google-services.json file you just
+        // downloaded. Modify your build.gradle files to use the plugin."
+        classpath 'com.google.gms:google-services:4.3.3'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
