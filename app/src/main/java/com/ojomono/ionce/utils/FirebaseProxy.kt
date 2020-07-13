@@ -21,7 +21,7 @@ object FirebaseProxy : Tagged {
     fun buildSignInIntent(
         androidPackageName : String? = null,
         activityIntent: Intent? = null
-    ) : Intent {
+    ): Intent {
 
         // Start building the sign-in Intent and email builders
         val signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder()
