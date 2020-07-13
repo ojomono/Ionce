@@ -16,11 +16,14 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Open sign-in screen
-        startActivityForResult(
-            FirebaseProxy.buildSignInIntent(packageName, intent),
-            Constants.RC_SIGN_IN
-        )
+        // If no user is logged in, open sign-in screen
+        if (FirebaseProxy.getCurrentUser() == null)
+            startActivityForResult(
+                FirebaseProxy.buildSignInIntent(packageName, intent),
+                Constants.RC_SIGN_IN
+            )
+        // Open main activity for the logged-in user
+        else startMainActivity()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -31,12 +34,12 @@ class SplashActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
 
                 // Successfully signed in
-//                val user = FirebaseAuth.getInstance().currentUser
+//                val user = FirebaseProxy.getCurrentUser()
 
                 // Open home screen
                 startMainActivity()
 
-            } else if (FirebaseProxy.handleSignInFailed(data)) finish()    // Sign in failed.
+            } else if (FirebaseProxy.handleSignInFailed(data)) finish() // Sign in failed.
         }
     }
 

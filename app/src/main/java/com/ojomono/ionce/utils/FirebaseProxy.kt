@@ -5,6 +5,8 @@ import android.util.Log
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.ActionCodeSettings
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 /**
  * Handles all interactions with Firebase.
@@ -76,6 +78,13 @@ object FirebaseProxy : Tagged {
         else Log.e(TAG, response.error.toString())
 
         return isCancelled
+    }
+
+    /**
+     * Get the user currently logged-in to firebase. If no user is logged-in, null will be returned.
+     */
+    fun getCurrentUser() : FirebaseUser? {
+        return FirebaseAuth.getInstance().currentUser
     }
 
 }
