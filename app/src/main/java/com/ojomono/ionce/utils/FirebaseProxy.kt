@@ -9,12 +9,11 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.ojomono.ionce.ui.splashscreen.SplashActivity
 
 /**
  * Handles all interactions with Firebase.
  */
-object FirebaseProxy : Tagged {
+object FirebaseProxy {
 
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
@@ -22,7 +21,7 @@ object FirebaseProxy : Tagged {
      * was clicked, the link should be given as the [activityIntent] data.
      */
     fun buildSignInIntent(
-        androidPackageName : String? = null,
+        androidPackageName: String? = null,
         activityIntent: Intent? = null
     ): Intent {
 
@@ -31,7 +30,7 @@ object FirebaseProxy : Tagged {
         val emailBuilder = AuthUI.IdpConfig.EmailBuilder()
 
         // If the package name is given, we can enable email link sign-in
-        if (!androidPackageName.isNullOrEmpty()){
+        if (!androidPackageName.isNullOrEmpty()) {
 
             // If the intent is given and AuthUI can handle it (email link clicked),
             // state it in the sign-in Intent
@@ -41,11 +40,12 @@ object FirebaseProxy : Tagged {
             }
 
             // Enable email link sign in
-            val actionCodeSettings : ActionCodeSettings = ActionCodeSettings.newBuilder()
-                .setAndroidPackageName(androidPackageName, true, null)
-                .setHandleCodeInApp(true) // This must be set to true
-                .setUrl(Constants.DL_EMAIL_LINK_SIGN_IN) // This URL needs to be whitelisted
-                .build()
+            val actionCodeSettings: ActionCodeSettings =
+                ActionCodeSettings.newBuilder()
+                    .setAndroidPackageName(androidPackageName, true, null)
+                    .setHandleCodeInApp(true) // This must be set to true
+                    .setUrl(Constants.DL_EMAIL_LINK_SIGN_IN) // This URL needs to be whitelisted
+                    .build()
 
             emailBuilder.enableEmailLinkSignIn().setActionCodeSettings(actionCodeSettings)
         }
@@ -68,7 +68,7 @@ object FirebaseProxy : Tagged {
      * Handle the case of a failed sign-in and returns if the cause is that the user canceled the
      * process (else an error had occurred). Response should be given in [dataIntent].
      */
-    fun handleSignInFailed(dataIntent : Intent?) : Boolean {
+    fun handleSignInFailed(dataIntent: Intent?): Boolean {
 
         val response = IdpResponse.fromResultIntent(dataIntent)
 
@@ -86,7 +86,7 @@ object FirebaseProxy : Tagged {
     /**
      * Get the user currently logged-in to firebase. If no user is logged-in, null will be returned.
      */
-    fun getCurrentUser() : FirebaseUser? {
+    fun getCurrentUser(): FirebaseUser? {
         return FirebaseAuth.getInstance().currentUser
     }
 

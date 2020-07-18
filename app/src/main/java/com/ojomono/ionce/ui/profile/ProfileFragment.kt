@@ -22,9 +22,9 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
     private lateinit var profileViewModel: ProfileViewModel
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_profile, container, false)
@@ -41,6 +41,8 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
 
         return root
     }
+
+    //
 
     override fun onComplete(task: Task<Void>) {
         // User is now signed out - go back to splash screen
