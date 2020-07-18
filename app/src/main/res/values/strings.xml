@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Ionce</string>
+
+    <string name="facebook_application_id">301355424319660</string>
+    <string name="facebook_login_protocol_scheme">fb301355424319660</string>
+
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="profile_sign_out_button_text">Sign Out</string>
 </resources>
