@@ -50,14 +50,11 @@ object FirebaseProxy {
             emailBuilder.enableEmailLinkSignIn().setActionCodeSettings(actionCodeSettings)
         }
 
-        // TODO add phone, google, facebook and twitter login support
         // Choose authentication providers
         val providers = arrayListOf(
-            emailBuilder.build()//,
-//            AuthUI.IdpConfig.PhoneBuilder().build(),
-//            AuthUI.IdpConfig.GoogleBuilder().build(),
-//            AuthUI.IdpConfig.FacebookBuilder().build(),
-//            AuthUI.IdpConfig.TwitterBuilder().build()
+            emailBuilder.build(),
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.FacebookBuilder().build()
         )
 
         // Return the built intent
