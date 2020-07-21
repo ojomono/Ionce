@@ -14,7 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.ojomono.ionce.R
 import com.ojomono.ionce.ui.splashscreen.SplashActivity
-import com.ojomono.ionce.utils.FirebaseProxy
+import com.ojomono.ionce.firebase.Authentication
 
 
 class ProfileFragment : Fragment(), OnCompleteListener<Void> {
@@ -36,7 +36,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         // When clicked, sign out user and listen for completion
         val button: Button = root.findViewById(R.id.button_sign_out)
         button.setOnClickListener {
-            context?.let { FirebaseProxy.signOut(it, this) }
+            context?.let { Authentication.signOut(it, this) }
         }
 
         return root

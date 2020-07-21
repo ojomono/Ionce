@@ -1,4 +1,4 @@
-package com.ojomono.ionce.utils
+package com.ojomono.ionce.firebase
 
 import android.content.Context
 import android.content.Intent
@@ -9,11 +9,13 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.ojomono.ionce.utils.Constants
+import com.ojomono.ionce.utils.TAG
 
 /**
- * Handles all interactions with Firebase.
+ * Handles all interactions with Firebase authentication.
  */
-object FirebaseProxy {
+object Authentication {
 
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
