@@ -8,14 +8,16 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
-import com.ojomono.ionce.ui.tales.dummy.DummyContent
 
 /**
  * A fragment representing a list of Items.
  */
 class TalesListFragment : Fragment() {
 
+    private lateinit var talesViewModel: TalesViewModel
     private var columnCount = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,22 +29,26 @@ class TalesListFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_tales_list, container, false)
+        talesViewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_tales_list, container, false)
 
         // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-                adapter = MyTaleRecyclerViewAdapter(DummyContent.ITEMS)
+        val recyclerView: RecyclerView = root.findViewById(R.id.recycler_tales_list)
+        with(recyclerView) {
+            layoutManager = when {
+                columnCount <= 1 -> LinearLayoutManager(context)
+                else -> GridLayoutManager(context, columnCount)
             }
+            talesViewModel.tales.observe(viewLifecycleOwner, Observer {
+                adapter = MyTaleRecyclerViewAdapter(it)
+            })
         }
-        return view
+
+        return root
     }
 
     companion object {

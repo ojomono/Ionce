@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.LiveData
 import com.ojomono.ionce.R
 
 import com.ojomono.ionce.ui.tales.dummy.DummyContent.DummyItem
@@ -14,7 +15,7 @@ import com.ojomono.ionce.ui.tales.dummy.DummyContent.DummyItem
  * TODO: Replace the implementation with code for your data type.
  */
 class MyTaleRecyclerViewAdapter(
-    private val values: List<DummyItem>
+    private val values: List<TaleItemModel>
 ) : RecyclerView.Adapter<MyTaleRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,7 +26,7 @@ class MyTaleRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.titleView.text = item.content
+        holder.titleView.text = item.title
     }
 
     override fun getItemCount(): Int = values.size
