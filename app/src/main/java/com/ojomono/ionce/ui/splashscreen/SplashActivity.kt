@@ -39,7 +39,10 @@ class SplashActivity : AppCompatActivity() {
                 // Open home screen
                 startMainActivity()
 
-            } else if (Authentication.handleSignInFailed(data)) finish() // Sign in failed.
+            } else {    // Sign in failed.
+                Authentication.handleSignInFailed(data)
+                finish()
+            }
         }
     }
 

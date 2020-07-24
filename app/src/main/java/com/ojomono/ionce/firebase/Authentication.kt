@@ -67,19 +67,13 @@ object Authentication {
      * Handle the case of a failed sign-in and returns if the cause is that the user canceled the
      * process (else an error had occurred). Response should be given in [dataIntent].
      */
-    fun handleSignInFailed(dataIntent: Intent?): Boolean {
-
+    fun handleSignInFailed(dataIntent: Intent?) {
         val response = IdpResponse.fromResultIntent(dataIntent)
 
-        var isCancelled = false
-
         // If response is null the user canceled the sign-in flow using the back button.
-        if (response == null) isCancelled = true
-        // Otherwise an error occurred
+        // Otherwise an error occurred:
         // TODO check response.getError().getErrorCode() and handle the error.
-        else Log.e(TAG, response.error.toString())
-
-        return isCancelled
+        if (response != null) Log.e(TAG, response.error.toString())
     }
 
     /**
