@@ -13,7 +13,8 @@ import com.ojomono.ionce.ui.tales.dummy.DummyContent.DummyItem
  * [RecyclerView.Adapter] that can display a [DummyItem].
  * TODO: Replace the implementation with code for your data type.
  */
-class TalesAdapter : ListAdapter<Tale, TalesAdapter.ViewHolder>(TalesDiffCallback()) {
+class TalesAdapter(private val clickListener: TalesListener) :
+    ListAdapter<Tale, TalesAdapter.ViewHolder>(TalesDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
@@ -21,7 +22,7 @@ class TalesAdapter : ListAdapter<Tale, TalesAdapter.ViewHolder>(TalesDiffCallbac
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(item, clickListener)
     }
 
     class ViewHolder private constructor(private val binding: ItemTaleBinding) :
@@ -31,8 +32,9 @@ class TalesAdapter : ListAdapter<Tale, TalesAdapter.ViewHolder>(TalesDiffCallbac
             return super.toString() + " '" + binding.textTitle.text + "'"
         }
 
-        fun bind(item: Tale) {
+        fun bind(item: Tale, clickListener: TalesListener) {
             binding.tale = item
+            binding.clickListener = clickListener
             binding.executePendingBindings()
         }
 
@@ -53,6 +55,10 @@ class TalesAdapter : ListAdapter<Tale, TalesAdapter.ViewHolder>(TalesDiffCallbac
         override fun areContentsTheSame(oldItem: Tale, newItem: Tale): Boolean {
             return oldItem == newItem
         }
+    }
+
+    class TalesListener(val clickListener: (taleId: Long) -> Unit) {
+        fun onClick(tale: Tale) = clickListener(tale.id)
     }
 
 }
