@@ -17,6 +17,9 @@ import com.ojomono.ionce.utils.TAG
  */
 object Authentication {
 
+    private val authUI = AuthUI.getInstance()
+    private val firebaseAuth = FirebaseAuth.getInstance()
+
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
      * directing to the given [androidPackageName]. If the function is called after the email link
@@ -28,7 +31,7 @@ object Authentication {
     ): Intent {
 
         // Start building the sign-in Intent and email builders
-        val signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder()
+        val signInIntentBuilder = authUI.createSignInIntentBuilder()
         val emailBuilder = AuthUI.IdpConfig.EmailBuilder()
 
         // If the package name is given, we can enable email link sign-in
@@ -80,7 +83,7 @@ object Authentication {
      * Get the user currently logged-in to firebase. If no user is logged-in, null will be returned.
      */
     fun getCurrentUser(): FirebaseUser? {
-        return FirebaseAuth.getInstance().currentUser
+        return firebaseAuth.currentUser
     }
 
     /**
@@ -88,9 +91,7 @@ object Authentication {
      * a [onCompleteListener] are needed.
      */
     fun signOut(context: Context, onCompleteListener: OnCompleteListener<Void>) {
-        AuthUI.getInstance()
-            .signOut(context)
-            .addOnCompleteListener(onCompleteListener)
+        authUI.signOut(context).addOnCompleteListener(onCompleteListener)
     }
 
 }

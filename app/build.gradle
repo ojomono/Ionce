@@ -2,10 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-// "Add Firebase SDK:
-// The Google services plugin for Gradle loads the google-services.json file you just
-// downloaded. Modify your build.gradle files to use the plugin."
+// Required for using Firebase SDK
 apply plugin: 'com.google.gms.google-services'
+
+// Required for using data binding
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
@@ -33,6 +34,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    dataBinding {
+        enabled = true
     }
 }
 

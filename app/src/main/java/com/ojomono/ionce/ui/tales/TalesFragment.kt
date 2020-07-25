@@ -4,18 +4,18 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
+import kotlinx.android.synthetic.main.fragment_tales_list.view.*
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of Tales.
  */
-class TalesListFragment : Fragment() {
+class TalesFragment : Fragment() {
 
     private lateinit var talesViewModel: TalesViewModel
     private var columnCount = 1
@@ -37,14 +37,15 @@ class TalesListFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_tales_list, container, false)
 
         // Set the adapter
-        val recyclerView: RecyclerView = root.findViewById(R.id.recycler_tales_list)
-        with(recyclerView) {
+        val adapter = TalesAdapter()
+        with(root.recycler_tales_list) {
             layoutManager = when {
                 columnCount <= 1 -> LinearLayoutManager(context)
                 else -> GridLayoutManager(context, columnCount)
             }
+            this.adapter = adapter
             talesViewModel.tales.observe(viewLifecycleOwner, Observer {
-                adapter = MyTaleRecyclerViewAdapter(it)
+                it?.let { adapter.submitList(it) }
             })
         }
 
@@ -59,7 +60,7 @@ class TalesListFragment : Fragment() {
         // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(columnCount: Int) =
-            TalesListFragment().apply {
+            TalesFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_COLUMN_COUNT, columnCount)
                 }

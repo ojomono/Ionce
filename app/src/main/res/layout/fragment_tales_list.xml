@@ -13,7 +13,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".ui.tales.TalesListFragment"
+        tools:context=".ui.tales.TalesFragment"
         tools:listitem="@layout/item_tale" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

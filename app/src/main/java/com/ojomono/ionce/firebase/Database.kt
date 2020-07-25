@@ -2,7 +2,7 @@ package com.ojomono.ionce.firebase
 
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.ojomono.ionce.ui.tales.TaleItemModel
+import com.ojomono.ionce.ui.tales.Tale
 import java.util.ArrayList
 
 /**
@@ -10,13 +10,13 @@ import java.util.ArrayList
  */
 object Database {
     // The Cloud Firestore instance
-    val db = Firebase.firestore
+    private val db = Firebase.firestore
 
-    fun getUserTales(): List<TaleItemModel>? {
+    fun getUserTales(): List<Tale>? {
 //        TODO("Not yet implemented")
-        val dummy = ArrayList<TaleItemModel>()
-        dummy.add(TaleItemModel(1, "Tale 1"))
-        dummy.add(TaleItemModel(2, "Tale 2"))
+        val dummy = ArrayList<Tale>()
+        dummy.add(Tale(1, "Tale 1"))
+        dummy.add(Tale(2, "Tale 2"))
         return dummy
     }
 }

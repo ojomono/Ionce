@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_tales"
-        android:name="com.ojomono.ionce.ui.tales.TalesListFragment"
+        android:name="com.ojomono.ionce.ui.tales.TalesFragment"
         android:label="@string/title_tales"
         tools:layout="@layout/fragment_tales_list" />
 
