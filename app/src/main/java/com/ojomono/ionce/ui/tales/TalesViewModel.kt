@@ -15,4 +15,12 @@ class TalesViewModel : ViewModel() {
         TODO("Not yet implemented")
     }
 
+    fun updateTale(id: Long, title: String) {
+        TODO("Not yet implemented")
+    }
+
+    fun deleteTale(id: Long) {
+        TODO("Not yet implemented")
+    }
+
 }

@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
@@ -19,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_tales_list.view.*
 /**
  * A fragment representing a list of Tales.
  */
-class TalesFragment : Fragment() {
+class TalesFragment : Fragment(), TalesAdapter.TalesListener {
 
     private lateinit var talesViewModel: TalesViewModel
     private var columnCount = 1
@@ -41,9 +40,7 @@ class TalesFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_tales_list, container, false)
 
         // Set the adapter
-        val adapter = TalesAdapter(TalesAdapter.TalesListener {
-            Toast.makeText(context, "$it", Toast.LENGTH_LONG).show()
-        })
+        val adapter = TalesAdapter(this)
         with(root.recycler_tales_list) {
             layoutManager = when {
                 columnCount <= 1 -> LinearLayoutManager(context)
@@ -75,12 +72,61 @@ class TalesFragment : Fragment() {
 
         dialogBuilder.setTitle("New Tale")
         dialogBuilder.setMessage("Enter Title Below")
-        dialogBuilder.setPositiveButton("Save") { _, _ ->
+        dialogBuilder.setPositiveButton("Save") { dialog, _ ->
             talesViewModel.createTale(input.text.toString())
+            dialog.cancel()
         }
-        dialogBuilder.setNegativeButton("Cancel") { _, _ -> }   // pass
+        dialogBuilder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
         val b = dialogBuilder.create()
         b.show()
+    }
+
+    private fun showUpdateDialog(tale: Tale) {
+        val dialogBuilder = AlertDialog.Builder(context)
+
+        val input = EditText(context)
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        input.layoutParams = lp
+        input.setText(tale.title)
+
+        dialogBuilder.setView(input)
+
+        dialogBuilder.setTitle("Update Tale")
+        dialogBuilder.setPositiveButton("Update") { dialog, _ ->
+            talesViewModel.updateTale(tale.id, input.text.toString())
+            dialog.cancel()
+        }
+        dialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.cancel()
+        }
+        val b = dialogBuilder.create()
+        b.show()
+    }
+
+    private fun showDeleteDialog(tale: Tale) {
+        val dialogBuilder = AlertDialog.Builder(context)
+        dialogBuilder.setTitle("Delete")
+        dialogBuilder.setMessage("Confirm delete?")
+        dialogBuilder.setPositiveButton("Delete") { dialog, _ ->
+            talesViewModel.deleteTale(tale.id)
+            dialog.cancel()
+        }
+        dialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.cancel()
+        }
+        val b = dialogBuilder.create()
+        b.show()
+    }
+
+    override fun onEditClicked(tale: Tale) {
+        showUpdateDialog(tale)
+    }
+
+    override fun onDeleteClicked(tale: Tale) {
+        showDeleteDialog(tale)
     }
 
     companion object {

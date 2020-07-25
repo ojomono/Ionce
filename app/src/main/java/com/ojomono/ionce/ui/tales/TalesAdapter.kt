@@ -25,7 +25,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
         holder.bind(item, clickListener)
     }
 
-    class ViewHolder private constructor(private val binding: ItemTaleBinding) :
+    class ViewHolder private constructor(val binding: ItemTaleBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         override fun toString(): String {
@@ -57,8 +57,9 @@ class TalesAdapter(private val clickListener: TalesListener) :
         }
     }
 
-    class TalesListener(val clickListener: (taleId: Long) -> Unit) {
-        fun onClick(tale: Tale) = clickListener(tale.id)
+    interface TalesListener {
+        fun onEditClicked(tale: Tale)
+        fun onDeleteClicked(tale: Tale)
     }
 
 }
