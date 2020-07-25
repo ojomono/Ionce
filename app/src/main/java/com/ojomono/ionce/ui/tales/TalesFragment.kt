@@ -1,5 +1,6 @@
 package com.ojomono.ionce.ui.tales
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -7,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -52,7 +55,32 @@ class TalesFragment : Fragment() {
             })
         }
 
+        // Set add fab action
+        root.fab_add_tale.setOnClickListener { showNewDialog() }
+
         return root
+    }
+
+    private fun showNewDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+
+        val input = EditText(context)
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        input.layoutParams = lp
+
+        dialogBuilder.setView(input)
+
+        dialogBuilder.setTitle("New Tale")
+        dialogBuilder.setMessage("Enter Title Below")
+        dialogBuilder.setPositiveButton("Save") { _, _ ->
+            talesViewModel.createTale(input.text.toString())
+        }
+        dialogBuilder.setNegativeButton("Cancel") { _, _ -> }   // pass
+        val b = dialogBuilder.create()
+        b.show()
     }
 
     companion object {
