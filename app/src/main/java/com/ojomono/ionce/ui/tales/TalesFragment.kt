@@ -23,6 +23,10 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
     private lateinit var talesViewModel: TalesViewModel
     private var columnCount = 1
 
+    /***********************/
+    /** Lifecycle methods **/
+    /***********************/
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,6 +62,22 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         return root
     }
 
+    /****************************************/
+    /** TalesAdapter.TalesListener methods **/
+    /****************************************/
+
+    override fun onEditTaleClicked(tale: Tale) {
+        showUpdateDialog(tale)
+    }
+
+    override fun onDeleteTaleClicked(tale: Tale) {
+        showDeleteDialog(tale)
+    }
+
+    /*************************/
+    /** Show dialog methods **/
+    /*************************/
+
     private fun showNewDialog() {
         val dialogBuilder = AlertDialog.Builder(context)
 
@@ -70,13 +90,17 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
 
         dialogBuilder.setView(input)
 
-        dialogBuilder.setTitle("New Tale")
-        dialogBuilder.setMessage("Enter Title Below")
-        dialogBuilder.setPositiveButton("Save") { dialog, _ ->
-            talesViewModel.createTale(input.text.toString())
-            dialog.cancel()
-        }
-        dialogBuilder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+        dialogBuilder.setTitle(getText(R.string.tales_new_dialog_title))
+        dialogBuilder.setMessage(getText(R.string.tales_new_dialog_message))
+        dialogBuilder
+            .setPositiveButton(getText(R.string.tales_new_dialog_positive_button_text))
+            { dialog, _ ->
+                talesViewModel.createTale(input.text.toString())
+                dialog.cancel()
+            }
+        dialogBuilder
+            .setNegativeButton(getText(R.string.tales_dialogs_negative_button_text))
+            { dialog, _ -> dialog.cancel() }
         val b = dialogBuilder.create()
         b.show()
     }
@@ -94,40 +118,40 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
 
         dialogBuilder.setView(input)
 
-        dialogBuilder.setTitle("Update Tale")
-        dialogBuilder.setPositiveButton("Update") { dialog, _ ->
-            talesViewModel.updateTale(tale.id, input.text.toString())
-            dialog.cancel()
-        }
-        dialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.cancel()
-        }
+        dialogBuilder.setTitle(getText(R.string.tales_update_dialog_title))
+        dialogBuilder
+            .setPositiveButton(getText(R.string.tales_update_dialog_positive_button_text))
+            { dialog, _ ->
+                talesViewModel.updateTale(tale.id, input.text.toString())
+                dialog.cancel()
+            }
+        dialogBuilder
+            .setNegativeButton(getText(R.string.tales_dialogs_negative_button_text))
+            { dialog, _ -> dialog.cancel() }
         val b = dialogBuilder.create()
         b.show()
     }
 
     private fun showDeleteDialog(tale: Tale) {
         val dialogBuilder = AlertDialog.Builder(context)
-        dialogBuilder.setTitle("Delete")
-        dialogBuilder.setMessage("Confirm delete?")
-        dialogBuilder.setPositiveButton("Delete") { dialog, _ ->
-            talesViewModel.deleteTale(tale.id)
-            dialog.cancel()
-        }
-        dialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.cancel()
-        }
+        dialogBuilder.setTitle(getText(R.string.tales_delete_dialog_title))
+        dialogBuilder.setMessage(getText(R.string.tales_delete_dialog_message))
+        dialogBuilder
+            .setPositiveButton(getText(R.string.tales_delete_dialog_positive_button_text))
+            { dialog, _ ->
+                talesViewModel.deleteTale(tale.id)
+                dialog.cancel()
+            }
+        dialogBuilder
+            .setNegativeButton(getText(R.string.tales_dialogs_negative_button_text))
+            { dialog, _ -> dialog.cancel() }
         val b = dialogBuilder.create()
         b.show()
     }
 
-    override fun onEditClicked(tale: Tale) {
-        showUpdateDialog(tale)
-    }
-
-    override fun onDeleteClicked(tale: Tale) {
-        showDeleteDialog(tale)
-    }
+    /**********************/
+    /** Companion object **/
+    /**********************/
 
     companion object {
 

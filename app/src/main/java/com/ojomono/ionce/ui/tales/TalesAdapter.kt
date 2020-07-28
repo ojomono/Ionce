@@ -7,11 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.ojomono.ionce.databinding.ItemTaleBinding
 
-import com.ojomono.ionce.ui.tales.dummy.DummyContent.DummyItem
 
 /**
- * [RecyclerView.Adapter] that can display a [DummyItem].
- * TODO: Replace the implementation with code for your data type.
+ * [RecyclerView.Adapter] that can display a [Tale] item.
  */
 class TalesAdapter(private val clickListener: TalesListener) :
     ListAdapter<Tale, TalesAdapter.ViewHolder>(TalesDiffCallback()) {
@@ -25,7 +23,11 @@ class TalesAdapter(private val clickListener: TalesListener) :
         holder.bind(item, clickListener)
     }
 
-    class ViewHolder private constructor(val binding: ItemTaleBinding) :
+    /**
+     * [RecyclerView.ViewHolder] that describes a [Tale] item view and metadata about its place within
+     * the RecyclerView.
+     */
+    class ViewHolder private constructor(private val binding: ItemTaleBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         override fun toString(): String {
@@ -41,12 +43,17 @@ class TalesAdapter(private val clickListener: TalesListener) :
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ItemTaleBinding.inflate(layoutInflater, parent, false)
+                val binding =
+                    ItemTaleBinding.inflate(layoutInflater, parent, false)
                 return ViewHolder(binding)
             }
         }
     }
 
+    /**
+     * [DiffUtil.ItemCallback] used to determine the diff between two lists of tales in order to
+     * optimize the [RecyclerView] for changes to the data.
+     */
     class TalesDiffCallback : DiffUtil.ItemCallback<Tale>() {
         override fun areItemsTheSame(oldItem: Tale, newItem: Tale): Boolean {
             return oldItem.id == newItem.id
@@ -57,9 +64,12 @@ class TalesAdapter(private val clickListener: TalesListener) :
         }
     }
 
+    /**
+     * The interface for listening to item events.
+     */
     interface TalesListener {
-        fun onEditClicked(tale: Tale)
-        fun onDeleteClicked(tale: Tale)
+        fun onEditTaleClicked(tale: Tale)   // Edit icon clicked
+        fun onDeleteTaleClicked(tale: Tale) // Delete icon clicked
     }
 
 }
