@@ -57,7 +57,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         }
 
         // Set add fab action
-        root.fab_add_tale.setOnClickListener { showNewDialog() }
+        root.fab_add_tale.setOnClickListener { showAddDialog() }
 
         return root
     }
@@ -78,7 +78,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
     /** Show dialog methods **/
     /*************************/
 
-    private fun showNewDialog() {
+    private fun showAddDialog() {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -90,12 +90,12 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
 
         dialogBuilder.setView(input)
 
-        dialogBuilder.setTitle(getText(R.string.tales_new_dialog_title))
-        dialogBuilder.setMessage(getText(R.string.tales_new_dialog_message))
+        dialogBuilder.setTitle(getText(R.string.tales_add_dialog_title))
+        dialogBuilder.setMessage(getText(R.string.tales_add_dialog_message))
         dialogBuilder
-            .setPositiveButton(getText(R.string.tales_new_dialog_positive_button_text))
+            .setPositiveButton(getText(R.string.tales_add_dialog_positive_button_text))
             { dialog, _ ->
-                talesViewModel.createTale(input.text.toString())
+                talesViewModel.addTale(input.text.toString())
                 dialog.cancel()
             }
         dialogBuilder

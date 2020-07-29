@@ -11,8 +11,11 @@ class TalesViewModel : ViewModel() {
     }
     val tales: LiveData<List<Tale>> = _tales
 
-    fun createTale(title: String) {
-        TODO("Not yet implemented")
+    /**
+     * Create a new tale document with the given [title].
+     */
+    fun addTale(title: String) {
+        Database.addTale(title)
     }
 
     fun updateTale(id: Long, title: String) {
