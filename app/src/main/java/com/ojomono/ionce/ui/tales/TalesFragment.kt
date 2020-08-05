@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
+import com.ojomono.ionce.models.Tale
 import kotlinx.android.synthetic.main.fragment_tales_list.view.*
 
 /**

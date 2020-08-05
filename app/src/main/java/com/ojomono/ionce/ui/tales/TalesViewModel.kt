@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ojomono.ionce.firebase.Database
+import com.ojomono.ionce.models.Tale
 
 class TalesViewModel : ViewModel() {
     private val _tales = MutableLiveData<List<Tale>>().apply {
-        value = Database.getUserTales()
+        value = Database.userTales
     }
     val tales: LiveData<List<Tale>> = _tales
 
@@ -18,12 +19,11 @@ class TalesViewModel : ViewModel() {
         Database.addTale(title)
     }
 
-    fun updateTale(id: Long, title: String) {
+    fun updateTale(id: String, title: String) {
         TODO("Not yet implemented")
     }
 
-    fun deleteTale(id: Long) {
+    fun deleteTale(id: String) {
         TODO("Not yet implemented")
     }
-
 }

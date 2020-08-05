@@ -7,7 +7,7 @@
     <data>
         <variable
             name="tale"
-            type="com.ojomono.ionce.ui.tales.Tale"/>
+            type="com.ojomono.ionce.models.Tale"/>
         <variable
             name="clickListener"
             type="com.ojomono.ionce.ui.tales.TalesAdapter.TalesListener" />

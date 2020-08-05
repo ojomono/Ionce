@@ -67,8 +67,15 @@ object Authentication {
     }
 
     /**
-     * Handle the case of a failed sign-in and returns if the cause is that the user canceled the
-     * process (else an error had occurred). Response should be given in [dataIntent].
+     * Handle the case of a successful sign-in.
+     */
+    fun handleSignInSucceeded() {
+        // Get reference to current user's document from Firestore.
+        Database.switchUserDocument(getCurrentUser()?.uid)
+    }
+
+    /**
+     * Handle the case of a failed sign-in. Response should be given in [dataIntent].
      */
     fun handleSignInFailed(dataIntent: Intent?) {
         val response = IdpResponse.fromResultIntent(dataIntent)
@@ -83,6 +90,7 @@ object Authentication {
      * Get the user currently logged-in to firebase. If no user is logged-in, null will be returned.
      */
     fun getCurrentUser(): FirebaseUser? {
+        // TODO: return uid instead
         return firebaseAuth.currentUser
     }
 

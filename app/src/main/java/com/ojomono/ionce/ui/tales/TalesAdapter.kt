@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.ojomono.ionce.databinding.ItemTaleBinding
+import com.ojomono.ionce.models.Tale
 
 
 /**

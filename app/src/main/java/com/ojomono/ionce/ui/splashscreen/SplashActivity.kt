@@ -34,7 +34,7 @@ class SplashActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
 
                 // Successfully signed in
-//                val user = Authentication.getCurrentUser()
+                Authentication.handleSignInSucceeded()
 
                 // Open home screen
                 startMainActivity()
