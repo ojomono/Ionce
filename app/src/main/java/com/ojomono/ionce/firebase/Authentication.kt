@@ -90,7 +90,6 @@ object Authentication {
      * Get the user currently logged-in to firebase. If no user is logged-in, null will be returned.
      */
     fun getCurrentUser(): FirebaseUser? {
-        // TODO: return uid instead
         return firebaseAuth.currentUser
     }
 
