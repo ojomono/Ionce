@@ -1,10 +1,10 @@
-package com.ojomono.ionce.ui.home
+package com.ojomono.ionce.ui.roll
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class HomeViewModel : ViewModel() {
+class RollViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is home Fragment"

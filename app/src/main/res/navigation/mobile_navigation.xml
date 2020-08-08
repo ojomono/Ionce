@@ -7,15 +7,15 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.ojomono.ionce.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:name="com.ojomono.ionce.ui.roll.RollFragment"
+        android:label="@string/title_roll"
+        tools:layout="@layout/fragment_roll" />
 
     <fragment
         android:id="@+id/navigation_tales"
         android:name="com.ojomono.ionce.ui.tales.TalesFragment"
         android:label="@string/title_tales"
-        tools:layout="@layout/fragment_tales_list" />
+        tools:layout="@layout/fragment_tales" />
 
     <fragment
         android:id="@+id/navigation_profile"

@@ -14,7 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.models.TalesItem
-import kotlinx.android.synthetic.main.fragment_tales_list.view.*
+import kotlinx.android.synthetic.main.fragment_tales.view.*
 
 /**
  * A fragment representing a list of Tales.
@@ -42,7 +42,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         savedInstanceState: Bundle?
     ): View? {
         talesViewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_tales_list, container, false)
+        val root = inflater.inflate(R.layout.fragment_tales, container, false)
 
         // Set the adapter
         val adapter = TalesAdapter(this)
