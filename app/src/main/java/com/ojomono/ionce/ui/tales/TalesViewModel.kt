@@ -12,20 +12,20 @@ class TalesViewModel : ViewModel() {
      * Create a new tale document with the given [title].
      */
     fun addTale(title: String) {
-        Database.addTale(title)
+        Database.setTale(title = title)
     }
 
     /**
      * Update the tale document which id's = [id] to have the given [title].
      */
     fun updateTale(id: String, title: String) {
-        TODO("Not yet implemented")
+        Database.setTale(id, title)
     }
 
     /**
      * Delete the tale document which id's = [id].
      */
     fun deleteTale(id: String) {
-        TODO("Not yet implemented")
+        Database.deleteTale(id)
     }
 }

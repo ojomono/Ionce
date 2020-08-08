@@ -89,20 +89,27 @@ object Database {
     /** CRUD methods **/
     /******************/
 
-    fun addTale(title: String) {
-        // Adding tale is possible only if a user is logged in
+    // TODO: Define security rules in Firestore:
+    // https://codelabs.developers.google.com/codelabs/firestore-android/#7
+    // https://console.firebase.google.com/u/1/project/ionce-9e4c3/database/firestore/rules
+
+    fun setTale(id: String = "", title: String) {
+        // Setting tale is possible only if a user is logged in
         // (== his document reference is not null)
         userDocRef?.let { userRef ->
-            // Create reference for new tale, for use inside the transaction
-            val taleRef = userRef.collection(CP_TALES).document()
+            val talesCol = userRef.collection(CP_TALES)
+            // Create reference for wanted tale, for use inside the transaction - if an id was given
+            // get the existing document, else reference a new one.
+            val taleRef =
+                if (id.isEmpty()) talesCol.document() else talesCol.document(id)
             val tale = Tale(taleRef.id, title)
 
-            // In a transaction, add the new tale and update the user's list
+            // In a transaction, set the tale's document and update the user's tale list
             db.runTransaction { transaction ->
                 val user: User? = transaction.get(userRef).toObject(User::class.java)
                 user?.let {
                     // Add new tale to user's list
-                    user.addTale(TalesItem(tale))
+                    user.setTale(TalesItem(tale))
 
                     // Commit to Firestore
                     transaction.set(userRef, user)
@@ -110,5 +117,9 @@ object Database {
                 }
             }
         }
+    }
+
+    fun deleteTale(id: String) {
+
     }
 }
