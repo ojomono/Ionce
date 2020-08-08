@@ -13,7 +13,7 @@ import android.widget.LinearLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
-import com.ojomono.ionce.models.Tale
+import com.ojomono.ionce.models.TalesItem
 import kotlinx.android.synthetic.main.fragment_tales_list.view.*
 
 /**
@@ -57,6 +57,9 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
             })
         }
 
+        // TODO: Use binding and event wrapper pattern to set click listeners:
+        // https://codelabs.developers.google.com/codelabs/kotlin-android-training-live-data-data-binding/index.html?index=..%2F..android-kotlin-fundamentals#3
+        // https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
         // Set add fab action
         root.fab_add_tale.setOnClickListener { showAddDialog() }
 
@@ -67,12 +70,12 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
     /** TalesAdapter.TalesListener methods **/
     /****************************************/
 
-    override fun onEditTaleClicked(tale: Tale) {
-        showUpdateDialog(tale)
+    override fun onEditTaleClicked(talesItem: TalesItem) {
+        showUpdateDialog(talesItem)
     }
 
-    override fun onDeleteTaleClicked(tale: Tale) {
-        showDeleteDialog(tale)
+    override fun onDeleteTaleClicked(talesItem: TalesItem) {
+        showDeleteDialog(talesItem)
     }
 
     /*************************/
@@ -106,7 +109,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         b.show()
     }
 
-    private fun showUpdateDialog(tale: Tale) {
+    private fun showUpdateDialog(talesItem: TalesItem) {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -115,7 +118,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
             LinearLayout.LayoutParams.MATCH_PARENT
         )
         input.layoutParams = lp
-        input.setText(tale.title)
+        input.setText(talesItem.title)
 
         dialogBuilder.setView(input)
 
@@ -123,7 +126,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_update_dialog_positive_button_text))
             { dialog, _ ->
-                talesViewModel.updateTale(tale.id, input.text.toString())
+                talesViewModel.updateTale(talesItem.id, input.text.toString())
                 dialog.cancel()
             }
         dialogBuilder
@@ -133,14 +136,14 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         b.show()
     }
 
-    private fun showDeleteDialog(tale: Tale) {
+    private fun showDeleteDialog(talesItem: TalesItem) {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle(getText(R.string.tales_delete_dialog_title))
         dialogBuilder.setMessage(getText(R.string.tales_delete_dialog_message))
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_delete_dialog_positive_button_text))
             { dialog, _ ->
-                talesViewModel.deleteTale(tale.id)
+                talesViewModel.deleteTale(talesItem.id)
                 dialog.cancel()
             }
         dialogBuilder

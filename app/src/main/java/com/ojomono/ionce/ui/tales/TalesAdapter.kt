@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.ojomono.ionce.databinding.ItemTaleBinding
-import com.ojomono.ionce.models.Tale
+import com.ojomono.ionce.models.TalesItem
 
 
 /**
- * [RecyclerView.Adapter] that can display a [Tale] item.
+ * [RecyclerView.Adapter] that can display a [TalesItem] item.
  */
 class TalesAdapter(private val clickListener: TalesListener) :
-    ListAdapter<Tale, TalesAdapter.ViewHolder>(TalesDiffCallback()) {
+    ListAdapter<TalesItem, TalesAdapter.ViewHolder>(TalesDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
@@ -25,7 +25,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
     }
 
     /**
-     * [RecyclerView.ViewHolder] that describes a [Tale] item view and metadata about its place within
+     * [RecyclerView.ViewHolder] that describes a [TalesItem] item view and metadata about its place within
      * the RecyclerView.
      */
     class ViewHolder private constructor(private val binding: ItemTaleBinding) :
@@ -35,8 +35,8 @@ class TalesAdapter(private val clickListener: TalesListener) :
             return super.toString() + " '" + binding.textTitle.text + "'"
         }
 
-        fun bind(item: Tale, clickListener: TalesListener) {
-            binding.tale = item
+        fun bind(item: TalesItem, clickListener: TalesListener) {
+            binding.talesItem = item
             binding.clickListener = clickListener
             binding.executePendingBindings()
         }
@@ -52,25 +52,28 @@ class TalesAdapter(private val clickListener: TalesListener) :
     }
 
     /**
-     * [DiffUtil.ItemCallback] used to determine the diff between two lists of tales in order to
+     * [DiffUtil.ItemCallback] used to determine the diff between two lists of talesItems in order to
      * optimize the [RecyclerView] for changes to the data.
      */
-    class TalesDiffCallback : DiffUtil.ItemCallback<Tale>() {
-        override fun areItemsTheSame(oldItem: Tale, newItem: Tale): Boolean {
+    class TalesDiffCallback : DiffUtil.ItemCallback<TalesItem>() {
+        override fun areItemsTheSame(oldItem: TalesItem, newItem: TalesItem): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Tale, newItem: Tale): Boolean {
+        override fun areContentsTheSame(oldItem: TalesItem, newItem: TalesItem): Boolean {
             return oldItem == newItem
         }
     }
 
+    // TODO: Use binding and event wrapper pattern to set click listeners:
+    // https://codelabs.developers.google.com/codelabs/kotlin-android-training-live-data-data-binding/index.html?index=..%2F..android-kotlin-fundamentals#3
+    // https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
     /**
      * The interface for listening to item events.
      */
     interface TalesListener {
-        fun onEditTaleClicked(tale: Tale)   // Edit icon clicked
-        fun onDeleteTaleClicked(tale: Tale) // Delete icon clicked
+        fun onEditTaleClicked(talesItem: TalesItem)   // Edit icon clicked
+        fun onDeleteTaleClicked(talesItem: TalesItem) // Delete icon clicked
     }
 
 }

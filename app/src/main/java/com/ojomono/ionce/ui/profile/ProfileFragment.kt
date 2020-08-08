@@ -33,6 +33,9 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
             textView.text = it
         })
 
+        // TODO: Use binding and event wrapper pattern to set click listeners:
+        // https://codelabs.developers.google.com/codelabs/kotlin-android-training-live-data-data-binding/index.html?index=..%2F..android-kotlin-fundamentals#3
+        // https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
         // When clicked, sign out user and listen for completion
         val button: Button = root.findViewById(R.id.button_sign_out)
         button.setOnClickListener {

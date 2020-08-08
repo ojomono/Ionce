@@ -1,12 +1,13 @@
 package com.ojomono.ionce.firebase
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.*
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.ojomono.ionce.models.User
 import com.ojomono.ionce.models.Tale
+import com.ojomono.ionce.models.User
+import com.ojomono.ionce.models.TalesItem
 import com.ojomono.ionce.utils.TAG
 
 
@@ -23,9 +24,6 @@ object Database {
     private const val CP_USERS = "users"
     private const val CP_TALES = "tales"
 
-    // Hash map keys
-    private const val KEY_TITLE = "title"
-
     /*************/
     /** Members **/
     /*************/
@@ -38,12 +36,13 @@ object Database {
     private var userDocument: DocumentSnapshot? = null
     private var registration: ListenerRegistration? = null
 
+    // Current user's talesItems
+    var userTales: MutableLiveData<List<TalesItem>> = MutableLiveData()
+
+    // If a user is already logged-in - get it's document
     init {
         Authentication.getCurrentUser()?.uid?.let { switchUserDocument(it) }
     }
-
-    // Current user's tales
-    var userTales: List<Tale> = listOf()
 
     /**
      * Switch the current user document reference and snapshot to those of the user with the given
@@ -78,7 +77,10 @@ object Database {
             // Listen for changes in the document
             registration = userDocRef?.addSnapshotListener { snapshot, e ->
                 if (e != null) Log.w(TAG, "Listen failed.", e)
-                else userDocument = snapshot
+                else {
+                    userDocument = snapshot
+                    userTales.value = snapshot?.toObject(User::class.java)?.talesItems
+                }
             }
         }
     }
@@ -100,7 +102,7 @@ object Database {
                 val user: User? = transaction.get(userRef).toObject(User::class.java)
                 user?.let {
                     // Add new tale to user's list
-                    user.addTale(tale)
+                    user.addTale(TalesItem(tale))
 
                     // Commit to Firestore
                     transaction.set(userRef, user)
