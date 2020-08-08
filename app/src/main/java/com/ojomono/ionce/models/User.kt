@@ -14,12 +14,21 @@ data class User(
     //  (more logical but maybe harder to use with Firestore or RecyclerView)
 
     /**
-     * Add or overwrite a tale from the list
+     * Add or overwrite a tale from the list.
      */
     fun setTale(talesItem: TalesItem) {
         // If given item is in the list (searched by id) - overwrite it with new data, else add it
         val index = talesItems.indexOfFirst { it.id == talesItem.id }
         if (index == -1) talesItems.add(talesItem)
         else talesItems[index] = talesItem
+    }
+
+    /**
+     * Delete a tale from the list.
+     */
+    fun deleteTale(id: String) {
+        // If given id is in the list - delete it
+        val index = talesItems.indexOfFirst { it.id == id }
+        if (index != -1) talesItems.removeAt(index)
     }
 }

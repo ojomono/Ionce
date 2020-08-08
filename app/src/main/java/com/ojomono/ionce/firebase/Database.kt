@@ -85,21 +85,21 @@ object Database {
         }
     }
 
-    /******************/
-    /** CRUD methods **/
-    /******************/
+    /************************/
+    /** Tales CRUD methods **/
+    /************************/
 
     // TODO: Define security rules in Firestore:
     // https://codelabs.developers.google.com/codelabs/firestore-android/#7
     // https://console.firebase.google.com/u/1/project/ionce-9e4c3/database/firestore/rules
 
     fun setTale(id: String = "", title: String) {
-        // Setting tale is possible only if a user is logged in
+        // Setting a tale is possible only if a user is logged in
         // (== his document reference is not null)
         userDocRef?.let { userRef ->
-            val talesCol = userRef.collection(CP_TALES)
             // Create reference for wanted tale, for use inside the transaction - if an id was given
             // get the existing document, else reference a new one.
+            val talesCol = userRef.collection(CP_TALES)
             val taleRef =
                 if (id.isEmpty()) talesCol.document() else talesCol.document(id)
             val tale = Tale(taleRef.id, title)
@@ -108,18 +108,38 @@ object Database {
             db.runTransaction { transaction ->
                 val user: User? = transaction.get(userRef).toObject(User::class.java)
                 user?.let {
-                    // Add new tale to user's list
+                    // Update user's list
                     user.setTale(TalesItem(tale))
 
                     // Commit to Firestore
-                    transaction.set(userRef, user)
+                    transaction.update(userRef, user::talesItems.name, user.talesItems)
                     transaction.set(taleRef, tale)
                 }
-            }
+            }.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
         }
     }
 
     fun deleteTale(id: String) {
+        // Deleting a tale is possible only if a user is logged in
+        // (== his document reference is not null)
+        userDocRef?.let { userRef ->
+            // Create reference for wanted tale, for use inside the transaction
+            val taleRef = userRef.collection(CP_TALES).document(id)
 
+            // In a transaction, delete the tale document and remove it from user's tales list
+            db.runTransaction { transaction ->
+                val user: User? = transaction.get(userRef).toObject(User::class.java)
+                user?.let {
+                    // Update user's list
+                    user.deleteTale(id)
+
+                    // Commit to Firestore
+                    transaction.update(userRef, user::talesItems.name, user.talesItems)
+                    transaction.delete(taleRef)
+                }
+            }.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
+                .addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
+        }
     }
 }
