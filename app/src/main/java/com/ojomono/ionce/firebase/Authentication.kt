@@ -1,4 +1,4 @@
-package com.ojomono.ionce.utils
+package com.ojomono.ionce.firebase
 
 import android.content.Context
 import android.content.Intent
@@ -9,11 +9,16 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.ojomono.ionce.utils.Constants
+import com.ojomono.ionce.utils.TAG
 
 /**
- * Handles all interactions with Firebase.
+ * Handles all interactions with Firebase authentication.
  */
-object FirebaseProxy {
+object Authentication {
+
+    private val authUI = AuthUI.getInstance()
+    private val firebaseAuth = FirebaseAuth.getInstance()
 
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
@@ -26,7 +31,7 @@ object FirebaseProxy {
     ): Intent {
 
         // Start building the sign-in Intent and email builders
-        val signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder()
+        val signInIntentBuilder = authUI.createSignInIntentBuilder()
         val emailBuilder = AuthUI.IdpConfig.EmailBuilder()
 
         // If the package name is given, we can enable email link sign-in
@@ -62,29 +67,30 @@ object FirebaseProxy {
     }
 
     /**
-     * Handle the case of a failed sign-in and returns if the cause is that the user canceled the
-     * process (else an error had occurred). Response should be given in [dataIntent].
+     * Handle the case of a successful sign-in.
      */
-    fun handleSignInFailed(dataIntent: Intent?): Boolean {
+    fun handleSignInSucceeded() {
+        // Get reference to current user's document from Firestore.
+        Database.switchUserDocument(getCurrentUser()?.uid)
+    }
 
+    /**
+     * Handle the case of a failed sign-in. Response should be given in [dataIntent].
+     */
+    fun handleSignInFailed(dataIntent: Intent?) {
         val response = IdpResponse.fromResultIntent(dataIntent)
 
-        var isCancelled = false
-
         // If response is null the user canceled the sign-in flow using the back button.
-        if (response == null) isCancelled = true
-        // Otherwise an error occurred
+        // Otherwise an error occurred:
         // TODO check response.getError().getErrorCode() and handle the error.
-        else Log.e(TAG, response.error.toString())
-
-        return isCancelled
+        if (response != null) Log.e(TAG, response.error.toString())
     }
 
     /**
      * Get the user currently logged-in to firebase. If no user is logged-in, null will be returned.
      */
     fun getCurrentUser(): FirebaseUser? {
-        return FirebaseAuth.getInstance().currentUser
+        return firebaseAuth.currentUser
     }
 
     /**
@@ -92,9 +98,7 @@ object FirebaseProxy {
      * a [onCompleteListener] are needed.
      */
     fun signOut(context: Context, onCompleteListener: OnCompleteListener<Void>) {
-        AuthUI.getInstance()
-            .signOut(context)
-            .addOnCompleteListener(onCompleteListener)
+        authUI.signOut(context).addOnCompleteListener(onCompleteListener)
     }
 
 }

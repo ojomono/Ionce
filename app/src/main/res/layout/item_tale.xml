@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="talesItem"
+            type="com.ojomono.ionce.models.TalesItem"/>
+        <variable
+            name="clickListener"
+            type="com.ojomono.ionce.ui.tales.TalesAdapter.TalesListener" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_item_tale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:padding="3dp"
+        app:cardElevation="2dp"
+        app:cardMaxElevation="2dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/text_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/image_edit"
+                android:padding="5dp"
+                android:textSize="16sp"
+                app:title="@{talesItem}"
+                tools:text="title" />
+
+            <ImageView
+                android:id="@+id/image_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginEnd="2dp"
+                android:layout_toStartOf="@+id/image_delete"
+                android:src="@drawable/ic_edit_black_24"
+                android:padding="5dp"
+                android:contentDescription="@string/tales_edit_icon_content_description"
+                android:onClick="@{() -> clickListener.onEditTaleClicked(talesItem)}"/>
+
+            <ImageView
+                android:id="@+id/image_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_delete_black_24"
+                android:padding="5dp"
+                android:contentDescription="@string/tales_delete_icon_content_description"
+                android:onClick="@{() -> clickListener.onDeleteTaleClicked(talesItem)}"/>
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+</layout>

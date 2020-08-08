@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ojomono.ionce.MainActivity
 import com.ojomono.ionce.R
 import com.ojomono.ionce.utils.Constants
-import com.ojomono.ionce.utils.FirebaseProxy
+import com.ojomono.ionce.firebase.Authentication
 
 
 class SplashActivity : AppCompatActivity() {
@@ -17,9 +17,9 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         // If no user is logged in, open sign-in screen
-        if (FirebaseProxy.getCurrentUser() == null)
+        if (Authentication.getCurrentUser() == null)
             startActivityForResult(
-                FirebaseProxy.buildSignInIntent(packageName, intent),
+                Authentication.buildSignInIntent(packageName, intent),
                 Constants.RC_SIGN_IN
             )
         // Open main activity for the logged-in user
@@ -34,12 +34,15 @@ class SplashActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
 
                 // Successfully signed in
-//                val user = FirebaseProxy.getCurrentUser()
+                Authentication.handleSignInSucceeded()
 
                 // Open home screen
                 startMainActivity()
 
-            } else if (FirebaseProxy.handleSignInFailed(data)) finish() // Sign in failed.
+            } else {    // Sign in failed.
+                Authentication.handleSignInFailed(data)
+                finish()
+            }
         }
     }
 

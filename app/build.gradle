@@ -2,10 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-// "Add Firebase SDK:
-// The Google services plugin for Gradle loads the google-services.json file you just
-// downloaded. Modify your build.gradle files to use the plugin."
+// Required for using Firebase SDK
 apply plugin: 'com.google.gms.google-services'
+
+// Required for using data binding
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
@@ -34,6 +35,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -48,9 +52,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
 
     // Required for Google Analytics
     implementation 'com.google.firebase:firebase-analytics:17.4.4'
@@ -61,5 +65,12 @@ dependencies {
     // Required only if Facebook login support is required
     // Find the latest Facebook SDK releases here: https://goo.gl/Ce5L94
     implementation 'com.facebook.android:facebook-android-sdk:5.0.0'
+
+    // Required for Cloud Firestore
+    implementation 'com.google.firebase:firebase-firestore-ktx:21.5.0'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 }
