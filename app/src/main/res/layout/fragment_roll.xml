@@ -1,41 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    tools:context=".ui.roll.RollFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/activity_vertical_margin"
-        android:textColor="@color/colorOnBackground"
-        android:textSize="@dimen/roll_preface_text_size"
-        android:text="@string/roll_preface_text"/>
+    <data>
+        <variable
+            name="rollViewModel"
+            type="com.ojomono.ionce.ui.roll.RollViewModel" />
+    </data>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginVertical="@dimen/activity_vertical_margin"
-        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-        android:paddingVertical="@dimen/roll_tale_padding"
-        android:paddingHorizontal="@dimen/roll_tale_padding"
-        android:background="@drawable/background_roll_tale"
-        android:textColor="@color/colorOnBackground"
-        android:textSize="@dimen/roll_tale_text_size"
-        tools:text="Hit \'ROLL!\' to get one of your unique tales!"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        tools:context=".ui.roll.RollFragment">
 
-    <TextView
-        android:layout_width="@dimen/roll_button_size"
-        android:layout_height="@dimen/roll_button_size"
-        android:layout_marginVertical="@dimen/activity_vertical_margin"
-        android:gravity="center"
-        android:background="@drawable/background_roll_button"
-        android:textColor="@color/colorOnBackground"
-        android:textSize="@dimen/roll_button_text_size"
-        android:text="@string/roll_button_text" />
+        <TextView
+            android:id="@+id/text_preface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:textColor="@color/colorOnBackground"
+            android:textSize="@dimen/roll_preface_text_size"
+            android:text="@string/roll_preface_text" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/text_tale"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:paddingVertical="@dimen/roll_tale_padding"
+            android:paddingHorizontal="@dimen/roll_tale_padding"
+            android:background="@drawable/background_roll_tale"
+            android:textColor="@color/colorOnBackground"
+            android:textSize="@dimen/roll_tale_text_size"
+            android:text="@{rollViewModel.text}"
+            tools:text="Hit \'ROLL!\' to get one of your unique tales!" />
+
+        <TextView
+            android:id="@+id/text_roll"
+            android:layout_width="@dimen/roll_button_size"
+            android:layout_height="@dimen/roll_button_size"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:gravity="center"
+            android:background="@drawable/background_roll_button"
+            android:onClick="@{() -> rollViewModel.onRoll()}"
+            android:textColor="@color/colorOnBackground"
+            android:textSize="@dimen/roll_button_text_size"
+            android:text="@string/roll_button_text" />
+
+    </LinearLayout>
+</layout>
