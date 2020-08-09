@@ -25,6 +25,20 @@
             android:text="@string/roll_preface_text" />
 
         <TextView
+            android:id="@+id/text_hint"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:paddingVertical="@dimen/roll_tale_padding"
+            android:paddingHorizontal="@dimen/roll_tale_padding"
+            android:textColor="@color/colorOnBackground"
+            android:textSize="@dimen/roll_tale_text_size"
+            android:text="@{rollViewModel.hintResourceId}"
+            tools:text="@string/roll_hint_default_text" />
+
+        <TextView
             android:id="@+id/text_tale"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -37,7 +51,7 @@
             android:textColor="@color/colorOnBackground"
             android:textSize="@dimen/roll_tale_text_size"
             android:text="@{rollViewModel.text}"
-            tools:text="Hit \'ROLL!\' to get one of your unique tales!" />
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/text_roll"

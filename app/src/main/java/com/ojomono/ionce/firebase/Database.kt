@@ -44,6 +44,10 @@ object Database {
         Authentication.getCurrentUser()?.uid?.let { switchUserDocument(it) }
     }
 
+    /**************/
+    /** methods **/
+    /*************/
+
     /**
      * Switch the current user document reference and snapshot to those of the user with the given
      * [id] - and listen to changes.
@@ -85,14 +89,14 @@ object Database {
         }
     }
 
-    /************************/
-    /** Tales CRUD methods **/
-    /************************/
-
     // TODO: Define security rules in Firestore:
     // https://codelabs.developers.google.com/codelabs/firestore-android/#7
     // https://console.firebase.google.com/u/1/project/ionce-9e4c3/database/firestore/rules
 
+    /**
+     * Overwrite the tale document with id=[id] to have the given [title]. If [id] is empty, create
+     * a new document with a generated id and title=[title].
+     */
     fun setTale(id: String = "", title: String) {
         // Setting a tale is possible only if a user is logged in
         // (== his document reference is not null)
@@ -120,6 +124,9 @@ object Database {
         }
     }
 
+    /**
+     * Delete the tale document with id=[id].
+     */
     fun deleteTale(id: String) {
         // Deleting a tale is possible only if a user is logged in
         // (== his document reference is not null)

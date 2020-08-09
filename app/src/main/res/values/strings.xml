@@ -1,3 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY title_tales "Tales">
+    <!ENTITY roll_button_text "ROLL!">
+    ]>
+
 <resources>
     <!-- Application -->
     <string name="app_name">Ionce</string>
@@ -7,7 +13,7 @@
     <string name="facebook_login_protocol_scheme">fb301355424319660</string>
 
     <!-- Navigation menu -->
-    <string name="title_roll">Roll</string>
+    <string name="title_roll">&title_tales;</string>
     <string name="title_tales">Tales</string>
     <string name="title_profile">Profile</string>
 
@@ -28,7 +34,8 @@
     <string name="tales_delete_dialog_positive_button_text">Delete</string>
 
     <!-- Roll screen -->
-    <string name="roll_button_text">ROLL!</string>
+    <string name="roll_button_text">&roll_button_text;</string>
     <string name="roll_preface_text">That one time when…</string>
-    <string name="roll_tale_default_text">Hit \'%1$s\' to get one of your unique tales!</string>
+    <string name="roll_hint_default_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
+    <string name="roll_hint_no_tales_text">It seems you don\'t have any tales yet. Add your first tale at the \'&title_tales;\' tab!</string>
 </resources>

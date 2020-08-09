@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentRollBinding
@@ -38,6 +39,11 @@ class RollFragment : Fragment() {
         // Specify the fragment view as the lifecycle owner of the binding.
         // This is used so that the binding can observe LiveData updates
         binding.lifecycleOwner = viewLifecycleOwner
+
+        // Observe the user's tales list to determine the hint text ("hit roll!" / "no tales found")
+        viewModel.tales.observe(viewLifecycleOwner, Observer {
+            viewModel.setHintText()
+        })
 
         return binding.root
     }
