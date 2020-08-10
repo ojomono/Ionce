@@ -9,5 +9,4 @@
     <dimen name="roll_button_text_size">22sp</dimen>
     <dimen name="roll_preface_text_size">20sp</dimen>
     <dimen name="roll_tale_text_size">24sp</dimen>
-    <dimen name="roll_tale_padding">16dp</dimen>
 </resources>

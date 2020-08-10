@@ -37,7 +37,7 @@
                 android:layout_toStartOf="@+id/image_edit"
                 android:padding="5dp"
                 android:textSize="16sp"
-                app:title="@{talesItem}"
+                android:text="@{talesItem.title}"
                 tools:text="title" />
 
             <ImageView

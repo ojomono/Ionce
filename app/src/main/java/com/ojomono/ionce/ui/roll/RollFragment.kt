@@ -21,8 +21,7 @@ class RollFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel =
-            ViewModelProvider(this).get(RollViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(RollViewModel::class.java)
 
         // Inflate view and obtain an instance of the binding class
         binding = DataBindingUtil.inflate(
@@ -39,11 +38,6 @@ class RollFragment : Fragment() {
         // Specify the fragment view as the lifecycle owner of the binding.
         // This is used so that the binding can observe LiveData updates
         binding.lifecycleOwner = viewLifecycleOwner
-
-        // Observe the user's tales list to determine the hint text ("hit roll!" / "no tales found")
-        viewModel.tales.observe(viewLifecycleOwner, Observer {
-            viewModel.setHintText()
-        })
 
         return binding.root
     }
