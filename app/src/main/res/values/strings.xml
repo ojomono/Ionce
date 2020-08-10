@@ -21,6 +21,7 @@
     <string name="profile_sign_out_button_text">Sign Out</string>
 
     <!-- Tales screen -->
+    <string name="tales_hint_text">Looks like you don\'t have any tales yet. You can add some with the \'+\' button in the bottom-right corner!</string>
     <string name="tales_edit_icon_content_description">Edit tale</string>
     <string name="tales_delete_icon_content_description">Delete tale</string>
     <string name="tales_dialogs_negative_button_text">Cancel</string>

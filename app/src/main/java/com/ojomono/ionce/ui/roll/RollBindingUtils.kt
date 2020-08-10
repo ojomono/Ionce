@@ -13,12 +13,12 @@ fun TextView.setHintText(tales: List<TalesItem>?) {
     else resources.getString(R.string.roll_hint_default_text)
 }
 
-@BindingAdapter("hintVisibility")
-fun TextView.setHintVisibility(taleText: String?) {
+@BindingAdapter("hintTextVisibility")
+fun TextView.setHintTextVisibility(taleText: String?) {
     visibility = if (taleText.isNullOrEmpty()) View.VISIBLE else View.GONE
 }
 
-@BindingAdapter("taleVisibility")
-fun CardView.setTaleVisibility(taleText: String?) {
+@BindingAdapter("taleCardVisibility")
+fun CardView.setTaleCardVisibility(taleText: String?) {
     visibility = if (!taleText.isNullOrEmpty()) View.VISIBLE else View.GONE
 }

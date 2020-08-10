@@ -10,9 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
+import com.ojomono.ionce.databinding.FragmentTalesBinding
 import com.ojomono.ionce.models.TalesItem
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
@@ -21,7 +23,8 @@ import kotlinx.android.synthetic.main.fragment_tales.view.*
  */
 class TalesFragment : Fragment(), TalesAdapter.TalesListener {
 
-    private lateinit var talesViewModel: TalesViewModel
+    private lateinit var binding: FragmentTalesBinding
+    private lateinit var viewModel: TalesViewModel
     private var columnCount = 1
 
     /***********************/
@@ -41,18 +44,33 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        talesViewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_tales, container, false)
+        viewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
+
+        // Inflate view and obtain an instance of the binding class
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_tales,
+            container,
+            false
+        )
+
+        // Set the viewmodel for databinding - this allows the bound layout access
+        // to all the data in the VieWModel
+        binding.talesViewModel = viewModel
+
+        // Specify the fragment view as the lifecycle owner of the binding.
+        // This is used so that the binding can observe LiveData updates
+        binding.lifecycleOwner = viewLifecycleOwner
 
         // Set the adapter
         val adapter = TalesAdapter(this)
-        with(root.recycler_tales_list) {
+        with(binding.root.recycler_tales_list) {
             layoutManager = when {
                 columnCount <= 1 -> LinearLayoutManager(context)
                 else -> GridLayoutManager(context, columnCount)
             }
             this.adapter = adapter
-            talesViewModel.tales.observe(viewLifecycleOwner, Observer {
+            viewModel.tales.observe(viewLifecycleOwner, Observer {
                 it?.let { adapter.submitList(it) }
             })
         }
@@ -61,9 +79,9 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         // https://codelabs.developers.google.com/codelabs/kotlin-android-training-live-data-data-binding/index.html?index=..%2F..android-kotlin-fundamentals#3
         // https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
         // Set add fab action
-        root.fab_add_tale.setOnClickListener { showAddDialog() }
+        binding.root.fab_add_tale.setOnClickListener { showAddDialog() }
 
-        return root
+        return binding.root
     }
 
     /****************************************/
@@ -99,7 +117,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_add_dialog_positive_button_text))
             { dialog, _ ->
-                talesViewModel.addTale(input.text.toString())
+                viewModel.addTale(input.text.toString())
                 dialog.cancel()
             }
         dialogBuilder
@@ -126,7 +144,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_update_dialog_positive_button_text))
             { dialog, _ ->
-                talesViewModel.updateTale(talesItem.id, input.text.toString())
+                viewModel.updateTale(talesItem.id, input.text.toString())
                 dialog.cancel()
             }
         dialogBuilder
@@ -143,7 +161,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_delete_dialog_positive_button_text))
             { dialog, _ ->
-                talesViewModel.deleteTale(talesItem.id)
+                viewModel.deleteTale(talesItem.id)
                 dialog.cancel()
             }
         dialogBuilder
