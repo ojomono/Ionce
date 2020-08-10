@@ -52,13 +52,13 @@
             <TextView
                 android:id="@+id/text_tale"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 android:layout_marginVertical="@dimen/activity_vertical_margin"
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                 android:textColor="@color/colorOnSurface"
                 android:textSize="@dimen/roll_tale_text_size"
-                android:text="@{rollViewModel.text}"/>
+                android:text="@{rollViewModel.text}"
+                tools:text="I went there!"/>
 
         </androidx.cardview.widget.CardView>
 
