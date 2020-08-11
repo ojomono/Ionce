@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentRollBinding
@@ -37,6 +39,16 @@ class RollFragment : Fragment() {
         // Specify the fragment view as the lifecycle owner of the binding.
         // This is used so that the binding can observe LiveData updates
         binding.lifecycleOwner = viewLifecycleOwner
+
+        // Observe if an error message should be shown.
+        viewModel.error.observe(
+            viewLifecycleOwner,
+            Observer {
+                it.consume { errorStringRes ->
+                    Toast.makeText(context, errorStringRes, Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
 
         return binding.root
     }

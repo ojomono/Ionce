@@ -39,4 +39,5 @@
     <string name="roll_preface_text">That one time when…</string>
     <string name="roll_hint_default_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
     <string name="roll_hint_no_tales_text">It seems you don\'t have any tales yet. Add your first tale at the \'&title_tales;\' tab!</string>
+    <string name="roll_error_no_tales">You must have at list one tale in order to use this feature.</string>
 </resources>
