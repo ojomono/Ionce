@@ -1,16 +1,27 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY title_tales "Tales">
+    <!ENTITY roll_button_text "ROLL!">
+    ]>
 
+<resources>
+    <!-- Application -->
     <string name="app_name">Ionce</string>
 
+    <!-- Sign in screen -->
     <string name="facebook_application_id">301355424319660</string>
     <string name="facebook_login_protocol_scheme">fb301355424319660</string>
 
-    <string name="title_home">Home</string>
-    <string name="title_tales">Tales</string>
+    <!-- Navigation menu -->
+    <string name="title_roll">Roll</string>
+    <string name="title_tales">&title_tales;</string>
     <string name="title_profile">Profile</string>
 
+    <!-- Profile screen -->
     <string name="profile_sign_out_button_text">Sign Out</string>
 
+    <!-- Tales screen -->
+    <string name="tales_hint_text">Looks like you don\'t have any tales yet. You can add some with the \'+\' button in the bottom-right corner!</string>
     <string name="tales_edit_icon_content_description">Edit tale</string>
     <string name="tales_delete_icon_content_description">Delete tale</string>
     <string name="tales_dialogs_negative_button_text">Cancel</string>
@@ -23,4 +34,10 @@
     <string name="tales_delete_dialog_message">Confirm delete?</string>
     <string name="tales_delete_dialog_positive_button_text">Delete</string>
 
+    <!-- Roll screen -->
+    <string name="roll_button_text">&roll_button_text;</string>
+    <string name="roll_preface_text">That one time when…</string>
+    <string name="roll_hint_default_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
+    <string name="roll_hint_no_tales_text">It seems you don\'t have any tales yet. Add your first tale at the \'&title_tales;\' tab!</string>
+    <string name="roll_error_no_tales">You must have at list one tale in order to use this feature.</string>
 </resources>

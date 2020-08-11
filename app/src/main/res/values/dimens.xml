@@ -3,4 +3,15 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <!-- Tales screen dimens -->
+    <dimen name="tales_hint_text_size">24sp</dimen>
+    <dimen name="tales_fab_elevation">6dp</dimen>
+    <dimen name="tales_fab_layout_margin">20dp</dimen>
+
+    <!-- Roll screen dimens -->
+    <dimen name="roll_button_size">150dp</dimen>
+    <dimen name="roll_button_text_size">22sp</dimen>
+    <dimen name="roll_preface_text_size">20sp</dimen>
+    <dimen name="roll_tale_text_size">24sp</dimen>
 </resources>
