@@ -44,10 +44,11 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add_white_36"
             android:layout_gravity="bottom|end"
-            app:elevation="@dimen/tales_fab_elevation"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_margin="@dimen/tales_fab_layout_margin" />
+            android:layout_margin="@dimen/tales_fab_layout_margin"
+            android:onClick="@{() -> talesViewModel.onAdd()}"
+            app:elevation="@dimen/tales_fab_elevation"/>
 
     </RelativeLayout>
 </layout>

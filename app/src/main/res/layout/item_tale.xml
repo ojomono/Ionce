@@ -49,7 +49,7 @@
                 android:src="@drawable/ic_edit_black_24"
                 android:padding="5dp"
                 android:contentDescription="@string/tales_edit_icon_content_description"
-                android:onClick="@{() -> clickListener.onEditTaleClicked(talesItem)}"/>
+                android:onClick="@{() -> clickListener.onEdit(talesItem)}"/>
 
             <ImageView
                 android:id="@+id/image_delete"
@@ -59,7 +59,7 @@
                 android:src="@drawable/ic_delete_black_24"
                 android:padding="5dp"
                 android:contentDescription="@string/tales_delete_icon_content_description"
-                android:onClick="@{() -> clickListener.onDeleteTaleClicked(talesItem)}"/>
+                android:onClick="@{() -> clickListener.onDelete(talesItem)}"/>
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

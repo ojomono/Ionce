@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_tales.view.*
 /**
  * A fragment representing a list of Tales.
  */
-class TalesFragment : Fragment(), TalesAdapter.TalesListener {
+class TalesFragment : Fragment() {
 
     private lateinit var binding: FragmentTalesBinding
     private lateinit var viewModel: TalesViewModel
@@ -47,12 +47,13 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         viewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
 
         // Inflate view and obtain an instance of the binding class
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_tales,
-            container,
-            false
-        )
+        binding =
+            DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_tales,
+                container,
+                false
+            )
 
         // Set the viewmodel for databinding - this allows the bound layout access
         // to all the data in the VieWModel
@@ -63,7 +64,7 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
         binding.lifecycleOwner = viewLifecycleOwner
 
         // Set the adapter
-        val adapter = TalesAdapter(this)
+        val adapter = TalesAdapter(viewModel)
         with(binding.root.recycler_tales_list) {
             layoutManager = when {
                 columnCount <= 1 -> LinearLayoutManager(context)
@@ -75,25 +76,16 @@ class TalesFragment : Fragment(), TalesAdapter.TalesListener {
             })
         }
 
-        // TODO: Use binding and event wrapper pattern to set click listeners:
-        // https://codelabs.developers.google.com/codelabs/kotlin-android-training-live-data-data-binding/index.html?index=..%2F..android-kotlin-fundamentals#3
-        // https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
-        // Set add fab action
-        binding.root.fab_add_tale.setOnClickListener { showAddDialog() }
+        // Observe the view model for item events - open the right dialog for the event
+        viewModel.itemEvent.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is TalesViewModel.AddItemEvent -> it.consume { showAddDialog() }
+                is TalesViewModel.UpdateItemEvent -> it.consume { item -> showUpdateDialog(item) }
+                is TalesViewModel.DeleteItemEvent -> it.consume { item -> showDeleteDialog(item) }
+            }
+        })
 
         return binding.root
-    }
-
-    /****************************************/
-    /** TalesAdapter.TalesListener methods **/
-    /****************************************/
-
-    override fun onEditTaleClicked(talesItem: TalesItem) {
-        showUpdateDialog(talesItem)
-    }
-
-    override fun onDeleteTaleClicked(talesItem: TalesItem) {
-        showDeleteDialog(talesItem)
     }
 
     /*************************/

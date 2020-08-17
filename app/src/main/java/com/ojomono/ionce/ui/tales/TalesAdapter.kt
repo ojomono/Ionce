@@ -65,15 +65,12 @@ class TalesAdapter(private val clickListener: TalesListener) :
         }
     }
 
-    // TODO: Use binding and event wrapper pattern to set click listeners:
-    // https://codelabs.developers.google.com/codelabs/kotlin-android-training-live-data-data-binding/index.html?index=..%2F..android-kotlin-fundamentals#3
-    // https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
     /**
      * The interface for listening to item events.
      */
     interface TalesListener {
-        fun onEditTaleClicked(talesItem: TalesItem)   // Edit icon clicked
-        fun onDeleteTaleClicked(talesItem: TalesItem) // Delete icon clicked
+        fun onEdit(item: TalesItem)   // Edit icon clicked
+        fun onDelete(item: TalesItem) // Delete icon clicked
     }
 
 }
