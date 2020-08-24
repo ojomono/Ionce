@@ -125,6 +125,12 @@ object Database {
     }
 
     /**
+     * Overwrite the tale document with id=[item].id to have the given [item]'s title. If [item].id
+     * is empty, create a new document with a generated id and title=[item].title.
+     */
+    fun setTale(item: TalesItem) = setTale(item.id, item.title)
+
+    /**
      * Delete the tale document with id=[id].
      */
     fun deleteTale(id: String) {
@@ -149,4 +155,9 @@ object Database {
                 .addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
         }
     }
+
+    /**
+     * Delete the tale document with id=[item].id.
+     */
+    fun deleteTale(item: TalesItem) = deleteTale(item.id)
 }

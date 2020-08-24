@@ -10,17 +10,19 @@ import com.ojomono.ionce.utils.OneTimeEvent
 class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
     val tales: LiveData<List<TalesItem>> = Database.userTales
 
-    // One time event for the fragment to listen to
-    private val _itemEvent = MutableLiveData<OneTimeEvent<Any>>()
-    val itemEvent: LiveData<OneTimeEvent<Any>> = _itemEvent
+    // Types of supported events
+    sealed class EventType(val onOk: (item: TalesItem) -> Unit) {
+        class AddItemEvent() : EventType(Database::setTale)
+        class UpdateItemEvent(val item: TalesItem) : EventType(Database::setTale)
+        class DeleteItemEvent(val item: TalesItem) : EventType(Database::deleteTale)
+    }
 
-    // Types of the supported events
-    class AddItemEvent() : OneTimeEvent<Unit>(Unit)
-    class UpdateItemEvent(item: TalesItem) : OneTimeEvent<TalesItem>(item)
-    class DeleteItemEvent(item: TalesItem) : OneTimeEvent<TalesItem>(item)
+    // One time event for the fragment to listen to
+    private val _itemEvent = MutableLiveData<OneTimeEvent<EventType>>()
+    val itemEvent: LiveData<OneTimeEvent<EventType>> = _itemEvent
 
     fun onAdd() {
-        _itemEvent.value = AddItemEvent()
+        _itemEvent.value = OneTimeEvent(EventType.AddItemEvent())
     }
 
     /****************************************/
@@ -28,31 +30,10 @@ class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
     /****************************************/
 
     override fun onEdit(item: TalesItem) {
-        _itemEvent.value = UpdateItemEvent(item)
+        _itemEvent.value = OneTimeEvent(EventType.UpdateItemEvent(item))
     }
 
     override fun onDelete(item: TalesItem) {
-        _itemEvent.value = DeleteItemEvent(item)
-    }
-
-    /**
-     * Create a new tale document with the given [title].
-     */
-    fun addTale(title: String) {
-        Database.setTale(title = title)
-    }
-
-    /**
-     * Update the tale document which id's = [id] to have the given [title].
-     */
-    fun updateTale(id: String, title: String) {
-        Database.setTale(id, title)
-    }
-
-    /**
-     * Delete the tale document which id's = [id].
-     */
-    fun deleteTale(id: String) {
-        Database.deleteTale(id)
+        _itemEvent.value = OneTimeEvent(EventType.DeleteItemEvent(item))
     }
 }
