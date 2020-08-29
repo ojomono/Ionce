@@ -7,45 +7,67 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.ojomono.ionce.R
+import com.ojomono.ionce.databinding.FragmentProfileBinding
+import com.ojomono.ionce.databinding.FragmentRollBinding
 import com.ojomono.ionce.ui.splashscreen.SplashActivity
 import com.ojomono.ionce.firebase.Authentication
 
 
 class ProfileFragment : Fragment(), OnCompleteListener<Void> {
 
-    private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var binding: FragmentProfileBinding
+    private lateinit var viewModel: ProfileViewModel
+
+    /***********************/
+    /** Lifecycle methods **/
+    /***********************/
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_profile, container, false)
-        val textView: TextView = root.findViewById(R.id.text_profile)
-        profileViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
 
-        // TODO: Use binding and event wrapper pattern to set click listeners:
-        // https://codelabs.developers.google.com/codelabs/kotlin-android-training-live-data-data-binding/index.html?index=..%2F..android-kotlin-fundamentals#3
-        // https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
-        // When clicked, sign out user and listen for completion
-        val button: Button = root.findViewById(R.id.button_sign_out)
-        button.setOnClickListener {
-            context?.let { Authentication.signOut(it, this) }
-        }
+        // Inflate view and obtain an instance of the binding class
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_profile,
+            container,
+            false
+        )
 
-        return root
+        // Set the viewmodel for databinding - this allows the bound layout access
+        // to all the data in the VieWModel
+        binding.profileViewModel = viewModel
+
+        // Specify the fragment view as the lifecycle owner of the binding.
+        // This is used so that the binding can observe LiveData updates
+        binding.lifecycleOwner = viewLifecycleOwner
+
+
+        // Observe if an event was thrown
+        viewModel.event.observe(
+            viewLifecycleOwner,
+            Observer {
+                it.consume { signOutFun -> context?.let { context -> signOutFun(context, this) } }
+            }
+        )
+
+        return binding.root
     }
 
-    //
+    /**************************************/
+    /** OnCompleteListener<Void> methods **/
+    /**************************************/
 
     override fun onComplete(task: Task<Void>) {
         // User is now signed out - go back to splash screen
