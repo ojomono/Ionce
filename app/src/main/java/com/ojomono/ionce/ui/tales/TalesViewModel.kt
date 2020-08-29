@@ -8,6 +8,7 @@ import com.ojomono.ionce.models.TalesItem
 import com.ojomono.ionce.utils.OneTimeEvent
 
 class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
+    // The user's tales list
     val tales: LiveData<List<TalesItem>> = Database.userTales
 
     // Types of supported events
@@ -21,6 +22,9 @@ class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
     private val _itemEvent = MutableLiveData<OneTimeEvent<EventType>>()
     val itemEvent: LiveData<OneTimeEvent<EventType>> = _itemEvent
 
+    /**
+     * Show dialog for new tale creation.
+     */
     fun onAdd() {
         _itemEvent.value = OneTimeEvent(EventType.AddItemEvent())
     }
@@ -29,10 +33,16 @@ class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
     /** TalesAdapter.TalesListener methods **/
     /****************************************/
 
+    /**
+     * Show dialog for tale title update.
+     */
     override fun onEdit(item: TalesItem) {
         _itemEvent.value = OneTimeEvent(EventType.UpdateItemEvent(item))
     }
 
+    /**
+     * Show dialog for tale deletion.
+     */
     override fun onDelete(item: TalesItem) {
         _itemEvent.value = OneTimeEvent(EventType.DeleteItemEvent(item))
     }

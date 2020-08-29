@@ -88,6 +88,9 @@ class TalesFragment : Fragment() {
     /** Show dialog methods **/
     /*************************/
 
+    /**
+     * Show the right event dialog (according to the [event] type).
+     */
     private fun showEventDialog(event: TalesViewModel.EventType) {
 
         // Build the right dialog UI
@@ -106,6 +109,10 @@ class TalesFragment : Fragment() {
         dialogBuilder.create().show()
     }
 
+    /**
+     * Build a dialog builder for adding a new tale, using [onOk] as the listener function of the
+     * positive button.
+     */
     private fun buildAddDialog(onOk: (item: TalesItem) -> Unit): AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
 
@@ -129,6 +136,10 @@ class TalesFragment : Fragment() {
         return dialogBuilder
     }
 
+    /**
+     * Build a dialog builder for updating the given tale [item], using [onOk] as the listener
+     * function of the positive button.
+     */
     private fun buildUpdateDialog(onOk: (item: TalesItem) -> Unit, item: TalesItem)
             : AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
@@ -154,6 +165,10 @@ class TalesFragment : Fragment() {
         return dialogBuilder
     }
 
+    /**
+     * Build a dialog builder for deleting the given tale [item], using [onOk] as the listener
+     * function of the positive button.
+     */
     private fun buildDeleteDialog(onOk: (item: TalesItem) -> Unit, item: TalesItem)
             : AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)

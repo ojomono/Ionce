@@ -9,11 +9,14 @@ import com.ojomono.ionce.models.TalesItem
 import com.ojomono.ionce.utils.OneTimeEvent
 
 class RollViewModel : ViewModel() {
+    // The user's tales list
     val tales: LiveData<List<TalesItem>> = Database.userTales
 
+    // The rolled tale's title
     private val _text = MutableLiveData<String>()
     val text: LiveData<String> = _text
 
+    // One time event for the fragment to listen to in order to show error texts
     private val _error = MutableLiveData<OneTimeEvent<Int>>()
     val error: LiveData<OneTimeEvent<Int>> = _error
 
