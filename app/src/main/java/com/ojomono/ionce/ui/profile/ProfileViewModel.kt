@@ -1,15 +1,11 @@
 package com.ojomono.ionce.ui.profile
 
 import android.content.Context
-import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.ojomono.ionce.firebase.Authentication
-import com.ojomono.ionce.models.TalesItem
-import com.ojomono.ionce.ui.splashscreen.SplashActivity
 import com.ojomono.ionce.utils.OneTimeEvent
 
 class ProfileViewModel : ViewModel() {

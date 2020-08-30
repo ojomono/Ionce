@@ -2,10 +2,8 @@ package com.ojomono.ionce.ui.tales
 
 import android.view.View
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.ojomono.ionce.R
 import com.ojomono.ionce.models.TalesItem
 
 @BindingAdapter("hintTextVisibility")
