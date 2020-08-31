@@ -1,31 +1,49 @@
 package com.ojomono.ionce.ui.tales
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.models.TalesItem
+import com.ojomono.ionce.utils.OneTimeEvent
 
-class TalesViewModel : ViewModel() {
+class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
+    // The user's tales list
     val tales: LiveData<List<TalesItem>> = Database.userTales
 
+    // Types of supported events
+    sealed class EventType(val onOk: (item: TalesItem) -> Unit) {
+        class AddItemEvent() : EventType(Database::setTale)
+        class UpdateItemEvent(val item: TalesItem) : EventType(Database::setTale)
+        class DeleteItemEvent(val item: TalesItem) : EventType(Database::deleteTale)
+    }
+
+    // One time event for the fragment to listen to
+    private val _itemEvent = MutableLiveData<OneTimeEvent<EventType>>()
+    val itemEvent: LiveData<OneTimeEvent<EventType>> = _itemEvent
+
     /**
-     * Create a new tale document with the given [title].
+     * Show dialog for new tale creation.
      */
-    fun addTale(title: String) {
-        Database.setTale(title = title)
+    fun onAdd() {
+        _itemEvent.value = OneTimeEvent(EventType.AddItemEvent())
+    }
+
+    /****************************************/
+    /** TalesAdapter.TalesListener methods **/
+    /****************************************/
+
+    /**
+     * Show dialog for tale title update.
+     */
+    override fun onEdit(item: TalesItem) {
+        _itemEvent.value = OneTimeEvent(EventType.UpdateItemEvent(item))
     }
 
     /**
-     * Update the tale document which id's = [id] to have the given [title].
+     * Show dialog for tale deletion.
      */
-    fun updateTale(id: String, title: String) {
-        Database.setTale(id, title)
-    }
-
-    /**
-     * Delete the tale document which id's = [id].
-     */
-    fun deleteTale(id: String) {
-        Database.deleteTale(id)
+    override fun onDelete(item: TalesItem) {
+        _itemEvent.value = OneTimeEvent(EventType.DeleteItemEvent(item))
     }
 }

@@ -89,10 +89,6 @@ object Database {
         }
     }
 
-    // TODO: Define security rules in Firestore:
-    // https://codelabs.developers.google.com/codelabs/firestore-android/#7
-    // https://console.firebase.google.com/u/1/project/ionce-9e4c3/database/firestore/rules
-
     /**
      * Overwrite the tale document with id=[id] to have the given [title]. If [id] is empty, create
      * a new document with a generated id and title=[title].
@@ -125,6 +121,12 @@ object Database {
     }
 
     /**
+     * Overwrite the tale document with id=[item].id to have the given [item]'s title. If [item].id
+     * is empty, create a new document with a generated id and title=[item].title.
+     */
+    fun setTale(item: TalesItem) = setTale(item.id, item.title)
+
+    /**
      * Delete the tale document with id=[id].
      */
     fun deleteTale(id: String) {
@@ -149,4 +151,9 @@ object Database {
                 .addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
         }
     }
+
+    /**
+     * Delete the tale document with id=[item].id.
+     */
+    fun deleteTale(item: TalesItem) = deleteTale(item.id)
 }
