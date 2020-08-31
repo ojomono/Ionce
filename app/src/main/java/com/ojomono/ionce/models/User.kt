@@ -10,9 +10,6 @@ data class User(
     @DocumentId val id: String = "",
     val talesItems: MutableList<TalesItem> = mutableListOf()
 ) {
-    // TODO: Maybe replace talesItems 'list' with 'set'
-    //  (more logical but maybe harder to use with Firestore or RecyclerView)
-
     /**
      * Add or overwrite a tale from the list.
      */

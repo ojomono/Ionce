@@ -89,10 +89,6 @@ object Database {
         }
     }
 
-    // TODO: Define security rules in Firestore:
-    // https://codelabs.developers.google.com/codelabs/firestore-android/#7
-    // https://console.firebase.google.com/u/1/project/ionce-9e4c3/database/firestore/rules
-
     /**
      * Overwrite the tale document with id=[id] to have the given [title]. If [id] is empty, create
      * a new document with a generated id and title=[title].
