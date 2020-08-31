@@ -82,7 +82,7 @@ object Authentication {
 
         // If response is null the user canceled the sign-in flow using the back button.
         // Otherwise an error occurred:
-        // Use response.error.errorCode if a specific error handling.
+        // Use response.error.errorCode if a specific error handling is needed.
         if (response != null) Log.e(TAG, response.error.toString())
     }
 
