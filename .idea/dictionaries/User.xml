@@ -2,6 +2,8 @@
   <dictionary name="User">
     <words>
       <w>firestore</w>
+      <w>ionce</w>
+      <w>ojomono</w>
     </words>
   </dictionary>
 </component>

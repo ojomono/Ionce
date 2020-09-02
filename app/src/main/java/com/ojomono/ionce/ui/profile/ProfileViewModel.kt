@@ -10,10 +10,10 @@ import com.ojomono.ionce.utils.OneTimeEvent
 
 class ProfileViewModel : ViewModel() {
     // Text to be shown
-    private val _text = MutableLiveData<String>().apply {
+    private val _email = MutableLiveData<String>().apply {
         value = Authentication.getCurrentUser()?.email
     }
-    val text: LiveData<String> = _text
+    val email: LiveData<String> = _email
 
     // One time event for the fragment to listen to
     private val _event =

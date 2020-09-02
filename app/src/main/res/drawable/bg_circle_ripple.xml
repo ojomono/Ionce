@@ -10,7 +10,7 @@
         <shape
             android:shape="oval">
             <stroke android:width="5dp"
-                android:color="@color/colorAccent"/>
+                android:color="@color/accent"/>
             <solid android:color="@android:color/white"/>
         </shape>
     </item>

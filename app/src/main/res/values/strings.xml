@@ -19,6 +19,12 @@
 
     <!-- Profile screen -->
     <string name="profile_sign_out_button_text">Sign Out</string>
+    <string name="profile_user_image_content_description">Profile picture</string>
+    <string name="profile_settings_icon_content_description">Settings</string>
+    <string name="profile_email_header_text">Email</string>
+    <string name="profile_phone_header_text">Phone</string>
+    <string name="profile_twitter_header_text">Twitter</string>
+    <string name="profile_facebook_header_text">Facebook</string>
 
     <!-- Tales screen -->
     <string name="tales_hint_text">Looks like you don\'t have any tales yet. You can add some with the \'+\' button in the bottom-right corner!</string>
