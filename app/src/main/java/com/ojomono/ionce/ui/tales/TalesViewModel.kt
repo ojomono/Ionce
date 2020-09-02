@@ -4,18 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ojomono.ionce.firebase.Database
-import com.ojomono.ionce.models.TalesItem
+import com.ojomono.ionce.models.TaleItemData
 import com.ojomono.ionce.utils.OneTimeEvent
 
 class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
     // The user's tales list
-    val tales: LiveData<List<TalesItem>> = Database.userTales
+    val tales: LiveData<List<TaleItemData>> = Database.userTales
 
     // Types of supported events
-    sealed class EventType(val onOk: (item: TalesItem) -> Unit) {
+    sealed class EventType(val onOk: (taleItem: TaleItemData) -> Unit) {
         class AddItemEvent() : EventType(Database::setTale)
-        class UpdateItemEvent(val item: TalesItem) : EventType(Database::setTale)
-        class DeleteItemEvent(val item: TalesItem) : EventType(Database::deleteTale)
+        class UpdateItemEvent(val taleItem: TaleItemData) : EventType(Database::setTale)
+        class DeleteItemEvent(val taleItem: TaleItemData) : EventType(Database::deleteTale)
     }
 
     // One time event for the fragment to listen to
@@ -36,14 +36,14 @@ class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
     /**
      * Show dialog for tale title update.
      */
-    override fun onEdit(item: TalesItem) {
-        _itemEvent.value = OneTimeEvent(EventType.UpdateItemEvent(item))
+    override fun onEdit(taleItem: TaleItemData) {
+        _itemEvent.value = OneTimeEvent(EventType.UpdateItemEvent(taleItem))
     }
 
     /**
      * Show dialog for tale deletion.
      */
-    override fun onDelete(item: TalesItem) {
-        _itemEvent.value = OneTimeEvent(EventType.DeleteItemEvent(item))
+    override fun onDelete(taleItem: TaleItemData) {
+        _itemEvent.value = OneTimeEvent(EventType.DeleteItemEvent(taleItem))
     }
 }

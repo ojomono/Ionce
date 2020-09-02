@@ -7,7 +7,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.ojomono.ionce.models.Tale
 import com.ojomono.ionce.models.User
-import com.ojomono.ionce.models.TalesItem
+import com.ojomono.ionce.models.TaleItemData
 import com.ojomono.ionce.utils.TAG
 
 
@@ -36,8 +36,8 @@ object Database {
     private var userDocument: DocumentSnapshot? = null
     private var registration: ListenerRegistration? = null
 
-    // Current user's talesItems
-    var userTales: MutableLiveData<List<TalesItem>> = MutableLiveData()
+    // Current user's taleItem
+    var userTales: MutableLiveData<List<TaleItemData>> = MutableLiveData()
 
     // If a user is already logged-in - get it's document
     init {
@@ -83,7 +83,7 @@ object Database {
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else {
                     userDocument = snapshot
-                    userTales.value = snapshot?.toObject(User::class.java)?.talesItems
+                    userTales.value = snapshot?.toObject(User::class.java)?.tales
                 }
             }
         }
@@ -109,10 +109,10 @@ object Database {
                 val user: User? = transaction.get(userRef).toObject(User::class.java)
                 user?.let {
                     // Update user's list
-                    user.setTale(TalesItem(tale))
+                    user.setTale(TaleItemData(tale))
 
                     // Commit to Firestore
-                    transaction.update(userRef, user::talesItems.name, user.talesItems)
+                    transaction.update(userRef, user::tales.name, user.tales)
                     transaction.set(taleRef, tale)
                 }
             }.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
@@ -121,10 +121,10 @@ object Database {
     }
 
     /**
-     * Overwrite the tale document with id=[item].id to have the given [item]'s title. If [item].id
-     * is empty, create a new document with a generated id and title=[item].title.
+     * Overwrite the tale document with id=[taleItem].id to have the given [taleItem]'s title. If [taleItem].id
+     * is empty, create a new document with a generated id and title=[taleItem].title.
      */
-    fun setTale(item: TalesItem) = setTale(item.id, item.title)
+    fun setTale(taleItem: TaleItemData) = setTale(taleItem.id, taleItem.title)
 
     /**
      * Delete the tale document with id=[id].
@@ -144,7 +144,7 @@ object Database {
                     user.deleteTale(id)
 
                     // Commit to Firestore
-                    transaction.update(userRef, user::talesItems.name, user.talesItems)
+                    transaction.update(userRef, user::tales.name, user.tales)
                     transaction.delete(taleRef)
                 }
             }.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
@@ -153,7 +153,7 @@ object Database {
     }
 
     /**
-     * Delete the tale document with id=[item].id.
+     * Delete the tale document with id=[taleItem].id.
      */
-    fun deleteTale(item: TalesItem) = deleteTale(item.id)
+    fun deleteTale(taleItem: TaleItemData) = deleteTale(taleItem.id)
 }

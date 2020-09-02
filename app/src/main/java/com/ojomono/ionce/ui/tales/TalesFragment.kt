@@ -15,7 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
-import com.ojomono.ionce.models.TalesItem
+import com.ojomono.ionce.models.TaleItemData
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
 /**
@@ -71,13 +71,13 @@ class TalesFragment : Fragment() {
                 else -> GridLayoutManager(context, columnCount)
             }
             this.adapter = adapter
-            viewModel.tales.observe(viewLifecycleOwner, Observer {
-                it?.let { adapter.submitList(it) }
+            viewModel.tales.observe(viewLifecycleOwner, {
+                it?.let { adapter.addHeaderAndSubmitList(it) }
             })
         }
 
         // Observe the view model for events - open the right dialog for the event
-        viewModel.itemEvent.observe(viewLifecycleOwner, Observer {
+        viewModel.itemEvent.observe(viewLifecycleOwner, {
             it.consume { event -> showEventDialog(event) }
         })
 
@@ -96,8 +96,14 @@ class TalesFragment : Fragment() {
         // Build the right dialog UI
         val dialogBuilder = when (event) {
             is TalesViewModel.EventType.AddItemEvent -> buildAddDialog(event.onOk)
-            is TalesViewModel.EventType.UpdateItemEvent -> buildUpdateDialog(event.onOk, event.item)
-            is TalesViewModel.EventType.DeleteItemEvent -> buildDeleteDialog(event.onOk, event.item)
+            is TalesViewModel.EventType.UpdateItemEvent -> buildUpdateDialog(
+                event.onOk,
+                event.taleItem
+            )
+            is TalesViewModel.EventType.DeleteItemEvent -> buildDeleteDialog(
+                event.onOk,
+                event.taleItem
+            )
         }
 
         // Add the 'cancel' button
@@ -113,7 +119,7 @@ class TalesFragment : Fragment() {
      * Build a dialog builder for adding a new tale, using [onOk] as the listener function of the
      * positive button.
      */
-    private fun buildAddDialog(onOk: (item: TalesItem) -> Unit): AlertDialog.Builder {
+    private fun buildAddDialog(onOk: (taleItem: TaleItemData) -> Unit): AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -130,17 +136,17 @@ class TalesFragment : Fragment() {
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_add_dialog_positive_button_text))
             { dialog, _ ->
-                onOk(TalesItem(title = input.text.toString()))
+                onOk(TaleItemData(title = input.text.toString()))
                 dialog.cancel()
             }
         return dialogBuilder
     }
 
     /**
-     * Build a dialog builder for updating the given tale [item], using [onOk] as the listener
+     * Build a dialog builder for updating the given tale [taleItem], using [onOk] as the listener
      * function of the positive button.
      */
-    private fun buildUpdateDialog(onOk: (item: TalesItem) -> Unit, item: TalesItem)
+    private fun buildUpdateDialog(onOk: (taleItem: TaleItemData) -> Unit, taleItem: TaleItemData)
             : AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
 
@@ -150,7 +156,7 @@ class TalesFragment : Fragment() {
             LinearLayout.LayoutParams.MATCH_PARENT
         )
         input.layoutParams = lp
-        input.setText(item.title)
+        input.setText(taleItem.title)
 
         dialogBuilder.setView(input)
 
@@ -158,18 +164,18 @@ class TalesFragment : Fragment() {
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_update_dialog_positive_button_text))
             { dialog, _ ->
-                item.title = input.text.toString()
-                onOk(item)
+                taleItem.title = input.text.toString()
+                onOk(taleItem)
                 dialog.cancel()
             }
         return dialogBuilder
     }
 
     /**
-     * Build a dialog builder for deleting the given tale [item], using [onOk] as the listener
+     * Build a dialog builder for deleting the given tale [taleItem], using [onOk] as the listener
      * function of the positive button.
      */
-    private fun buildDeleteDialog(onOk: (item: TalesItem) -> Unit, item: TalesItem)
+    private fun buildDeleteDialog(onOk: (taleItem: TaleItemData) -> Unit, taleItem: TaleItemData)
             : AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle(getText(R.string.tales_delete_dialog_title))
@@ -177,7 +183,7 @@ class TalesFragment : Fragment() {
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_delete_dialog_positive_button_text))
             { dialog, _ ->
-                onOk(item)
+                onOk(taleItem)
                 dialog.cancel()
             }
         return dialogBuilder

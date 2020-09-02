@@ -8,16 +8,16 @@ import com.google.firebase.firestore.DocumentId
  */
 data class User(
     @DocumentId val id: String = "",
-    val talesItems: MutableList<TalesItem> = mutableListOf()
+    val tales: MutableList<TaleItemData> = mutableListOf()
 ) {
     /**
      * Add or overwrite a tale from the list.
      */
-    fun setTale(talesItem: TalesItem) {
-        // If given item is in the list (searched by id) - overwrite it with new data, else add it
-        val index = talesItems.indexOfFirst { it.id == talesItem.id }
-        if (index == -1) talesItems.add(talesItem)
-        else talesItems[index] = talesItem
+    fun setTale(taleItem: TaleItemData) {
+        // If given taleItem is in the list (searched by id) - overwrite it with new data, else add it
+        val index = tales.indexOfFirst { it.id == taleItem.id }
+        if (index == -1) tales.add(taleItem)
+        else tales[index] = taleItem
     }
 
     /**
@@ -25,7 +25,7 @@ data class User(
      */
     fun deleteTale(id: String) {
         // If given id is in the list - delete it
-        val index = talesItems.indexOfFirst { it.id == id }
-        if (index != -1) talesItems.removeAt(index)
+        val index = tales.indexOfFirst { it.id == id }
+        if (index != -1) tales.removeAt(index)
     }
 }
