@@ -9,12 +9,18 @@ import androidx.recyclerview.widget.DiffUtil
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.ItemTaleBinding
 import com.ojomono.ionce.models.TaleItemData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * [RecyclerView.Adapter] that can display a [TaleItemData] taleItem.
  */
 class TalesAdapter(private val clickListener: TalesListener) :
     ListAdapter<TalesAdapter.DataItem, RecyclerView.ViewHolder>(TalesDiffCallback()) {
+
+    private val adapterScope = CoroutineScope(Dispatchers.Default)
 
     /**
      * Create new views (invoked by the layout manager).
@@ -31,11 +37,13 @@ class TalesAdapter(private val clickListener: TalesListener) :
      * Used instead of the standard "submitList" in order to add the header item to the [list].
      */
     fun addHeaderAndSubmitList(list: List<TaleItemData>?) {
-        val items = when (list) {
-            null -> listOf(DataItem.Header)
-            else -> listOf(DataItem.Header) + list.map { DataItem.TaleItem(it) }
+        adapterScope.launch {
+            val items = when (list) {
+                null -> listOf(DataItem.Header)
+                else -> listOf(DataItem.Header) + list.map { DataItem.TaleItem(it) }
+            }
+            withContext(Dispatchers.Main) { submitList(items) }
         }
-        submitList(items)
     }
 
     /**

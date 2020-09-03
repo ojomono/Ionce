@@ -13,7 +13,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
-import com.ojomono.ionce.ui.splashscreen.SplashActivity
+import com.ojomono.ionce.SplashActivity
 
 
 class ProfileFragment : Fragment(), OnCompleteListener<Void> {
@@ -48,13 +48,10 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         // This is used so that the binding can observe LiveData updates
         binding.lifecycleOwner = viewLifecycleOwner
 
-
         // Observe if an event was thrown
         viewModel.event.observe(
             viewLifecycleOwner,
-            Observer {
-                it.consume { signOutFun -> context?.let { context -> signOutFun(context, this) } }
-            }
+            { it.consume { signOutFun -> context?.let { context -> signOutFun(context, this) } } }
         )
 
         return binding.root
