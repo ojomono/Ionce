@@ -105,7 +105,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_email_header_text"
-                        android:textColor="@color/primary"
+                        android:textColor="@color/colorPrimary"
                         android:textSize="13sp" />
 
                     <TextView
@@ -135,7 +135,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_phone_header_text"
-                        android:textColor="@color/primary"
+                        android:textColor="@color/colorPrimary"
                         android:textSize="13sp" />
 
                     <TextView
@@ -164,7 +164,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_twitter_header_text"
-                        android:textColor="@color/primary"
+                        android:textColor="@color/colorPrimary"
                         android:textSize="13sp" />
 
                     <TextView
@@ -193,7 +193,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_facebook_header_text"
-                        android:textColor="@color/primary"
+                        android:textColor="@color/colorPrimary"
                         android:textSize="13sp" />
 
                     <TextView
