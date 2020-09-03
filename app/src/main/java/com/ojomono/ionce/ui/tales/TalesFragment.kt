@@ -1,6 +1,7 @@
 package com.ojomono.ionce.ui.tales
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -68,7 +69,7 @@ class TalesFragment : Fragment() {
         with(binding.root.recycler_tales_list) {
             layoutManager = when {
                 columnCount <= 1 -> LinearLayoutManager(context)
-                else -> GridLayoutManager(context, columnCount)
+                else -> buildGridLayoutManager()
             }
             this.adapter = adapter
             viewModel.tales.observe(viewLifecycleOwner, {
@@ -82,6 +83,21 @@ class TalesFragment : Fragment() {
         })
 
         return binding.root
+    }
+
+    /**
+     * Build a [GridLayoutManager] using the wanted [columnCount] but expending header to span
+     * across the hole screen.
+     */
+    private fun buildGridLayoutManager(): GridLayoutManager {
+        val manager = GridLayoutManager(context, columnCount)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int) = when (position) {
+                0 -> columnCount
+                else -> 1
+            }
+        }
+        return manager
     }
 
     /*************************/
