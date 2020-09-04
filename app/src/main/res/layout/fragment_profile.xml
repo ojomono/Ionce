@@ -52,6 +52,7 @@
                 android:fontFamily="sans-serif-light"
                 android:textColor="@color/onPrimary"
                 android:textSize="32sp"
+                android:text="@{profileViewModel.user.displayName}"
                 tools:text="Joey Tribbiani" />
 
 
@@ -114,7 +115,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/onSurface"
                         android:textSize="18sp"
-                        android:text="@{profileViewModel.email}"
+                        android:text="@{profileViewModel.user.email}"
                         tools:text="joey@sharenofood.com" />
 
                     <View
@@ -144,6 +145,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/onSurface"
                         android:textSize="18sp"
+                        android:text="@{profileViewModel.user.phoneNumber}"
                         tools:text="+1-202-555-0157" />
 
                     <View

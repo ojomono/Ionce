@@ -5,15 +5,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.utils.OneTimeEvent
 
 class ProfileViewModel : ViewModel() {
-    // Text to be shown
-    private val _email = MutableLiveData<String>().apply {
-        value = Authentication.getCurrentUser()?.email
+    // Current logged in user
+    private val _user = MutableLiveData<FirebaseUser>().apply {
+        value = Authentication.getCurrentUser()
     }
-    val email: LiveData<String> = _email
+    val user: LiveData<FirebaseUser> = _user
 
     // One time event for the fragment to listen to
     private val _event =
