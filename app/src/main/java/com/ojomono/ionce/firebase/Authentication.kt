@@ -23,7 +23,7 @@ object Authentication {
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
      * directing to the given [androidPackageName]. If the function is called after the email link
-     * was clicked, the link should be given as the [activityIntent] data.
+     * was clicked, the link should be given as the [activityIntent] model.
      */
     fun buildSignInIntent(
         androidPackageName: String? = null,

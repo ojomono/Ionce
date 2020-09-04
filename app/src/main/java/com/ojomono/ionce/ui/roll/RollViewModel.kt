@@ -5,12 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Database
-import com.ojomono.ionce.models.TaleItemData
+import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.OneTimeEvent
 
 class RollViewModel : ViewModel() {
     // The user's tales list
-    val tales: LiveData<List<TaleItemData>> = Database.userTales
+    val tales: LiveData<List<TaleItemModel>> = Database.userTales
 
     // The rolled tale's title
     private val _text = MutableLiveData<String>()

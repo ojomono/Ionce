@@ -33,7 +33,7 @@ class RollFragment : Fragment() {
         )
 
         // Set the viewmodel for databinding - this allows the bound layout access
-        // to all the data in the VieWModel
+        // to all the model in the VieWModel
         binding.rollViewModel = viewModel
 
         // Specify the fragment view as the lifecycle owner of the binding.
@@ -43,7 +43,7 @@ class RollFragment : Fragment() {
         // Observe if an error message should be shown.
         viewModel.error.observe(
             viewLifecycleOwner,
-            Observer {
+            {
                 it.consume { errorStringRes ->
                     Toast.makeText(context, errorStringRes, Toast.LENGTH_SHORT).show()
                 }

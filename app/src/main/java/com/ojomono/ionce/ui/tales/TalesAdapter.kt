@@ -8,14 +8,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.ItemTaleBinding
-import com.ojomono.ionce.models.TaleItemData
+import com.ojomono.ionce.models.TaleItemModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * [RecyclerView.Adapter] that can display a [TaleItemData] taleItem.
+ * [RecyclerView.Adapter] that can display a [TaleItemModel] taleItem.
  */
 class TalesAdapter(private val clickListener: TalesListener) :
     ListAdapter<TalesAdapter.DataItem, RecyclerView.ViewHolder>(TalesDiffCallback()) {
@@ -36,7 +36,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
     /**
      * Used instead of the standard "submitList" in order to add the header item to the [list].
      */
-    fun addHeaderAndSubmitList(list: List<TaleItemData>?) {
+    fun addHeaderAndSubmitList(list: List<TaleItemModel>?) {
         adapterScope.launch {
             val items = when (list) {
                 null -> listOf(DataItem.Header)
@@ -53,7 +53,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
         when (holder) {
             is ViewHolder -> {
                 val talesItem = getItem(position) as DataItem.TaleItem
-                holder.bind(talesItem.data, clickListener)
+                holder.bind(talesItem.model, clickListener)
             }
         }
     }
@@ -83,7 +83,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
     }
 
     /**
-     * Provide a reference to the views for each data item.
+     * Provide a reference to the views for each model item.
      */
     class ViewHolder private constructor(private val binding: ItemTaleBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -92,7 +92,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
             return super.toString() + " '" + binding.textTitle.text + "'"
         }
 
-        fun bind(taleItem: TaleItemData, clickListener: TalesListener) {
+        fun bind(taleItem: TaleItemModel, clickListener: TalesListener) {
             binding.taleItem = taleItem
             binding.clickListener = clickListener
             binding.executePendingBindings()
@@ -110,7 +110,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
 
     /**
      * The [DiffUtil.ItemCallback] used to determine the diff between two lists of taleItem in order
-     * to optimize the [RecyclerView] for changes to the data.
+     * to optimize the [RecyclerView] for changes to the model.
      */
     class TalesDiffCallback : DiffUtil.ItemCallback<DataItem>() {
         override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
@@ -126,8 +126,8 @@ class TalesAdapter(private val clickListener: TalesListener) :
      * The interface for listening to taleItem events.
      */
     interface TalesListener {
-        fun onEdit(taleItem: TaleItemData)   // Edit icon clicked
-        fun onDelete(taleItem: TaleItemData) // Delete icon clicked
+        fun onEdit(taleItem: TaleItemModel)   // Edit icon clicked
+        fun onDelete(taleItem: TaleItemModel) // Delete icon clicked
     }
 
     /**
@@ -136,8 +136,8 @@ class TalesAdapter(private val clickListener: TalesListener) :
     sealed class DataItem {
         abstract val id: String
 
-        data class TaleItem(val data: TaleItemData) : DataItem() {
-            override val id = data.id
+        data class TaleItem(val model: TaleItemModel) : DataItem() {
+            override val id = model.id
         }
 
         object Header : DataItem() {

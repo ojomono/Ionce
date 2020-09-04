@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages
+import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages here
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.utils.OneTimeEvent
 

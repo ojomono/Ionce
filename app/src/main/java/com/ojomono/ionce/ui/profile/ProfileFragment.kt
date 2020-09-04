@@ -41,7 +41,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         )
 
         // Set the viewmodel for databinding - this allows the bound layout access
-        // to all the data in the VieWModel
+        // to all the model in the VieWModel
         binding.profileViewModel = viewModel
 
         // Specify the fragment view as the lifecycle owner of the binding.
@@ -62,7 +62,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
     /**************************************/
 
     override fun onComplete(task: Task<Void>) {
-        // User is now signed out - go back to splash screen
+        // UserModel is now signed out - go back to splash screen
         startActivity(Intent(context, SplashActivity::class.java))
         activity?.finish()
     }

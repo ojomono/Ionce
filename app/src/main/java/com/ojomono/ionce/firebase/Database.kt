@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.ojomono.ionce.models.Tale
-import com.ojomono.ionce.models.User
-import com.ojomono.ionce.models.TaleItemData
+import com.ojomono.ionce.models.TaleModel
+import com.ojomono.ionce.models.UserModel
+import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.TAG
 
 
@@ -37,7 +37,7 @@ object Database {
     private var registration: ListenerRegistration? = null
 
     // Current user's taleItem
-    var userTales: MutableLiveData<List<TaleItemData>> = MutableLiveData()
+    var userTales: MutableLiveData<List<TaleItemModel>> = MutableLiveData()
 
     // If a user is already logged-in - get it's document
     init {
@@ -73,7 +73,7 @@ object Database {
             userDocRef?.get()?.addOnSuccessListener { document ->
                 userDocument = document
                 // If the document does not exist yet - initialize it
-                if (!document.exists()) userDocRef?.set(User())
+                if (!document.exists()) userDocRef?.set(UserModel())
             }?.addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
             }
@@ -83,7 +83,7 @@ object Database {
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else {
                     userDocument = snapshot
-                    userTales.value = snapshot?.toObject(User::class.java)?.tales
+                    userTales.value = snapshot?.toObject(UserModel::class.java)?.tales
                 }
             }
         }
@@ -102,14 +102,14 @@ object Database {
             val talesCol = userRef.collection(CP_TALES)
             val taleRef =
                 if (id.isEmpty()) talesCol.document() else talesCol.document(id)
-            val tale = Tale(taleRef.id, title)
+            val tale = TaleModel(taleRef.id, title)
 
             // In a transaction, set the tale's document and update the user's tale list
             db.runTransaction { transaction ->
-                val user: User? = transaction.get(userRef).toObject(User::class.java)
+                val user: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
                 user?.let {
                     // Update user's list
-                    user.setTale(TaleItemData(tale))
+                    user.setTale(TaleItemModel(tale))
 
                     // Commit to Firestore
                     transaction.update(userRef, user::tales.name, user.tales)
@@ -124,7 +124,7 @@ object Database {
      * Overwrite the tale document with id=[taleItem].id to have the given [taleItem]'s title. If [taleItem].id
      * is empty, create a new document with a generated id and title=[taleItem].title.
      */
-    fun setTale(taleItem: TaleItemData) = setTale(taleItem.id, taleItem.title)
+    fun setTale(taleItem: TaleItemModel) = setTale(taleItem.id, taleItem.title)
 
     /**
      * Delete the tale document with id=[id].
@@ -138,7 +138,7 @@ object Database {
 
             // In a transaction, delete the tale document and remove it from user's tales list
             db.runTransaction { transaction ->
-                val user: User? = transaction.get(userRef).toObject(User::class.java)
+                val user: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
                 user?.let {
                     // Update user's list
                     user.deleteTale(id)
@@ -155,5 +155,5 @@ object Database {
     /**
      * Delete the tale document with id=[taleItem].id.
      */
-    fun deleteTale(taleItem: TaleItemData) = deleteTale(taleItem.id)
+    fun deleteTale(taleItem: TaleItemModel) = deleteTale(taleItem.id)
 }

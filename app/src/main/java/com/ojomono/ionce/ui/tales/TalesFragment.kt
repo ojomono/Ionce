@@ -1,22 +1,20 @@
 package com.ojomono.ionce.ui.tales
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
-import com.ojomono.ionce.models.TaleItemData
+import com.ojomono.ionce.models.TaleItemModel
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
 /**
@@ -57,7 +55,7 @@ class TalesFragment : Fragment() {
             )
 
         // Set the viewmodel for databinding - this allows the bound layout access
-        // to all the data in the VieWModel
+        // to all the model in the VieWModel
         binding.talesViewModel = viewModel
 
         // Specify the fragment view as the lifecycle owner of the binding.
@@ -135,7 +133,7 @@ class TalesFragment : Fragment() {
      * Build a dialog builder for adding a new tale, using [onOk] as the listener function of the
      * positive button.
      */
-    private fun buildAddDialog(onOk: (taleItem: TaleItemData) -> Unit): AlertDialog.Builder {
+    private fun buildAddDialog(onOk: (taleItem: TaleItemModel) -> Unit): AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -152,7 +150,7 @@ class TalesFragment : Fragment() {
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_add_dialog_positive_button_text))
             { dialog, _ ->
-                onOk(TaleItemData(title = input.text.toString()))
+                onOk(TaleItemModel(title = input.text.toString()))
                 dialog.cancel()
             }
         return dialogBuilder
@@ -162,7 +160,7 @@ class TalesFragment : Fragment() {
      * Build a dialog builder for updating the given tale [taleItem], using [onOk] as the listener
      * function of the positive button.
      */
-    private fun buildUpdateDialog(onOk: (taleItem: TaleItemData) -> Unit, taleItem: TaleItemData)
+    private fun buildUpdateDialog(onOk: (taleItem: TaleItemModel) -> Unit, taleItem: TaleItemModel)
             : AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
 
@@ -191,7 +189,7 @@ class TalesFragment : Fragment() {
      * Build a dialog builder for deleting the given tale [taleItem], using [onOk] as the listener
      * function of the positive button.
      */
-    private fun buildDeleteDialog(onOk: (taleItem: TaleItemData) -> Unit, taleItem: TaleItemData)
+    private fun buildDeleteDialog(onOk: (taleItem: TaleItemModel) -> Unit, taleItem: TaleItemModel)
             : AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle(getText(R.string.tales_delete_dialog_title))
