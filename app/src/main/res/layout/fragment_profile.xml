@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copied from github project 'android-profile-ui' by 'karunstha': https://github.com/karunstha/android-profile-ui/blob/master/app/src/main/res/layout/activity_main.xml-->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="profileViewModel"
             type="com.ojomono.ionce.ui.profile.ProfileViewModel" />
@@ -175,6 +177,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/onSurface"
                         android:textSize="18sp"
+                        app:twitterText="@{profileViewModel.user}"
                         tools:text="\@joeytribbiani" />
 
                     <View
@@ -204,6 +207,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/onSurface"
                         android:textSize="18sp"
+                        app:facebookText="@{profileViewModel.user}"
                         tools:text="facebook.com/joeytrib" />
 
                     <View
