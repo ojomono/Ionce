@@ -76,9 +76,11 @@ class TalesFragment : Fragment() {
         }
 
         // Observe the view model for events - open the right dialog for the event
-        viewModel.itemEvent.observe(viewLifecycleOwner, {
-            it.consume { event -> showEventDialog(event) }
-        })
+        viewModel.itemEvent.observe(
+            viewLifecycleOwner,
+            {
+                it.consume { event -> showEventDialog(event) }
+            })
 
         return binding.root
     }
@@ -110,19 +112,21 @@ class TalesFragment : Fragment() {
         // Build the right dialog UI
         val dialogBuilder = when (event) {
             is TalesViewModel.EventType.AddItemEvent -> buildAddDialog(event.onOk)
-            is TalesViewModel.EventType.UpdateItemEvent -> buildUpdateDialog(
-                event.onOk,
-                event.taleItem
-            )
-            is TalesViewModel.EventType.DeleteItemEvent -> buildDeleteDialog(
-                event.onOk,
-                event.taleItem
-            )
+            is TalesViewModel.EventType.UpdateItemEvent ->
+                buildUpdateDialog(
+                    event.onOk,
+                    event.taleItem
+                )
+            is TalesViewModel.EventType.DeleteItemEvent ->
+                buildDeleteDialog(
+                    event.onOk,
+                    event.taleItem
+                )
         }
 
         // Add the 'cancel' button
         dialogBuilder
-            .setNegativeButton(getText(R.string.tales_dialogs_negative_button_text))
+            .setNegativeButton(getText(R.string.dialogs_negative_button_text))
             { dialog, _ -> dialog.cancel() }
 
         // Create the dialog and show it
@@ -148,7 +152,7 @@ class TalesFragment : Fragment() {
         dialogBuilder.setTitle(getText(R.string.tales_add_dialog_title))
         dialogBuilder.setMessage(getText(R.string.tales_add_dialog_message))
         dialogBuilder
-            .setPositiveButton(getText(R.string.tales_add_dialog_positive_button_text))
+            .setPositiveButton(getText(R.string.dialogs_positive_button_text))
             { dialog, _ ->
                 onOk(TaleItemModel(title = input.text.toString()))
                 dialog.cancel()
@@ -176,7 +180,7 @@ class TalesFragment : Fragment() {
 
         dialogBuilder.setTitle(getText(R.string.tales_update_dialog_title))
         dialogBuilder
-            .setPositiveButton(getText(R.string.tales_update_dialog_positive_button_text))
+            .setPositiveButton(getText(R.string.dialogs_positive_button_text))
             { dialog, _ ->
                 taleItem.title = input.text.toString()
                 onOk(taleItem)

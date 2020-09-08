@@ -1,10 +1,13 @@
 package com.ojomono.ionce.ui.profile
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -50,11 +53,53 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
 
         // Observe if an event was thrown
         viewModel.event.observe(
-            viewLifecycleOwner,
-            { it.consume { signOutFun -> context?.let { context -> signOutFun(context, this) } } }
+            viewLifecycleOwner, {
+                it.consume { event ->
+                    when (event) {
+                        is ProfileViewModel.EventType.SignOutEvent ->
+                            context?.let { context -> event.func(context, this) }
+                        is ProfileViewModel.EventType.EditNameEvent ->
+                            showEditNameDialog(event.func)
+                    }
+                }
+            }
         )
 
         return binding.root
+    }
+
+    /**
+     * Build a dialog builder for updating the current user's name, using [onOk] as the listener
+     * function of the positive button.
+     */
+    private fun showEditNameDialog(onOk: (String) -> Unit) {
+        val dialogBuilder = AlertDialog.Builder(context)
+
+        val input = EditText(context)
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        input.layoutParams = lp
+        input.setText(viewModel.user.value?.displayName)
+
+        dialogBuilder.setView(input)
+
+        dialogBuilder.setTitle(getText(R.string.profile_edit_name_dialog_title))
+        dialogBuilder
+            .setPositiveButton(getText(R.string.dialogs_positive_button_text))
+            { dialog, _ ->
+                onOk(input.text.toString())
+                dialog.cancel()
+            }
+
+        // Add the 'cancel' button
+        dialogBuilder
+            .setNegativeButton(getText(R.string.dialogs_negative_button_text))
+            { dialog, _ -> dialog.cancel() }
+
+        // Create the dialog and show it
+        dialogBuilder.create().show()
     }
 
     /**************************************/

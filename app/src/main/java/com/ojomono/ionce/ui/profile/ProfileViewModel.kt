@@ -14,21 +14,26 @@ class ProfileViewModel : ViewModel() {
     val user: LiveData<FirebaseUser?> = Authentication.currentUser
 
     // One time event for the fragment to listen to
-    private val _event =
-        MutableLiveData<OneTimeEvent<(Context, OnCompleteListener<Void>) -> Unit>>()
-    val event: LiveData<OneTimeEvent<(Context, OnCompleteListener<Void>) -> Unit>> = _event
+    private val _event = MutableLiveData<OneTimeEvent<EventType>>()
+    val event: LiveData<OneTimeEvent<EventType>> = _event
+
+    // Types of supported events
+    sealed class EventType() {
+        class SignOutEvent(val func: (Context, OnCompleteListener<Void>) -> Unit) : EventType()
+        class EditNameEvent(val func: (String) -> Unit) : EventType()
+    }
 
     /**
      * Sign out the user.
      */
     fun onSignOut() {
-        _event.value = OneTimeEvent(Authentication::signOut)
+        _event.value = OneTimeEvent(EventType.SignOutEvent(Authentication::signOut))
     }
 
     /**
      * Edit the user's display name.
      */
     fun onEditName() {
-
+        _event.value = OneTimeEvent(EventType.EditNameEvent(Authentication::updateDisplayName))
     }
 }

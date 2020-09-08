@@ -26,18 +26,16 @@
     <string name="profile_phone_header_text">Phone</string>
     <string name="profile_twitter_header_text">Twitter</string>
     <string name="profile_facebook_header_text">Facebook</string>
+    <string name="profile_edit_name_dialog_title">Update user name</string>
 
     <!-- Tales screen -->
     <string name="tales_hint_text">Looks like you don\'t have any tales yet. You can add some with the \'+\' button in the bottom-right corner!</string>
     <string name="tales_header_text">My Tales</string>
     <string name="tales_edit_icon_content_description">Edit tale</string>
     <string name="tales_delete_icon_content_description">Delete tale</string>
-    <string name="tales_dialogs_negative_button_text">Cancel</string>
     <string name="tales_add_dialog_title">New Tale</string>
     <string name="tales_add_dialog_message">Enter Title Below</string>
-    <string name="tales_add_dialog_positive_button_text">Save</string>
     <string name="tales_update_dialog_title">Update Tale</string>
-    <string name="tales_update_dialog_positive_button_text">Update</string>
     <string name="tales_delete_dialog_title">Delete</string>
     <string name="tales_delete_dialog_message">Confirm delete?</string>
     <string name="tales_delete_dialog_positive_button_text">Delete</string>
@@ -48,4 +46,9 @@
     <string name="roll_hint_default_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
     <string name="roll_hint_no_tales_text">It seems you don\'t have any tales yet. Add your first tale at the \'&title_tales;\' tab!</string>
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
+
+    <!-- Dialogs -->
+    <string name="dialogs_positive_button_text">Save</string>
+    <string name="dialogs_negative_button_text">Cancel</string>
+
 </resources>

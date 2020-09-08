@@ -11,16 +11,16 @@ class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
     // The user's tales list
     val tales: LiveData<List<TaleItemModel>> = Database.userTales
 
+    // One time event for the fragment to listen to
+    private val _itemEvent = MutableLiveData<OneTimeEvent<EventType>>()
+    val itemEvent: LiveData<OneTimeEvent<EventType>> = _itemEvent
+
     // Types of supported events
     sealed class EventType(val onOk: (taleItem: TaleItemModel) -> Unit) {
         class AddItemEvent() : EventType(Database::setTale)
         class UpdateItemEvent(val taleItem: TaleItemModel) : EventType(Database::setTale)
         class DeleteItemEvent(val taleItem: TaleItemModel) : EventType(Database::deleteTale)
     }
-
-    // One time event for the fragment to listen to
-    private val _itemEvent = MutableLiveData<OneTimeEvent<EventType>>()
-    val itemEvent: LiveData<OneTimeEvent<EventType>> = _itemEvent
 
     /**
      * Show dialog for new tale creation.
