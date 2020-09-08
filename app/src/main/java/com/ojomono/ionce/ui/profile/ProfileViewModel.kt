@@ -22,9 +22,16 @@ class ProfileViewModel : ViewModel() {
     val event: LiveData<OneTimeEvent<(Context, OnCompleteListener<Void>) -> Unit>> = _event
 
     /**
-     * Sign out to user.
+     * Sign out the user.
      */
     fun onSignOut() {
         _event.value = OneTimeEvent(Authentication::signOut)
+    }
+
+    /**
+     * Edit the user's display name.
+     */
+    fun onEditName() {
+
     }
 }

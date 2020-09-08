@@ -20,8 +20,7 @@
             android:id="@+id/relative_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_gradient"
-            android:paddingBottom="20dp">
+            android:background="@drawable/bg_gradient">
 
             <RelativeLayout
                 android:id="@+id/relative_image"
@@ -44,38 +43,47 @@
 
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/text_name"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relative_image"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="15sp"
-                android:fontFamily="sans-serif-light"
-                android:textColor="@color/onPrimary"
-                android:textSize="32sp"
-                android:text="@{profileViewModel.user.displayName}"
-                tools:text="Joey Tribbiani" />
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingHorizontal="@dimen/activity_horizontal_margin"
+                android:paddingBottom="@dimen/profile_name_padding_bottom"
+                android:gravity="center"
+                android:background="@drawable/bg_ripple"
+                android:onClick="@{() -> profileViewModel.onEditName()}">
 
+                <TextView
+                    android:id="@+id/text_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_marginStart="@dimen/profile_icons_sizes"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/onPrimary"
+                    android:textSize="32sp"
+                    android:text="@{profileViewModel.user.displayName}"
+                    tools:text="Joey Tribbiani" />
 
-            <TextView
-                android:id="@+id/text_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/text_name"
-                android:layout_centerHorizontal="true"
-                android:fontFamily="sans-serif"
-                android:textAllCaps="true"
-                android:textColor="@color/onPrimary"
-                android:textSize="14sp"
-                tools:text="new york, usa" />
+                <ImageView
+                    android:layout_width="@dimen/profile_icons_sizes"
+                    android:layout_height="@dimen/profile_icons_sizes"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_edit_accent_24"
+                    android:contentDescription="@string/profile_edit_name_content_description" />
+
+            </LinearLayout>
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/profile_icons_sizes"
+                android:layout_height="@dimen/profile_icons_sizes"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="15dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_settings_white_24"
@@ -123,7 +131,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
                         android:background="@color/grey" />
 
                 </LinearLayout>
@@ -131,7 +139,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
                     android:orientation="vertical">
 
                     <TextView
@@ -153,7 +161,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
                         android:background="@color/grey" />
 
                 </LinearLayout>
@@ -161,7 +169,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
                     android:orientation="vertical">
 
                     <TextView
@@ -183,7 +191,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
                         android:background="@color/grey" />
 
                 </LinearLayout>
@@ -191,7 +199,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
                     android:orientation="vertical">
 
                     <TextView
@@ -213,7 +221,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
                         android:background="@color/grey" />
 
                 </LinearLayout>

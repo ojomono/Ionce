@@ -14,4 +14,8 @@
     <dimen name="roll_button_text_size">22sp</dimen>
     <dimen name="roll_preface_text_size">20sp</dimen>
     <dimen name="roll_tale_text_size">24sp</dimen>
+
+    <!-- Profile screen dimes -->
+    <dimen name="profile_icons_sizes">40dp</dimen>
+    <dimen name="profile_name_padding_bottom">20dp</dimen>
 </resources>

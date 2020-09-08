@@ -21,6 +21,7 @@
     <string name="profile_sign_out_button_text">Sign Out</string>
     <string name="profile_user_image_content_description">Profile picture</string>
     <string name="profile_settings_icon_content_description">Settings</string>
+    <string name="profile_edit_name_content_description">Edit name</string>
     <string name="profile_email_header_text">Email</string>
     <string name="profile_phone_header_text">Phone</string>
     <string name="profile_twitter_header_text">Twitter</string>
