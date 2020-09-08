@@ -2,13 +2,17 @@ package com.ojomono.ionce.firebase
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.ojomono.ionce.utils.Constants
 import com.ojomono.ionce.utils.TAG
 
@@ -17,8 +21,17 @@ import com.ojomono.ionce.utils.TAG
  */
 object Authentication {
 
+    // The Firebase Authentication and it's pre-built UI instances
     private val authUI = AuthUI.getInstance()
-    private val firebaseAuth = FirebaseAuth.getInstance()
+    private val firebaseAuth = FirebaseAuth.getInstance().apply {
+        // Update the LiveData every time the underlying token state changes.
+        addAuthStateListener { _currentUser.value = currentUser }
+    }
+
+    // Current logged in user
+    private val _currentUser: MutableLiveData<FirebaseUser?> =
+        MutableLiveData<FirebaseUser?>().apply { value = firebaseAuth.currentUser }
+    val currentUser: LiveData<FirebaseUser?> = _currentUser
 
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
@@ -71,7 +84,7 @@ object Authentication {
      */
     fun handleSignInSucceeded() {
         // Get reference to current user's document from Firestore.
-        Database.switchUserDocument(getCurrentUser()?.uid)
+        Database.switchUserDocument(currentUser.value?.uid)
     }
 
     /**
@@ -87,10 +100,30 @@ object Authentication {
     }
 
     /**
-     * Get the user currently logged-in to firebase. If no user is logged-in, null will be returned.
+     * Update the current user's displayed name to [displayName].
      */
-    fun getCurrentUser(): FirebaseUser? {
-        return firebaseAuth.currentUser
+    fun updateDisplayName(displayName: String) {
+        updateProfile(UserProfileChangeRequest.Builder().setDisplayName(displayName).build())
+    }
+
+    /**
+     * Update the current user's photo to [photoUri].
+     */
+    fun updatePhotoUri(photoUri: Uri) {
+        updateProfile(UserProfileChangeRequest.Builder().setPhotoUri(photoUri).build())
+    }
+
+    /**
+     * Send the given [profileUpdates] change request to Firebase.
+     */
+    private fun updateProfile(profileUpdates: UserProfileChangeRequest) {
+        currentUser.value?.updateProfile(profileUpdates)
+            ?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "User profile updated.")
+                    _currentUser.value = firebaseAuth.currentUser
+                }
+            }
     }
 
     /**

@@ -1,7 +1,9 @@
 package com.ojomono.ionce.firebase
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -36,12 +38,13 @@ object Database {
     private var userDocument: DocumentSnapshot? = null
     private var registration: ListenerRegistration? = null
 
-    // Current user's taleItem
-    var userTales: MutableLiveData<List<TaleItemModel>> = MutableLiveData()
+    // Current user's tales list
+    private val _userTales = MutableLiveData<List<TaleItemModel>>()
+    val userTales: LiveData<List<TaleItemModel>> = _userTales
 
     // If a user is already logged-in - get it's document
     init {
-        Authentication.getCurrentUser()?.uid?.let { switchUserDocument(it) }
+        Authentication.currentUser.value?.uid?.let { switchUserDocument(it) }
     }
 
     /**************/
@@ -83,7 +86,7 @@ object Database {
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else {
                     userDocument = snapshot
-                    userTales.value = snapshot?.toObject(UserModel::class.java)?.tales
+                    _userTales.value = snapshot?.toObject(UserModel::class.java)?.tales
                 }
             }
         }

@@ -11,10 +11,7 @@ import com.ojomono.ionce.utils.OneTimeEvent
 
 class ProfileViewModel : ViewModel() {
     // Current logged in user
-    private val _user = MutableLiveData<FirebaseUser>().apply {
-        value = Authentication.getCurrentUser()
-    }
-    val user: LiveData<FirebaseUser> = _user
+    val user: LiveData<FirebaseUser?> = Authentication.currentUser
 
     // One time event for the fragment to listen to
     private val _event =

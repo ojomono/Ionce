@@ -15,7 +15,7 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         // If no user is logged in, open sign-in screen
-        if (Authentication.getCurrentUser() == null)
+        if (Authentication.currentUser.value == null)
             startActivityForResult(
                 Authentication.buildSignInIntent(packageName, intent),
                 Constants.RC_SIGN_IN
