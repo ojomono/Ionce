@@ -1,7 +1,9 @@
 package com.ojomono.ionce.ui.profile
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +12,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
@@ -23,6 +24,9 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var viewModel: ProfileViewModel
+
+    // Function to run when a new image was picked
+    private lateinit var onImagePicked: (Uri?) -> Unit     // TODO: maybe get rid of member
 
     /***********************/
     /** Lifecycle methods **/
@@ -60,6 +64,8 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
                             context?.let { context -> event.func(context, this) }
                         is ProfileViewModel.EventType.EditNameEvent ->
                             showEditNameDialog(event.func)
+                        is ProfileViewModel.EventType.ChangePhotoEvent ->
+                            showImagePicker(event.func)
                     }
                 }
             }
@@ -67,6 +73,17 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
 
         return binding.root
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == RC_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
+            onImagePicked(data?.data)
+        }
+    }
+
+    /***********************/
+    /** private methods **/
+    /***********************/
 
     /**
      * Build a dialog builder for updating the current user's name, using [onOk] as the listener
@@ -102,6 +119,19 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         dialogBuilder.create().show()
     }
 
+    /**
+     * Show the image picker. Picked image will be set to [onPick] function.
+     */
+    private fun showImagePicker(onPick: (Uri?) -> Unit) {
+        onImagePicked = onPick
+        val intent =
+            Intent(
+                Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI
+            )
+        startActivityForResult(intent, RC_PICK_IMAGE)
+    }
+
     /**************************************/
     /** OnCompleteListener<Void> methods **/
     /**************************************/
@@ -112,4 +142,12 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         activity?.finish()
     }
 
+    /***************/
+    /** constants **/
+    /***************/
+
+    companion object {
+        // Request codes
+        const val RC_PICK_IMAGE = 1
+    }
 }

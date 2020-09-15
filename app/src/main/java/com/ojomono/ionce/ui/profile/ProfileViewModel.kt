@@ -1,6 +1,7 @@
 package com.ojomono.ionce.ui.profile
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,7 +22,12 @@ class ProfileViewModel : ViewModel() {
     sealed class EventType() {
         class SignOutEvent(val func: (Context, OnCompleteListener<Void>) -> Unit) : EventType()
         class EditNameEvent(val func: (String) -> Unit) : EventType()
+        class ChangePhotoEvent(val func: (Uri?) -> Unit) : EventType()
     }
+
+    /*************************/
+    /** raise event methods **/
+    /*************************/
 
     /**
      * Sign out the user.
@@ -36,4 +42,12 @@ class ProfileViewModel : ViewModel() {
     fun onEditName() {
         _event.value = OneTimeEvent(EventType.EditNameEvent(Authentication::updateDisplayName))
     }
+
+    /**
+     * Change user's profile picture.
+     */
+    fun onChangePhoto() {
+        _event.value = OneTimeEvent(EventType.ChangePhotoEvent(Authentication::updatePhotoUri))
+    }
+
 }

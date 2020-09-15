@@ -13,13 +13,15 @@ import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.ojomono.ionce.utils.Constants
 import com.ojomono.ionce.utils.TAG
 
 /**
  * Handles all interactions with Firebase authentication.
  */
 object Authentication {
+
+    // Dynamic Links
+    private const val DL_EMAIL_LINK_SIGN_IN = "https://ionce.page.link"
 
     // The Firebase Authentication and it's pre-built UI instances
     private val authUI = AuthUI.getInstance()
@@ -62,7 +64,7 @@ object Authentication {
                 ActionCodeSettings.newBuilder()
                     .setAndroidPackageName(androidPackageName, true, null)
                     .setHandleCodeInApp(true) // This must be set to true
-                    .setUrl(Constants.DL_EMAIL_LINK_SIGN_IN) // This URL needs to be whitelisted
+                    .setUrl(DL_EMAIL_LINK_SIGN_IN) // This URL needs to be whitelisted
                     .build()
 
             emailBuilder.enableEmailLinkSignIn().setActionCodeSettings(actionCodeSettings)
@@ -109,7 +111,7 @@ object Authentication {
     /**
      * Update the current user's photo to [photoUri].
      */
-    fun updatePhotoUri(photoUri: Uri) {
+    fun updatePhotoUri(photoUri: Uri?) {
         updateProfile(UserProfileChangeRequest.Builder().setPhotoUri(photoUri).build())
     }
 
@@ -133,5 +135,4 @@ object Authentication {
     fun signOut(context: Context, onCompleteListener: OnCompleteListener<Void>) {
         authUI.signOut(context).addOnCompleteListener(onCompleteListener)
     }
-
 }

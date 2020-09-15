@@ -14,7 +14,6 @@ fun ImageView.setUserPhotoSrc(user: FirebaseUser?) {
     Glide.with(context)
         .load(user?.photoUrl)
         .circleCrop()
-        .placeholder(R.drawable.ic_profile_grey_72)
         .fallback(R.drawable.ic_profile_grey_72)
         .into(this)
 }

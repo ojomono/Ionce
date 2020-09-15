@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.ojomono.ionce.utils.Constants
 import com.ojomono.ionce.firebase.Authentication
 
 
@@ -18,7 +17,7 @@ class SplashActivity : AppCompatActivity() {
         if (Authentication.currentUser.value == null)
             startActivityForResult(
                 Authentication.buildSignInIntent(packageName, intent),
-                Constants.RC_SIGN_IN
+                RC_SIGN_IN
             )
         // Open main activity for the logged-in user
         else startMainActivity()
@@ -27,7 +26,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == Constants.RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN) {
 
             if (resultCode == Activity.RESULT_OK) {
 
@@ -50,4 +49,8 @@ class SplashActivity : AppCompatActivity() {
         finish()
     }
 
+    companion object {
+        // Request codes
+        const val RC_SIGN_IN = 1
+    }
 }
