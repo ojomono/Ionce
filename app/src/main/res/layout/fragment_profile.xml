@@ -37,8 +37,9 @@
                     android:adjustViewBounds="true"
                     android:background="@drawable/bg_circle_solid"
                     android:padding="3dp"
-                    android:scaleType="centerInside"
+                    android:scaleType="centerCrop"
                     android:contentDescription="@string/profile_user_image_content_description"
+                    app:userPhotoSrc="@{profileViewModel.user}"
                     tools:src="@drawable/ic_user" />
 
             </RelativeLayout>
@@ -87,7 +88,9 @@
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_settings_white_24"
-                android:contentDescription="@string/profile_settings_icon_content_description" />
+                android:contentDescription="@string/profile_settings_icon_content_description"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
         </RelativeLayout>
 
@@ -185,7 +188,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/onSurface"
                         android:textSize="18sp"
-                        app:twitterText="@{profileViewModel.user}"
+                        app:twitterLinkText="@{profileViewModel.user}"
                         tools:text="\@joeytribbiani" />
 
                     <View
@@ -215,7 +218,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/onSurface"
                         android:textSize="18sp"
-                        app:facebookText="@{profileViewModel.user}"
+                        app:facebookLinkText="@{profileViewModel.user}"
                         tools:text="facebook.com/joeytrib" />
 
                     <View
