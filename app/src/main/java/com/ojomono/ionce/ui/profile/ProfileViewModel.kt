@@ -14,6 +14,11 @@ class ProfileViewModel : ViewModel() {
     // Current logged in user
     val user: LiveData<FirebaseUser?> = Authentication.currentUser
 
+    // Refresh the user data (in case the name/photo/... was changed on another device)
+    init {
+        Authentication.reloadCurrentUser()
+    }
+
     // One time event for the fragment to listen to
     private val _event = MutableLiveData<OneTimeEvent<EventType>>()
     val event: LiveData<OneTimeEvent<EventType>> = _event
@@ -22,7 +27,7 @@ class ProfileViewModel : ViewModel() {
     sealed class EventType() {
         class SignOutEvent(val func: (Context, OnCompleteListener<Void>) -> Unit) : EventType()
         class EditNameEvent(val func: (String) -> Unit) : EventType()
-        class ChangePhotoEvent(val func: (Uri?) -> Unit) : EventType()
+        class ChangePhotoEvent(val func: (Uri) -> Unit) : EventType()
     }
 
     /*************************/
@@ -47,6 +52,7 @@ class ProfileViewModel : ViewModel() {
      * Change user's profile picture.
      */
     fun onChangePhoto() {
+        // TODO open picture activity
         _event.value = OneTimeEvent(EventType.ChangePhotoEvent(Authentication::updatePhotoUri))
     }
 

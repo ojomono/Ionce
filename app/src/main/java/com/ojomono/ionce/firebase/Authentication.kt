@@ -20,6 +20,10 @@ import com.ojomono.ionce.utils.TAG
  */
 object Authentication {
 
+    /***************/
+    /** Constants **/
+    /***************/
+
     // Dynamic Links
     private const val DL_EMAIL_LINK_SIGN_IN = "https://ionce.page.link"
 
@@ -30,10 +34,20 @@ object Authentication {
         addAuthStateListener { _currentUser.value = currentUser }
     }
 
+    /*************/
+    /** Members **/
+    /*************/
+
     // Current logged in user
     private val _currentUser: MutableLiveData<FirebaseUser?> =
-        MutableLiveData<FirebaseUser?>().apply { value = firebaseAuth.currentUser }
+        MutableLiveData<FirebaseUser?>().apply {
+            value = firebaseAuth.currentUser
+        }
     val currentUser: LiveData<FirebaseUser?> = _currentUser
+
+    /**************/
+    /** methods **/
+    /*************/
 
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
@@ -111,8 +125,19 @@ object Authentication {
     /**
      * Update the current user's photo to [photoUri].
      */
-    fun updatePhotoUri(photoUri: Uri?) {
-        updateProfile(UserProfileChangeRequest.Builder().setPhotoUri(photoUri).build())
+    fun updatePhotoUri(photoUri: Uri) {
+        currentUser.value?.uid?.let {
+            Storage.updateUserPhoto(it, photoUri).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    updateProfile(
+                        UserProfileChangeRequest.Builder().setPhotoUri(task.result).build()
+                    )
+                } else {
+                    // Handle failures
+                    Log.e(TAG, task.exception.toString())
+                }
+            }
+        }
     }
 
     /**
@@ -126,6 +151,14 @@ object Authentication {
                     _currentUser.value = firebaseAuth.currentUser
                 }
             }
+    }
+
+    /**
+     * Refresh the data of the current user.
+     */
+    fun reloadCurrentUser() {
+        firebaseAuth.currentUser?.reload()
+            ?.addOnCompleteListener { _currentUser.value = firebaseAuth.currentUser }
     }
 
     /**

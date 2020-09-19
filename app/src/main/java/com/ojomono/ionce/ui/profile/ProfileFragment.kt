@@ -26,7 +26,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
     private lateinit var viewModel: ProfileViewModel
 
     // Function to run when a new image was picked
-    private lateinit var onImagePicked: (Uri?) -> Unit     // TODO: maybe get rid of member
+    private lateinit var onImagePicked: (Uri) -> Unit     // TODO: maybe get rid of member
 
     /***********************/
     /** Lifecycle methods **/
@@ -77,7 +77,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
-            onImagePicked(data?.data)
+            data?.data?.let { onImagePicked(it) }
         }
     }
 
@@ -122,7 +122,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
     /**
      * Show the image picker. Picked image will be set to [onPick] function.
      */
-    private fun showImagePicker(onPick: (Uri?) -> Unit) {
+    private fun showImagePicker(onPick: (Uri) -> Unit) {
         onImagePicked = onPick
         val intent =
             Intent(

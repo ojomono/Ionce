@@ -8,13 +8,13 @@
     <color name="colorSurface">#FFFFFF</color>
     <color name="colorError">#B00020</color>
 
-    <color name="onPrimary">#FFFFFF</color>
-    <color name="onAccent">#000000</color>
-    <color name="onBackground">#000000</color>
-    <color name="onSurface">#000000</color>
-    <color name="onError">#FFFFFF</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnAccent">#000000</color>
+    <color name="colorOnBackground">#000000</color>
+    <color name="colorOnSurface">#000000</color>
+    <color name="colorOnError">#FFFFFF</color>
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="grey">#E5E5E5</color>
+    <color name="gray">#E5E5E5</color>
 </resources>
