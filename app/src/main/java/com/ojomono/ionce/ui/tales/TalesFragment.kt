@@ -182,8 +182,9 @@ class TalesFragment : Fragment() {
         dialogBuilder
             .setPositiveButton(getText(R.string.dialogs_positive_button_text))
             { dialog, _ ->
-                taleItem.title = input.text.toString()
-                onOk(taleItem)
+                // If we change original item, adapter's new list and old list would be the same and
+                // it will not refresh. Thus a copy is needed.
+                onOk(taleItem.copy(title = input.text.toString()))
                 dialog.cancel()
             }
         return dialogBuilder
