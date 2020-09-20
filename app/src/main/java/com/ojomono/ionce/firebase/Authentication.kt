@@ -46,9 +46,9 @@ object Authentication {
         }
     val currentUser: LiveData<FirebaseUser?> = _currentUser
 
-    /********************/
-    /** Public methods **/
-    /********************/
+    /*********************/
+    /** Sign in methods **/
+    /*********************/
 
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
@@ -116,11 +116,17 @@ object Authentication {
         if (response != null) Log.e(TAG, response.error.toString())
     }
 
+    /***********************************/
+    /** Invoke firebase tasks methods **/
+    /***********************************/
+
     /**
-     * Update the current user's displayed name to [displayName], and return the updating [Task].
+     * Refresh the data of the current user, and return the refreshing [Task].
      */
-    fun updateDisplayName(displayName: String): Task<Void>? {
-        return updateProfile(UserProfileChangeRequest.Builder().setDisplayName(displayName).build())
+    fun reloadCurrentUser(): Task<Void>? {
+        val task = firebaseAuth.currentUser?.reload()
+        task?.addOnCompleteListener { _currentUser.value = firebaseAuth.currentUser }
+        return task
     }
 
     /**
@@ -149,11 +155,10 @@ object Authentication {
     }
 
     /**
-     * Refresh the data of the current user.
+     * Update the current user's displayed name to [displayName], and return the updating [Task].
      */
-    fun reloadCurrentUser() {
-        firebaseAuth.currentUser?.reload()
-            ?.addOnCompleteListener { _currentUser.value = firebaseAuth.currentUser }
+    fun updateDisplayName(displayName: String): Task<Void>? {
+        return updateProfile(UserProfileChangeRequest.Builder().setDisplayName(displayName).build())
     }
 
     /**

@@ -96,13 +96,14 @@ class ProfileFragment : Fragment() {
     /**
      * Sign out the user using the given [func] and go back to [SplashActivity].
      */
-    private fun executeSignOut(func: (Context) -> Task<Void>) {
+    private fun executeSignOut(func: (Context) -> Task<Void>?) {
         context?.let { context ->
-            func(context).withProgressBar(progress_bar).addOnCompleteListener {
-                // User is now signed out - go back to splash screen
-                startActivity(Intent(context, SplashActivity::class.java))
-                activity?.finish()
-            }
+            func(context)?.withProgressBar(progress_bar)
+                ?.addOnCompleteListener {
+                    // User is now signed out - go back to splash screen
+                    startActivity(Intent(context, SplashActivity::class.java))
+                    activity?.finish()
+                }
         }
     }
 

@@ -25,14 +25,14 @@ class ProfileViewModel : ViewModel() {
     }
 
     // One time event for the fragment to listen to
-    private val _event = MutableLiveData<OneTimeEvent<EventType>>()
-    val event: LiveData<OneTimeEvent<EventType>> = _event
+    private val _event = MutableLiveData<OneTimeEvent<EventType<Nothing>>>()
+    val event: LiveData<OneTimeEvent<EventType<Nothing>>> = _event
 
     // Types of supported events
-    sealed class EventType() {
-        class SignOutEvent(val func: (Context) -> Task<Void>) : EventType()
-        class EditNameEvent(val func: (String) -> Task<Void>?) : EventType()
-        class ChangePhotoEvent(val func: (Uri) -> Task<Void>?) : EventType()
+    sealed class EventType<in T>(val func: (T) -> Task<Void>?) {
+        class SignOutEvent(func: (Context) -> Task<Void>?) : EventType<Context>(func)
+        class EditNameEvent(func: (String) -> Task<Void>?) : EventType<String>(func)
+        class ChangePhotoEvent(func: (Uri) -> Task<Void>?) : EventType<Uri>(func)
     }
 
     /*************************/
