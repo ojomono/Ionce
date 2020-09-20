@@ -157,11 +157,11 @@ object Authentication {
     }
 
     /**
-     * sign out of Firebase Authentication as well as all social identity providers. a [context] and
-     * a [onCompleteListener] are needed.
+     * sign out of Firebase Authentication as well as all social identity providers, and return the
+     * sign out [Task].
      */
-    fun signOut(context: Context, onCompleteListener: OnCompleteListener<Void>) {
-        authUI.signOut(context).addOnCompleteListener(onCompleteListener)
+    fun signOut(context: Context): Task<Void> {
+        return authUI.signOut(context)
     }
 
     /*********************/
@@ -172,13 +172,13 @@ object Authentication {
      * Send the given [profileUpdates] change request to Firebase, and return the updating [Task].
      */
     private fun updateProfile(profileUpdates: UserProfileChangeRequest): Task<Void>? {
-        val updateProfileTask = currentUser.value?.updateProfile(profileUpdates)
-        updateProfileTask?.addOnCompleteListener {
+        val task = currentUser.value?.updateProfile(profileUpdates)
+        task?.addOnCompleteListener {
             if (it.isSuccessful) {
                 Log.d(TAG, "User profile updated.")
                 _currentUser.value = firebaseAuth.currentUser
             }
         }
-        return updateProfileTask
+        return task
     }
 }

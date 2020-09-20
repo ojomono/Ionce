@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages here
 import com.ojomono.ionce.firebase.Authentication
@@ -31,7 +30,7 @@ class ProfileViewModel : ViewModel() {
 
     // Types of supported events
     sealed class EventType() {
-        class SignOutEvent(val func: (Context, OnCompleteListener<Void>) -> Unit) : EventType()
+        class SignOutEvent(val func: (Context) -> Task<Void>) : EventType()
         class EditNameEvent(val func: (String) -> Task<Void>?) : EventType()
         class ChangePhotoEvent(val func: (Uri) -> Task<Void>?) : EventType()
     }

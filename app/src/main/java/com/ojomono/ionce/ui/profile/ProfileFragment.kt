@@ -2,6 +2,7 @@ package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -13,7 +14,6 @@ import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
@@ -22,7 +22,7 @@ import com.ojomono.ionce.utils.withProgressBar
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 
-class ProfileFragment : Fragment(), OnCompleteListener<Void> {
+class ProfileFragment : Fragment() {
 
     /************/
     /** Fields **/
@@ -67,7 +67,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
                 it.consume { event ->
                     when (event) {
                         is ProfileViewModel.EventType.SignOutEvent ->
-                            context?.let { context -> event.func(context, this) }
+                            executeSignOut(event.func)
                         is ProfileViewModel.EventType.EditNameEvent ->
                             showEditNameDialog(event.func)
                         is ProfileViewModel.EventType.ChangePhotoEvent ->
@@ -89,25 +89,28 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         }
     }
 
-    /**************************************/
-    /** OnCompleteListener<Void> methods **/
-    /**************************************/
-
-    override fun onComplete(task: Task<Void>) {
-        // UserModel is now signed out - go back to splash screen
-        startActivity(Intent(context, SplashActivity::class.java))
-        activity?.finish()
-    }
-
     /***********************/
     /** private methods **/
     /***********************/
 
     /**
-     * Build a dialog builder for updating the current user's name, using [onOk] as the listener
+     * Sign out the user using the given [func] and go back to [SplashActivity].
+     */
+    private fun executeSignOut(func: (Context) -> Task<Void>) {
+        context?.let { context ->
+            func(context).withProgressBar(progress_bar).addOnCompleteListener {
+                // User is now signed out - go back to splash screen
+                startActivity(Intent(context, SplashActivity::class.java))
+                activity?.finish()
+            }
+        }
+    }
+
+    /**
+     * Build a dialog builder for updating the current user's name, using [func] as the listener
      * function of the positive button.
      */
-    private fun showEditNameDialog(onOk: (String) -> Task<Void>?) {
+    private fun showEditNameDialog(func: (String) -> Task<Void>?) {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -124,7 +127,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         dialogBuilder
             .setPositiveButton(getText(R.string.dialogs_positive_button_text))
             { dialog, _ ->
-                onOk(input.text.toString())?.withProgressBar(progress_bar)
+                func(input.text.toString())?.withProgressBar(progress_bar)
                 dialog.cancel()
             }
 
@@ -138,10 +141,10 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
     }
 
     /**
-     * Show the image picker. Picked image will be set to [onPick] function.
+     * Show the image picker. Picked image will be set to [func] function.
      */
-    private fun showImagePicker(onPick: (Uri) -> Task<Void>?) {
-        onImagePicked = onPick
+    private fun showImagePicker(func: (Uri) -> Task<Void>?) {
+        onImagePicked = func
         val intent =
             Intent(
                 Intent.ACTION_PICK,

@@ -18,7 +18,8 @@ val Any.TAG: String
  * This extension allows us to show the given [progressBar] while the task is running, and hide it
  * when completed.
  */
-fun <T> Task<T>.withProgressBar(progressBar: ProgressBar) {
+fun <T> Task<T>.withProgressBar(progressBar: ProgressBar): Task<T> {
     progressBar.visibility = View.VISIBLE
     addOnCompleteListener { progressBar.visibility = View.GONE }
+    return this
 }
