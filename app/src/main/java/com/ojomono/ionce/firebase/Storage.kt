@@ -14,9 +14,9 @@ object Storage {
     // Path Strings
     private const val PS_IMAGES = "images"
 
-    /*************/
-    /** Members **/
-    /*************/
+    /************/
+    /** Fields **/
+    /************/
 
     // The Cloud Storage instance
     private val storage = Firebase.storage
@@ -24,12 +24,12 @@ object Storage {
     // Create a storage reference from our app
     var storageRef = storage.reference
 
-    /**************/
-    /** methods **/
-    /*************/
+    /********************/
+    /** Public methods **/
+    /********************/
 
     /**
-     * Upload the given [file] to Storage, with name=[uid].
+     * Upload the given [file] to Storage, with name=[uid], and return the download Url [Task].
      */
     fun updateUserPhoto(uid: String, file: Uri): Task<Uri> {
         val imageRef = storageRef.child("$PS_IMAGES/$uid")

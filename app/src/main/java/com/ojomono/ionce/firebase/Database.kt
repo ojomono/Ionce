@@ -26,9 +26,9 @@ object Database {
     private const val CP_USERS = "users"
     private const val CP_TALES = "tales"
 
-    /*************/
-    /** Members **/
-    /*************/
+    /************/
+    /** Fields **/
+    /************/
 
     // The Cloud Firestore instance
     private val db = Firebase.firestore
@@ -47,9 +47,9 @@ object Database {
         Authentication.currentUser.value?.uid?.let { switchUserDocument(it) }
     }
 
-    /**************/
-    /** methods **/
-    /*************/
+    /********************/
+    /** Public methods **/
+    /********************/
 
     /**
      * Switch the current user document reference and snapshot to those of the user with the given

@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,16 +28,16 @@ object Authentication {
     // Dynamic Links
     private const val DL_EMAIL_LINK_SIGN_IN = "https://ionce.page.link"
 
+    /************/
+    /** Fields **/
+    /************/
+
     // The Firebase Authentication and it's pre-built UI instances
     private val authUI = AuthUI.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance().apply {
         // Update the LiveData every time the underlying token state changes.
         addAuthStateListener { _currentUser.value = currentUser }
     }
-
-    /*************/
-    /** Members **/
-    /*************/
 
     // Current logged in user
     private val _currentUser: MutableLiveData<FirebaseUser?> =
@@ -45,9 +46,9 @@ object Authentication {
         }
     val currentUser: LiveData<FirebaseUser?> = _currentUser
 
-    /**************/
-    /** methods **/
-    /*************/
+    /********************/
+    /** Public methods **/
+    /********************/
 
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
@@ -116,41 +117,35 @@ object Authentication {
     }
 
     /**
-     * Update the current user's displayed name to [displayName].
+     * Update the current user's displayed name to [displayName], and return the updating [Task].
      */
-    fun updateDisplayName(displayName: String) {
-        updateProfile(UserProfileChangeRequest.Builder().setDisplayName(displayName).build())
+    fun updateDisplayName(displayName: String): Task<Void>? {
+        return updateProfile(UserProfileChangeRequest.Builder().setDisplayName(displayName).build())
     }
 
     /**
-     * Update the current user's photo to [photoUri].
+     * Update the current user's photo to [photoUri], and return the updating [Task].
      */
-    fun updatePhotoUri(photoUri: Uri) {
+    fun updatePhotoUri(photoUri: Uri): Task<Void>? {
+        var updateProfileTask: Task<Void>? = null
         currentUser.value?.uid?.let {
-            Storage.updateUserPhoto(it, photoUri).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    updateProfile(
-                        UserProfileChangeRequest.Builder().setPhotoUri(task.result).build()
-                    )
-                } else {
-                    // Handle failures
-                    Log.e(TAG, task.exception.toString())
-                }
-            }
+            updateProfileTask =
+                Storage.updateUserPhoto(it, photoUri)
+                    .continueWithTask { downloadUrlTask ->
+                        if (downloadUrlTask.isSuccessful) {
+                            updateProfile(
+                                UserProfileChangeRequest.Builder()
+                                    .setPhotoUri(downloadUrlTask.result)
+                                    .build()
+                            )
+                        } else {
+                            // Handle failures and return null task
+                            Log.e(TAG, downloadUrlTask.exception.toString())
+                            null
+                        }
+                    }
         }
-    }
-
-    /**
-     * Send the given [profileUpdates] change request to Firebase.
-     */
-    private fun updateProfile(profileUpdates: UserProfileChangeRequest) {
-        currentUser.value?.updateProfile(profileUpdates)
-            ?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d(TAG, "User profile updated.")
-                    _currentUser.value = firebaseAuth.currentUser
-                }
-            }
+        return updateProfileTask
     }
 
     /**
@@ -167,5 +162,23 @@ object Authentication {
      */
     fun signOut(context: Context, onCompleteListener: OnCompleteListener<Void>) {
         authUI.signOut(context).addOnCompleteListener(onCompleteListener)
+    }
+
+    /*********************/
+    /** Private methods **/
+    /*********************/
+
+    /**
+     * Send the given [profileUpdates] change request to Firebase, and return the updating [Task].
+     */
+    private fun updateProfile(profileUpdates: UserProfileChangeRequest): Task<Void>? {
+        val updateProfileTask = currentUser.value?.updateProfile(profileUpdates)
+        updateProfileTask?.addOnCompleteListener {
+            if (it.isSuccessful) {
+                Log.d(TAG, "User profile updated.")
+                _currentUser.value = firebaseAuth.currentUser
+            }
+        }
+        return updateProfileTask
     }
 }

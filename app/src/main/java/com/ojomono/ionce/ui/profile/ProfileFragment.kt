@@ -18,19 +18,25 @@ import com.google.android.gms.tasks.Task
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
 import com.ojomono.ionce.SplashActivity
+import com.ojomono.ionce.utils.withProgressBar
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 
 class ProfileFragment : Fragment(), OnCompleteListener<Void> {
+
+    /************/
+    /** Fields **/
+    /************/
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var viewModel: ProfileViewModel
 
     // Function to run when a new image was picked
-    private lateinit var onImagePicked: (Uri) -> Unit     // TODO: maybe get rid of member
+    private lateinit var onImagePicked: (Uri) -> Task<Void>?     // TODO: maybe get rid of member
 
-    /***********************/
-    /** Lifecycle methods **/
-    /***********************/
+    /**********************/
+    /** Fragment methods **/
+    /**********************/
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,8 +83,20 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
-            data?.data?.let { onImagePicked(it) }
+            data?.data?.let {
+                onImagePicked(it)?.withProgressBar(progress_bar)
+            }
         }
+    }
+
+    /**************************************/
+    /** OnCompleteListener<Void> methods **/
+    /**************************************/
+
+    override fun onComplete(task: Task<Void>) {
+        // UserModel is now signed out - go back to splash screen
+        startActivity(Intent(context, SplashActivity::class.java))
+        activity?.finish()
     }
 
     /***********************/
@@ -89,7 +107,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
      * Build a dialog builder for updating the current user's name, using [onOk] as the listener
      * function of the positive button.
      */
-    private fun showEditNameDialog(onOk: (String) -> Unit) {
+    private fun showEditNameDialog(onOk: (String) -> Task<Void>?) {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -106,7 +124,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         dialogBuilder
             .setPositiveButton(getText(R.string.dialogs_positive_button_text))
             { dialog, _ ->
-                onOk(input.text.toString())
+                onOk(input.text.toString())?.withProgressBar(progress_bar)
                 dialog.cancel()
             }
 
@@ -122,7 +140,7 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
     /**
      * Show the image picker. Picked image will be set to [onPick] function.
      */
-    private fun showImagePicker(onPick: (Uri) -> Unit) {
+    private fun showImagePicker(onPick: (Uri) -> Task<Void>?) {
         onImagePicked = onPick
         val intent =
             Intent(
@@ -132,18 +150,8 @@ class ProfileFragment : Fragment(), OnCompleteListener<Void> {
         startActivityForResult(intent, RC_PICK_IMAGE)
     }
 
-    /**************************************/
-    /** OnCompleteListener<Void> methods **/
-    /**************************************/
-
-    override fun onComplete(task: Task<Void>) {
-        // UserModel is now signed out - go back to splash screen
-        startActivity(Intent(context, SplashActivity::class.java))
-        activity?.finish()
-    }
-
     /***************/
-    /** constants **/
+    /** Constants **/
     /***************/
 
     companion object {
