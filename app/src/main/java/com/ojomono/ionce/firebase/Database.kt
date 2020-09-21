@@ -3,7 +3,7 @@ package com.ojomono.ionce.firebase
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.auth.FirebaseUser
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -53,9 +53,11 @@ object Database {
 
     /**
      * Switch the current user document reference and snapshot to those of the user with the given
-     * [id] - and listen to changes.
+     * [id] - and listen to changes. Return the get [Task].
      */
-    fun switchUserDocument(id: String?) {
+    fun switchUserDocument(id: String?): Task<DocumentSnapshot>? {
+
+        var task: Task<DocumentSnapshot>? = null
 
         // If no id was given - no user is logged-in
         if (id.isNullOrEmpty()) {
@@ -73,10 +75,12 @@ object Database {
             userDocRef = db.collection(CP_USERS).document(id)
 
             // Save the document locally
-            userDocRef?.get()?.addOnSuccessListener { document ->
-                userDocument = document
-                // If the document does not exist yet - initialize it
-                if (!document.exists()) userDocRef?.set(UserModel())
+            task = userDocRef?.get()
+            task?.continueWithTask { getTask ->
+                userDocument = getTask.result
+                // If the document does not exist yet - initialize it, as a continuation task
+                if (userDocument?.exists() == true) null
+                else userDocRef?.set(UserModel())
             }?.addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
             }
@@ -90,13 +94,17 @@ object Database {
                 }
             }
         }
+
+        return task
     }
 
     /**
      * Overwrite the tale document with id=[id] to have the given [title]. If [id] is empty, create
-     * a new document with a generated id and title=[title].
+     * a new document with a generated id and title=[title]. Return the set [Task].
      */
-    fun setTale(id: String = "", title: String) {
+    fun setTale(id: String = "", title: String): Task<Transaction>? {
+        var task: Task<Transaction>? = null
+
         // Setting a tale is possible only if a user is logged in
         // (== his document reference is not null)
         userDocRef?.let { userRef ->
@@ -108,7 +116,7 @@ object Database {
             val tale = TaleModel(taleRef.id, title)
 
             // In a transaction, set the tale's document and update the user's tale list
-            db.runTransaction { transaction ->
+            task = db.runTransaction { transaction ->
                 val user: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
                 user?.let {
                     // Update user's list
@@ -118,9 +126,12 @@ object Database {
                     transaction.update(userRef, user::tales.name, user.tales)
                     transaction.set(taleRef, tale)
                 }
-            }.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
-                .addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
+            }
+            task?.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
+                ?.addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
         }
+
+        return task
     }
 
     /**
@@ -132,7 +143,9 @@ object Database {
     /**
      * Delete the tale document with id=[id].
      */
-    fun deleteTale(id: String) {
+    fun deleteTale(id: String): Task<Transaction>? {
+        var task: Task<Transaction>? = null
+
         // Deleting a tale is possible only if a user is logged in
         // (== his document reference is not null)
         userDocRef?.let { userRef ->
@@ -140,7 +153,7 @@ object Database {
             val taleRef = userRef.collection(CP_TALES).document(id)
 
             // In a transaction, delete the tale document and remove it from user's tales list
-            db.runTransaction { transaction ->
+            task = db.runTransaction { transaction ->
                 val user: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
                 user?.let {
                     // Update user's list
@@ -150,9 +163,12 @@ object Database {
                     transaction.update(userRef, user::tales.name, user.tales)
                     transaction.delete(taleRef)
                 }
-            }.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
-                .addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
+            }
+            task?.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
+                ?.addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
         }
+
+        return task
     }
 
     /**

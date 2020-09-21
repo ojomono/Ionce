@@ -3,6 +3,8 @@ package com.ojomono.ionce.ui.tales
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.Transaction
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.OneTimeEvent
@@ -16,7 +18,7 @@ class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
     val itemEvent: LiveData<OneTimeEvent<EventType>> = _itemEvent
 
     // Types of supported events
-    sealed class EventType(val onOk: (taleItem: TaleItemModel) -> Unit) {
+    sealed class EventType(val onOk: (taleItem: TaleItemModel) -> Task<Transaction>?) {
         class AddItemEvent() : EventType(Database::setTale)
         class UpdateItemEvent(val taleItem: TaleItemModel) : EventType(Database::setTale)
         class DeleteItemEvent(val taleItem: TaleItemModel) : EventType(Database::deleteTale)

@@ -12,9 +12,13 @@ import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.Transaction
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
 import com.ojomono.ionce.models.TaleItemModel
+import com.ojomono.ionce.utils.withProgressBar
+import kotlinx.android.synthetic.main.fragment_tales.*
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
 /**
@@ -137,7 +141,7 @@ class TalesFragment : Fragment() {
      * Build a dialog builder for adding a new tale, using [onOk] as the listener function of the
      * positive button.
      */
-    private fun buildAddDialog(onOk: (taleItem: TaleItemModel) -> Unit): AlertDialog.Builder {
+    private fun buildAddDialog(onOk: (taleItem: TaleItemModel) -> Task<Transaction>?): AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -154,7 +158,7 @@ class TalesFragment : Fragment() {
         dialogBuilder
             .setPositiveButton(getText(R.string.dialogs_positive_button_text))
             { dialog, _ ->
-                onOk(TaleItemModel(title = input.text.toString()))
+                onOk(TaleItemModel(title = input.text.toString()))?.withProgressBar(progress_bar)
                 dialog.cancel()
             }
         return dialogBuilder
@@ -164,8 +168,10 @@ class TalesFragment : Fragment() {
      * Build a dialog builder for updating the given tale [taleItem], using [onOk] as the listener
      * function of the positive button.
      */
-    private fun buildUpdateDialog(onOk: (taleItem: TaleItemModel) -> Unit, taleItem: TaleItemModel)
-            : AlertDialog.Builder {
+    private fun buildUpdateDialog(
+        onOk: (taleItem: TaleItemModel) -> Task<Transaction>?,
+        taleItem: TaleItemModel
+    ): AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -184,7 +190,7 @@ class TalesFragment : Fragment() {
             { dialog, _ ->
                 // If we change original item, adapter's new list and old list would be the same and
                 // it will not refresh. Thus a copy is needed.
-                onOk(taleItem.copy(title = input.text.toString()))
+                onOk(taleItem.copy(title = input.text.toString()))?.withProgressBar(progress_bar)
                 dialog.cancel()
             }
         return dialogBuilder
@@ -194,15 +200,17 @@ class TalesFragment : Fragment() {
      * Build a dialog builder for deleting the given tale [taleItem], using [onOk] as the listener
      * function of the positive button.
      */
-    private fun buildDeleteDialog(onOk: (taleItem: TaleItemModel) -> Unit, taleItem: TaleItemModel)
-            : AlertDialog.Builder {
+    private fun buildDeleteDialog(
+        onOk: (taleItem: TaleItemModel) -> Task<Transaction>?,
+        taleItem: TaleItemModel
+    ): AlertDialog.Builder {
         val dialogBuilder = AlertDialog.Builder(context)
         dialogBuilder.setTitle(getText(R.string.tales_delete_dialog_title))
         dialogBuilder.setMessage(getText(R.string.tales_delete_dialog_message))
         dialogBuilder
             .setPositiveButton(getText(R.string.tales_delete_dialog_positive_button_text))
             { dialog, _ ->
-                onOk(taleItem)
+                onOk(taleItem)?.withProgressBar(progress_bar)
                 dialog.cancel()
             }
         return dialogBuilder
