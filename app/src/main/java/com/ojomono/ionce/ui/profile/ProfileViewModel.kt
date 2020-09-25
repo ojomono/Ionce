@@ -30,9 +30,10 @@ class ProfileViewModel : ViewModel() {
 
     // Types of supported events
     sealed class EventType<in T>(val func: (T) -> Task<Void>?) {
-        class SignOutEvent(func: (Context) -> Task<Void>?) : EventType<Context>(func)
-        class EditNameEvent(func: (String) -> Task<Void>?) : EventType<String>(func)
         class ChangePhotoEvent(func: (Uri) -> Task<Void>?) : EventType<Uri>(func)
+        class EditNameEvent(func: (String) -> Task<Void>?) : EventType<String>(func)
+        class EditEmailEvent(func: (String) -> Task<Void>?) : EventType<String>(func)
+        class SignOutEvent(func: (Context) -> Task<Void>?) : EventType<Context>(func)
     }
 
     /*************************/
@@ -40,10 +41,18 @@ class ProfileViewModel : ViewModel() {
     /*************************/
 
     /**
-     * Sign out the user.
+     * Edit the user's email.
      */
-    fun onSignOut() {
-        _event.value = OneTimeEvent(EventType.SignOutEvent(Authentication::signOut))
+    fun onEditEmail() {
+        _event.value = OneTimeEvent(EventType.EditEmailEvent(Authentication::updateEmail))
+    }
+
+    /**
+     * Change user's profile picture.
+     */
+    fun onChangePhoto() {
+        // TODO open picture activity to view photo. Actions should be there.
+        _event.value = OneTimeEvent(EventType.ChangePhotoEvent(Authentication::updatePhotoUri))
     }
 
     /**
@@ -54,11 +63,10 @@ class ProfileViewModel : ViewModel() {
     }
 
     /**
-     * Change user's profile picture.
+     * Sign out the user.
      */
-    fun onChangePhoto() {
-        // TODO open picture activity to view photo. Actions should be there.
-        _event.value = OneTimeEvent(EventType.ChangePhotoEvent(Authentication::updatePhotoUri))
+    fun onSignOut() {
+        _event.value = OneTimeEvent(EventType.SignOutEvent(Authentication::signOut))
     }
 
 }

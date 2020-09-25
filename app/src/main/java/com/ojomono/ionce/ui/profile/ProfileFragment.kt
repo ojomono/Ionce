@@ -66,12 +66,14 @@ class ProfileFragment : Fragment() {
             viewLifecycleOwner, {
                 it.consume { event ->
                     when (event) {
-                        is ProfileViewModel.EventType.SignOutEvent ->
-                            executeSignOut(event.func)
-                        is ProfileViewModel.EventType.EditNameEvent ->
-                            showEditNameDialog(event.func)
+                        is ProfileViewModel.EventType.EditEmailEvent ->
+                            showEditEmailDialog(event.func)
                         is ProfileViewModel.EventType.ChangePhotoEvent ->
                             showImagePicker(event.func)
+                        is ProfileViewModel.EventType.EditNameEvent ->
+                            showEditNameDialog(event.func)
+                        is ProfileViewModel.EventType.SignOutEvent ->
+                            executeSignOut(event.func)
                     }
                 }
             }
@@ -108,6 +110,19 @@ class ProfileFragment : Fragment() {
     }
 
     /**
+     * Show the image picker. Picked image will be set to [func] function.
+     */
+    private fun showImagePicker(func: (Uri) -> Task<Void>?) {
+        onImagePicked = func
+        val intent =
+            Intent(
+                Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI
+            )
+        startActivityForResult(intent, RC_PICK_IMAGE)
+    }
+
+    /**
      * Build a dialog builder for updating the current user's name, using [func] as the listener
      * function of the positive button.
      */
@@ -141,17 +156,40 @@ class ProfileFragment : Fragment() {
         dialogBuilder.create().show()
     }
 
+    // TODO make a generic dialog builder (changing input-text, title)
+
     /**
-     * Show the image picker. Picked image will be set to [func] function.
+     * Build a dialog builder for updating the current user's email, using [func] as the listener
+     * function of the positive button.
      */
-    private fun showImagePicker(func: (Uri) -> Task<Void>?) {
-        onImagePicked = func
-        val intent =
-            Intent(
-                Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI
-            )
-        startActivityForResult(intent, RC_PICK_IMAGE)
+    private fun showEditEmailDialog(func: (String) -> Task<Void>?) {
+        val dialogBuilder = AlertDialog.Builder(context)
+
+        val input = EditText(context)
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        input.layoutParams = lp
+        input.setText(viewModel.user.value?.email)
+
+        dialogBuilder.setView(input)
+
+        dialogBuilder.setTitle(getText(R.string.profile_edit_email_dialog_title))
+        dialogBuilder
+            .setPositiveButton(getText(R.string.dialogs_positive_button_text))
+            { dialog, _ ->
+                func(input.text.toString())?.withProgressBar(progress_bar)
+                dialog.cancel()
+            }
+
+        // Add the 'cancel' button
+        dialogBuilder
+            .setNegativeButton(getText(R.string.dialogs_negative_button_text))
+            { dialog, _ -> dialog.cancel() }
+
+        // Create the dialog and show it
+        dialogBuilder.create().show()
     }
 
     /***************/

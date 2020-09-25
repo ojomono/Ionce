@@ -19,6 +19,8 @@ val Any.TAG: String
  * when completed.
  */
 fun <T> Task<T>.withProgressBar(progressBar: ProgressBar): Task<T> {
+    // TODO: keep track on how many tasks are running with the same bar in order to hide it only
+    //  when all of them are done.
     progressBar.visibility = View.VISIBLE
     addOnCompleteListener { progressBar.visibility = View.GONE }
     return this

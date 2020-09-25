@@ -124,9 +124,8 @@ object Authentication {
      * Refresh the data of the current user, and return the refreshing [Task].
      */
     fun reloadCurrentUser(): Task<Void>? {
-        val task = firebaseAuth.currentUser?.reload()
-        task?.addOnCompleteListener { _currentUser.value = firebaseAuth.currentUser }
-        return task
+        return firebaseAuth.currentUser?.reload()
+            ?.addOnCompleteListener { _currentUser.value = firebaseAuth.currentUser }
     }
 
     /**
@@ -162,6 +161,24 @@ object Authentication {
     }
 
     /**
+     * Update the current user's email to [email], and return the updating [Task].
+     */
+    fun updateEmail(email: String): Task<Void>? {
+        return currentUser.value?.updateEmail(email)
+            ?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "User email address updated.")
+                } else {
+                    Log.e(TAG, task.exception.toString())
+                    // TODO: Re-authenticate the user when feature is ready:
+                    //  https://github.com/firebase/FirebaseUI-Android/issues/563#issuecomment-367736441
+                    //  Also send a verification email and implement password change and delete account options:
+                    //  https://firebase.google.com/docs/auth/android/manage-users#re-authenticate_a_user
+                }
+            }
+    }
+
+    /**
      * sign out of Firebase Authentication as well as all social identity providers, and return the
      * sign out [Task].
      */
@@ -177,13 +194,12 @@ object Authentication {
      * Send the given [profileUpdates] change request to Firebase, and return the updating [Task].
      */
     private fun updateProfile(profileUpdates: UserProfileChangeRequest): Task<Void>? {
-        val task = currentUser.value?.updateProfile(profileUpdates)
-        task?.addOnCompleteListener {
-            if (it.isSuccessful) {
-                Log.d(TAG, "User profile updated.")
-                _currentUser.value = firebaseAuth.currentUser
+        return currentUser.value?.updateProfile(profileUpdates)
+            ?.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Log.d(TAG, "User profile updated.")
+                    _currentUser.value = firebaseAuth.currentUser
+                }
             }
-        }
-        return task
     }
 }
