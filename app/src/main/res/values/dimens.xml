@@ -17,7 +17,9 @@
 
     <!-- Profile screen dimes -->
     <dimen name="profile_icons_sizes">40dp</dimen>
-    <dimen name="profile_name_padding_bottom">20dp</dimen>
     <dimen name="profile_image_size">120dp</dimen>
     <dimen name="profile_relative_image_size">138dp</dimen>
+    <dimen name="profile_name_padding_bottom">20dp</dimen>
+    <dimen name="profile_fields_padding_horizontal">30dp</dimen>
+    <dimen name="profile_fields_padding_top">20dp</dimen>
 </resources>
