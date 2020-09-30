@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ojomono.ionce.firebase.Authentication
 
-
 class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,14 +30,19 @@ class SplashActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
 
                 // Successfully signed in
-                Authentication.handleSignInSucceeded()
+                Authentication.handleSignInSucceeded(data)
 
                 // Open home screen
                 startMainActivity()
 
-            } else {    // Sign in failed.
+            } else {
+
+                // Sign in failed.
                 Authentication.handleSignInFailed(data)
+
+                // Close app
                 finish()
+
             }
         }
     }

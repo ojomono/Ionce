@@ -85,9 +85,7 @@ class ProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
-            data?.data?.let {
-                onImagePicked(it)?.withProgressBar(progress_bar)
-            }
+            data?.data?.let { onImagePicked(it)?.withProgressBar(progress_bar) }
         }
     }
 

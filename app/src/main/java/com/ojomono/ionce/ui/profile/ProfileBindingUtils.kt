@@ -4,9 +4,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FacebookAuthProvider    // TODO avoid importing firebase packages here
 import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages here
-import com.google.firebase.auth.TwitterAuthProvider
+import com.google.firebase.auth.TwitterAuthProvider    // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 
 @BindingAdapter("userPhotoSrc")

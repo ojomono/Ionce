@@ -8,12 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.ActionCodeSettings
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.auth.*
 import com.ojomono.ionce.utils.TAG
 
 /**
@@ -99,9 +95,24 @@ object Authentication {
     /**
      * Handle the case of a successful sign-in.
      */
-    fun handleSignInSucceeded() {
+    fun handleSignInSucceeded(dataIntent: Intent?) {
+        val response = IdpResponse.fromResultIntent(dataIntent)
+
         // Get reference to current user's document from Firestore.
         Database.switchUserDocument(currentUser.value?.uid)
+
+        // For new created users, check if a photo is available from the auth provider
+        if (response?.isNewUser == true) {
+            // All users have a default FirebaseAuth provider data - we want to check the other one
+            currentUser.value?.providerData
+                ?.find { it.providerId != FirebaseAuthProvider.PROVIDER_ID }?.apply {
+                    when (providerId) {
+                        GoogleAuthProvider.PROVIDER_ID -> getGooglePhotoUri()
+                        FacebookAuthProvider.PROVIDER_ID -> getFacebookPhotoUri()
+                        TwitterAuthProvider.PROVIDER_ID -> getTwitterPhotoUri()
+                    }
+                }
+        }
     }
 
     /**
@@ -189,6 +200,18 @@ object Authentication {
     /*********************/
     /** Private methods **/
     /*********************/
+
+    private fun getTwitterPhotoUri() {
+        TODO("Not yet implemented")
+    }
+
+    private fun getFacebookPhotoUri() {
+        TODO("Not yet implemented")
+    }
+
+    private fun getGooglePhotoUri() {
+        TODO("Not yet implemented")
+    }
 
     /**
      * Send the given [profileUpdates] change request to Firebase, and return the updating [Task].
