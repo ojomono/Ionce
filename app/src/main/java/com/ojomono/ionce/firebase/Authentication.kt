@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.firebase.ui.auth.AuthUI
@@ -23,6 +24,12 @@ object Authentication {
 
     // Dynamic Links
     private const val DL_EMAIL_LINK_SIGN_IN = "https://ionce.page.link"
+
+    // Photo Url Size
+    private const val PU_WANTED_SIZE = 400
+    private const val PU_GOOGLE_DEFAULT_SIZE = 96
+    private const val PU_GOOGLE_SIZE_COMPONENT = "s%d-c"
+    private const val PU_FACEBOOK_SIZE_COMPONENT = "?height=%d&access_token=%s"
 
     /************/
     /** Fields **/
@@ -90,6 +97,7 @@ object Authentication {
 
         // Return the built intent
         return signInIntentBuilder.setAvailableProviders(providers).build()
+        // TODO: Add logo and theme
     }
 
     /**
@@ -103,14 +111,24 @@ object Authentication {
 
         // For new created users, check if a photo is available from the auth provider
         if (response?.isNewUser == true) {
-            // All users have a default FirebaseAuth provider data - we want to check the other one
+            // All users have a default FirebaseAuth provider data - we want to check which is the
+            // other one
             currentUser.value?.providerData
                 ?.find { it.providerId != FirebaseAuthProvider.PROVIDER_ID }?.apply {
-                    when (providerId) {
-                        GoogleAuthProvider.PROVIDER_ID -> getGooglePhotoUri()
-                        FacebookAuthProvider.PROVIDER_ID -> getFacebookPhotoUri()
-                        TwitterAuthProvider.PROVIDER_ID -> getTwitterPhotoUri()
+                    val photoUrl = when (providerId) {
+                        GoogleAuthProvider.PROVIDER_ID ->
+                            photoUrl.toString().replace(
+                                PU_GOOGLE_SIZE_COMPONENT.format(PU_GOOGLE_DEFAULT_SIZE),
+                                PU_GOOGLE_SIZE_COMPONENT.format(PU_WANTED_SIZE)
+                            )
+                        FacebookAuthProvider.PROVIDER_ID ->
+                            photoUrl.toString().plus(
+                                PU_FACEBOOK_SIZE_COMPONENT.format(PU_WANTED_SIZE, response.idpToken)
+                            )
+//                        TwitterAuthProvider.PROVIDER_ID ->
+                        else -> null
                     }
+                    photoUrl?.let { updatePhotoUrl(it.toUri(), false) }
                 }
         }
     }
@@ -140,19 +158,19 @@ object Authentication {
     }
 
     /**
-     * Update the current user's photo to [photoUri], and return the updating [Task].
+     * Update the current user's photo to [photoUrl], and return the updating [Task]. If needed,
+     * ([uploadToStorage]) upload photo to [Storage].
      */
-    fun updatePhotoUri(photoUri: Uri): Task<Void>? {
-        var updateProfileTask: Task<Void>? = null
-        currentUser.value?.uid?.let {
-            updateProfileTask =
-                Storage.updateUserPhoto(it, photoUri)
+    fun updatePhotoUrl(photoUrl: Uri, uploadToStorage: Boolean = true): Task<Void>? {
+        val profileUpdates = UserProfileChangeRequest.Builder()
+
+        return if (uploadToStorage)
+            currentUser.value?.uid?.let {
+                Storage.uploadUserPhoto(it, photoUrl)
                     .continueWithTask { downloadUrlTask ->
                         if (downloadUrlTask.isSuccessful) {
                             updateProfile(
-                                UserProfileChangeRequest.Builder()
-                                    .setPhotoUri(downloadUrlTask.result)
-                                    .build()
+                                profileUpdates.setPhotoUri(downloadUrlTask.result).build()
                             )
                         } else {
                             // Handle failures and return null task
@@ -160,8 +178,8 @@ object Authentication {
                             null
                         }
                     }
-        }
-        return updateProfileTask
+            }
+        else updateProfile(profileUpdates.setPhotoUri(photoUrl).build())
     }
 
     /**
@@ -200,18 +218,6 @@ object Authentication {
     /*********************/
     /** Private methods **/
     /*********************/
-
-    private fun getTwitterPhotoUri() {
-        TODO("Not yet implemented")
-    }
-
-    private fun getFacebookPhotoUri() {
-        TODO("Not yet implemented")
-    }
-
-    private fun getGooglePhotoUri() {
-        TODO("Not yet implemented")
-    }
 
     /**
      * Send the given [profileUpdates] change request to Firebase, and return the updating [Task].

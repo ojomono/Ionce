@@ -52,7 +52,7 @@ class ProfileViewModel : ViewModel() {
      */
     fun onChangePhoto() {
         // TODO open picture activity to view photo. Actions should be there.
-        _event.value = OneTimeEvent(EventType.ChangePhotoEvent(Authentication::updatePhotoUri))
+        _event.value = OneTimeEvent(EventType.ChangePhotoEvent(Authentication::updatePhotoUrl))
     }
 
     /**

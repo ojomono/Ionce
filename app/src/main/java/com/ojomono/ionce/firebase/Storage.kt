@@ -31,11 +31,9 @@ object Storage {
     /**
      * Upload the given [file] to Storage, with name=[uid], and return the download Url [Task].
      */
-    fun updateUserPhoto(uid: String, file: Uri): Task<Uri> {
+    fun uploadUserPhoto(uid: String, file: Uri): Task<Uri> {
         val imageRef = storageRef.child("$PS_IMAGES/$uid")
         val uploadTask = imageRef.putFile(file)
-
-        // TODO show progressbar
 
         // Return the task getting the download URL
         return uploadTask.continueWithTask { task ->
