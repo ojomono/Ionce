@@ -92,8 +92,10 @@ object Authentication {
         // Choose authentication providers
         val providers = arrayListOf(
             emailBuilder.build(),
+            AuthUI.IdpConfig.PhoneBuilder().build(),
             AuthUI.IdpConfig.GoogleBuilder().build(),
-            AuthUI.IdpConfig.FacebookBuilder().build()
+            AuthUI.IdpConfig.FacebookBuilder().build()//,
+//            AuthUI.IdpConfig.TwitterBuilder().build()
         )
 
         // Return the built intent
