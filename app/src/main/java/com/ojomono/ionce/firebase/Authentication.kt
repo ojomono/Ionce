@@ -27,10 +27,12 @@ object Authentication {
     private const val DL_EMAIL_LINK_SIGN_IN = "https://ionce.page.link"
 
     // Photo Url Size
-    private const val PU_WANTED_SIZE = 400
+    private const val PU_WANTED_SIZE = 400  // Not all values are supported by Twitter API!
     private const val PU_GOOGLE_DEFAULT_SIZE = 96
     private const val PU_GOOGLE_SIZE_COMPONENT = "s%d-c"
     private const val PU_FACEBOOK_SIZE_COMPONENT = "?height=%d&access_token=%s"
+    private const val PU_TWITTER_SIZE_COMPONENT_DEFAULT = "_normal"
+    private const val PU_TWITTER_SIZE_COMPONENT_WANTED = "_%dx%d"
 
     /************/
     /** Fields **/
@@ -122,17 +124,26 @@ object Authentication {
                 ?.find { it.providerId != FirebaseAuthProvider.PROVIDER_ID }?.apply {
                     val photoUrl = when (providerId) {
                         GoogleAuthProvider.PROVIDER_ID ->
+                            // Replace "s96-c" to "s400-c" to get 400x400 image
                             photoUrl.toString().replace(
                                 PU_GOOGLE_SIZE_COMPONENT.format(PU_GOOGLE_DEFAULT_SIZE),
                                 PU_GOOGLE_SIZE_COMPONENT.format(PU_WANTED_SIZE)
                             )
                         FacebookAuthProvider.PROVIDER_ID ->
+                            // Add parameters: "?height=400&access_token=${response.idpToken}" to
+                            // get 400x400 image
                             photoUrl.toString().plus(
                                 PU_FACEBOOK_SIZE_COMPONENT.format(PU_WANTED_SIZE, response.idpToken)
-                                // TODO: Get facebook link
+                                // TODO: Get facebook link from graph API
                             )
-//                        TwitterAuthProvider.PROVIDER_ID ->
-                        // TODO: Get Twitter large picture and link
+                        TwitterAuthProvider.PROVIDER_ID ->
+                            // Replace "_normal" to "_400x400" to get 400x400 image
+                            photoUrl.toString().replace(
+                                PU_TWITTER_SIZE_COMPONENT_DEFAULT,
+                                PU_TWITTER_SIZE_COMPONENT_WANTED
+                                    .format(PU_WANTED_SIZE, PU_WANTED_SIZE)
+                            )
+                        // TODO: Get Twitter screen name (from user info)
                         else -> null
                     }
                     photoUrl?.let { updatePhotoUrl(it.toUri(), false) }
