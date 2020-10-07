@@ -91,11 +91,11 @@ object Authentication {
 
         // Choose authentication providers
         val providers = arrayListOf(
-            emailBuilder.build(),
-            AuthUI.IdpConfig.PhoneBuilder().build(),
             AuthUI.IdpConfig.GoogleBuilder().build(),
-            AuthUI.IdpConfig.FacebookBuilder().build()//,
-//            AuthUI.IdpConfig.TwitterBuilder().build()
+            AuthUI.IdpConfig.FacebookBuilder().build(),
+            AuthUI.IdpConfig.TwitterBuilder().build(),
+            emailBuilder.build(),
+            AuthUI.IdpConfig.PhoneBuilder().build()
         )
 
         // Return the built intent
@@ -129,8 +129,10 @@ object Authentication {
                         FacebookAuthProvider.PROVIDER_ID ->
                             photoUrl.toString().plus(
                                 PU_FACEBOOK_SIZE_COMPONENT.format(PU_WANTED_SIZE, response.idpToken)
+                                // TODO: Get facebook link
                             )
 //                        TwitterAuthProvider.PROVIDER_ID ->
+                        // TODO: Get Twitter large picture and link
                         else -> null
                     }
                     photoUrl?.let { updatePhotoUrl(it.toUri(), false) }
