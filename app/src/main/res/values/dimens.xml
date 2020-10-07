@@ -4,6 +4,9 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
+    <!-- Splash screen dimens -->
+    <dimen name="splash_logo_item_bottom_offset">240dp</dimen>
+
     <!-- Tales screen dimens -->
     <dimen name="tales_hint_text_size">24sp</dimen>
     <dimen name="tales_fab_elevation">6dp</dimen>

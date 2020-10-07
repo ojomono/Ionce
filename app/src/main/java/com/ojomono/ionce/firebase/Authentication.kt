@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.Task
+import com.ojomono.ionce.R
 import com.google.firebase.auth.*
 import com.ojomono.ionce.utils.TAG
 
@@ -96,8 +97,10 @@ object Authentication {
         )
 
         // Return the built intent
-        return signInIntentBuilder.setAvailableProviders(providers).build()
-        // TODO: Add logo and theme
+        return signInIntentBuilder.setAvailableProviders(providers)
+            .setLogo(R.drawable.app_logo) // Set logo drawable
+            .setTheme(R.style.AppTheme) // Set theme
+            .build()
     }
 
     /**
