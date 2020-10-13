@@ -2,6 +2,7 @@ package com.ojomono.ionce.ui.profile
 
 import android.content.Context
 import android.net.Uri
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -30,6 +31,9 @@ class ProfileViewModel : ViewModel() {
 
     // Types of supported events
     sealed class EventType<in T>(val func: (T) -> Task<Void>?) {
+        class ShowMenuEvent(func: (Context) -> Task<Void>?, val view: View) :
+            EventType<Context>(func)
+
         class ChangePhotoEvent(func: (Uri) -> Task<Void>?) : EventType<Uri>(func)
         class EditNameEvent(func: (String) -> Task<Void>?) : EventType<String>(func)
         class EditEmailEvent(func: (String) -> Task<Void>?) : EventType<String>(func)
@@ -41,10 +45,10 @@ class ProfileViewModel : ViewModel() {
     /*************************/
 
     /**
-     * Edit the user's email.
+     * Show popup menu.
      */
-    fun onEditEmail() {
-        _event.value = OneTimeEvent(EventType.EditEmailEvent(Authentication::updateEmail))
+    fun onShowMenu(view: View) {
+        _event.value = OneTimeEvent(EventType.ShowMenuEvent(Authentication::signOut, view))
     }
 
     /**
@@ -60,6 +64,13 @@ class ProfileViewModel : ViewModel() {
      */
     fun onEditName() {
         _event.value = OneTimeEvent(EventType.EditNameEvent(Authentication::updateDisplayName))
+    }
+
+    /**
+     * Edit the user's email.
+     */
+    fun onEditEmail() {
+        _event.value = OneTimeEvent(EventType.EditEmailEvent(Authentication::updateEmail))
     }
 
     /**

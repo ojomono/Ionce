@@ -130,20 +130,20 @@ object Authentication {
                                 PU_GOOGLE_SIZE_COMPONENT.format(PU_WANTED_SIZE)
                             )
                         FacebookAuthProvider.PROVIDER_ID ->
+                            // TODO: Get facebook link (when Graph API will allow it again)
                             // Add parameters: "?height=400&access_token=${response.idpToken}" to
                             // get 400x400 image
                             photoUrl.toString().plus(
                                 PU_FACEBOOK_SIZE_COMPONENT.format(PU_WANTED_SIZE, response.idpToken)
-                                // TODO: Get facebook link from graph API
                             )
                         TwitterAuthProvider.PROVIDER_ID ->
+                            // TODO: Get Twitter screen_name (when getting Facebook link)
                             // Replace "_normal" to "_400x400" to get 400x400 image
                             photoUrl.toString().replace(
                                 PU_TWITTER_SIZE_COMPONENT_DEFAULT,
                                 PU_TWITTER_SIZE_COMPONENT_WANTED
                                     .format(PU_WANTED_SIZE, PU_WANTED_SIZE)
                             )
-                        // TODO: Get Twitter screen name (from user info)
                         else -> null
                     }
                     photoUrl?.let { updatePhotoUrl(it.toUri(), false) }

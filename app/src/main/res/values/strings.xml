@@ -18,7 +18,7 @@
     <string name="title_profile">Profile</string>
 
     <!-- Profile screen -->
-    <string name="profile_sign_out_button_text">Sign Out</string>
+    <string name="profile_action_sign_out">Sign Out</string>
     <string name="profile_user_image_content_description">Profile picture</string>
     <string name="profile_settings_icon_content_description">Settings</string>
     <string name="profile_edit_photo_content_description">Change Photo</string>
@@ -27,6 +27,7 @@
     <string name="profile_edit_phone_content_description">Edit phone</string>
     <string name="profile_edit_twitter_content_description">Edit twitter</string>
     <string name="profile_edit_facebook_content_description">Edit facebook</string>
+    <string name="profile_edit_google_content_description">Edit google</string>
     <string name="profile_email_header_text">Email</string>
     <string name="profile_phone_header_text">Phone</string>
     <string name="profile_twitter_header_text">Twitter</string>
@@ -56,5 +57,6 @@
     <!-- Dialogs -->
     <string name="dialogs_positive_button_text">Save</string>
     <string name="dialogs_negative_button_text">Cancel</string>
+    <string name="profile_google_header_text">Google</string>
 
 </resources>

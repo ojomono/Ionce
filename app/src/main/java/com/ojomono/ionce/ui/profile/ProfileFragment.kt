@@ -6,11 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,7 +21,7 @@ import com.ojomono.ionce.utils.withProgressBar
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
     /************/
     /** Fields **/
@@ -31,8 +30,9 @@ class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     private lateinit var viewModel: ProfileViewModel
 
-    // Function to run when a new image was picked
-    private lateinit var onImagePicked: (Uri) -> Task<Void>?     // TODO: maybe get rid of member
+    // Function to run when the user has made it's picking
+    private lateinit var onImagePicked: (Uri) -> Task<Void>?     // TODO: get rid of member
+    private lateinit var onItemPicked: (Context) -> Task<Void>?     // TODO: get rid of member
 
     /**********************/
     /** Fragment methods **/
@@ -66,14 +66,14 @@ class ProfileFragment : Fragment() {
             viewLifecycleOwner, {
                 it.consume { event ->
                     when (event) {
+                        is ProfileViewModel.EventType.ShowMenuEvent ->
+                            showMenu(event.func, event.view)
                         is ProfileViewModel.EventType.EditEmailEvent ->
                             showEditEmailDialog(event.func)
                         is ProfileViewModel.EventType.ChangePhotoEvent ->
                             showImagePicker(event.func)
                         is ProfileViewModel.EventType.EditNameEvent ->
                             showEditNameDialog(event.func)
-                        is ProfileViewModel.EventType.SignOutEvent ->
-                            executeSignOut(event.func)
                     }
                 }
             }
@@ -89,16 +89,43 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    /**********************************************/
+    /** MenuItem.OnMenuItemClickListener methods **/
+    /**********************************************/
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.action_sign_out -> {
+                executeSignOut()
+                true
+            }
+            else -> false
+        }
+    }
+
     /***********************/
     /** private methods **/
     /***********************/
 
     /**
-     * Sign out the user using the given [func] and go back to [SplashActivity].
+     * Show the settings menu as a popup menu attached to [v].
      */
-    private fun executeSignOut(func: (Context) -> Task<Void>?) {
+    private fun showMenu(func: (Context) -> Task<Void>?, v: View) {
+        onItemPicked = func
+        PopupMenu(context, v).apply {
+            // ProfileFragment implements OnMenuItemClickListener
+            setOnMenuItemClickListener(this@ProfileFragment)
+            inflate(R.menu.profile_settings_menu)
+            show()
+        }
+    }
+
+    /**
+     * Sign out the user using the given [onItemPicked] and go back to [SplashActivity].
+     */
+    private fun executeSignOut() {
         context?.let { context ->
-            func(context)?.withProgressBar(progress_bar)
+            onItemPicked(context)?.withProgressBar(progress_bar)
                 ?.addOnCompleteListener {
                     // User is now signed out - go back to splash screen
                     startActivity(Intent(context, SplashActivity::class.java))

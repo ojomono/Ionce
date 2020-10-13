@@ -6,6 +6,7 @@ import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FacebookAuthProvider    // TODO avoid importing firebase packages here
 import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages here
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.TwitterAuthProvider    // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 
@@ -28,4 +29,10 @@ fun TextView.setTwitterLinkText(user: FirebaseUser?) {
 fun TextView.setFacebookLinkText(user: FirebaseUser?) {
     text =
         user?.providerData?.find { it.providerId == FacebookAuthProvider.PROVIDER_ID }?.displayName
+}
+
+@BindingAdapter("googleLinkText")
+fun TextView.setGoogleLinkText(user: FirebaseUser?) {
+    text =
+        user?.providerData?.find { it.providerId == GoogleAuthProvider.PROVIDER_ID }?.displayName
 }
