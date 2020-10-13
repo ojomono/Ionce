@@ -2,31 +2,88 @@ package com.ojomono.ionce.ui.tales
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.ItemTaleBinding
-import com.ojomono.ionce.models.TalesItem
-
+import com.ojomono.ionce.models.TaleItemModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
- * [RecyclerView.Adapter] that can display a [TalesItem] item.
+ * [RecyclerView.Adapter] that can display a [TaleItemModel] taleItem.
  */
 class TalesAdapter(private val clickListener: TalesListener) :
-    ListAdapter<TalesItem, TalesAdapter.ViewHolder>(TalesDiffCallback()) {
+    ListAdapter<TalesAdapter.DataItem, RecyclerView.ViewHolder>(TalesDiffCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder.from(parent)
-    }
+    private val adapterScope = CoroutineScope(Dispatchers.Default)
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = getItem(position)
-        holder.bind(item, clickListener)
+    /**
+     * Create new views (invoked by the layout manager).
+     */
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            ITEM_VIEW_TYPE_HEADER -> TextViewHolder.from(parent)
+            ITEM_VIEW_TYPE_ITEM -> ViewHolder.from(parent)
+            else -> throw ClassCastException("Unknown viewType $viewType")
+        }
     }
 
     /**
-     * [RecyclerView.ViewHolder] that describes a [TalesItem] item view and metadata about its place within
-     * the RecyclerView.
+     * Used instead of the standard "submitList" in order to add the header item to the [list].
+     */
+    fun addHeaderAndSubmitList(list: List<TaleItemModel>?) {
+        adapterScope.launch {
+            val items = when (list) {
+                null -> listOf(DataItem.Header)
+                else -> listOf(DataItem.Header) + list.map { DataItem.TaleItem(it) }
+            }
+            withContext(Dispatchers.Main) { submitList(items) }
+        }
+    }
+
+    /**
+     * Replace the contents of a view (invoked by the layout manager).
+     */
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is ViewHolder -> {
+                val talesItem = getItem(position) as DataItem.TaleItem
+                holder.bind(talesItem.model, clickListener)
+            }
+        }
+    }
+
+    /**
+     * Get the right type of the view in the given [position] (invoked by the layout manager).
+     */
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is DataItem.Header -> ITEM_VIEW_TYPE_HEADER
+            is DataItem.TaleItem -> ITEM_VIEW_TYPE_ITEM
+            else -> super.getItemViewType(position)
+        }
+    }
+
+    /**
+     * Provide a reference to the views for each header item.
+     */
+    class TextViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        companion object {
+            fun from(parent: ViewGroup): TextViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val view = layoutInflater.inflate(R.layout.item_header, parent, false)
+                return TextViewHolder(view)
+            }
+        }
+    }
+
+    /**
+     * Provide a reference to the views for each model item.
      */
     class ViewHolder private constructor(private val binding: ItemTaleBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -35,8 +92,8 @@ class TalesAdapter(private val clickListener: TalesListener) :
             return super.toString() + " '" + binding.textTitle.text + "'"
         }
 
-        fun bind(item: TalesItem, clickListener: TalesListener) {
-            binding.talesItem = item
+        fun bind(taleItem: TaleItemModel, clickListener: TalesListener) {
+            binding.taleItem = taleItem
             binding.clickListener = clickListener
             binding.executePendingBindings()
         }
@@ -52,25 +109,44 @@ class TalesAdapter(private val clickListener: TalesListener) :
     }
 
     /**
-     * [DiffUtil.ItemCallback] used to determine the diff between two lists of talesItems in order to
-     * optimize the [RecyclerView] for changes to the data.
+     * The [DiffUtil.ItemCallback] used to determine the diff between two lists of taleItem in order
+     * to optimize the [RecyclerView] for changes to the model.
      */
-    class TalesDiffCallback : DiffUtil.ItemCallback<TalesItem>() {
-        override fun areItemsTheSame(oldItem: TalesItem, newItem: TalesItem): Boolean {
+    class TalesDiffCallback : DiffUtil.ItemCallback<DataItem>() {
+        override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: TalesItem, newItem: TalesItem): Boolean {
+        override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
             return oldItem == newItem
         }
     }
 
     /**
-     * The interface for listening to item events.
+     * The interface for listening to taleItem events.
      */
     interface TalesListener {
-        fun onEdit(item: TalesItem)   // Edit icon clicked
-        fun onDelete(item: TalesItem) // Delete icon clicked
+        fun onEdit(taleItem: TaleItemModel)   // Edit icon clicked
+        fun onDelete(taleItem: TaleItemModel) // Delete icon clicked
     }
 
+    /**
+     * Types of possible items in the RecyclerView.
+     */
+    sealed class DataItem {
+        abstract val id: String
+
+        data class TaleItem(val model: TaleItemModel) : DataItem() {
+            override val id = model.id
+        }
+
+        object Header : DataItem() {
+            override val id = ""
+        }
+    }
+
+    companion object {
+        private const val ITEM_VIEW_TYPE_HEADER = 0
+        private const val ITEM_VIEW_TYPE_ITEM = 1
+    }
 }

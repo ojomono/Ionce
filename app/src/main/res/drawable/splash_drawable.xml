@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="opaque">
 
-    <!-- The white background color as one in Amazon, YouTube, or Drive app -->
-    <item android:drawable="@android:color/white"/>
+    <!-- Background color -->
+    <item android:drawable="@drawable/bg_gradient" />
 
-    <!-- TODO add app logo -->
     <!-- App logo -->
-<!--    <item>-->
-<!--        <bitmap-->
-<!--            android:src="@drawable/amazon_logo"-->
-<!--            android:gravity="center">-->
-<!--        </bitmap>-->
-<!--    </item>-->
+    <item android:bottom="@dimen/splash_logo_item_bottom_offset">
+        <bitmap
+            android:src="@drawable/app_logo"
+            android:gravity="center" />
+    </item>
 
 </layer-list>
