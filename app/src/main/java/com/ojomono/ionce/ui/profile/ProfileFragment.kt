@@ -2,37 +2,31 @@ package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.tasks.Task
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
-import com.ojomono.ionce.SplashActivity
+import com.ojomono.ionce.utils.BaseFragment
+import com.ojomono.ionce.utils.BaseViewModel
 import com.ojomono.ionce.utils.withProgressBar
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 
-class ProfileFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
+class ProfileFragment : BaseFragment() {
 
     /************/
     /** Fields **/
     /************/
 
+    private val layoutId = R.layout.fragment_profile
     private lateinit var binding: FragmentProfileBinding
-    private lateinit var viewModel: ProfileViewModel
-
-    // Function to run when the user has made it's picking
-    private lateinit var onImagePicked: (Uri) -> Task<Void>?     // TODO: get rid of member
-    private lateinit var onItemPicked: (Context) -> Task<Void>?     // TODO: get rid of member
+    override lateinit var viewModel: ProfileViewModel
 
     /**********************/
     /** Fragment methods **/
@@ -43,41 +37,14 @@ class ProfileFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Init the ViewModel
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
 
-        // Inflate view and obtain an instance of the binding class
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_profile,
-            container,
-            false
-        )
+        // Init the DataBinding
+        initDataBinding(inflater, container)
 
-        // Set the viewmodel for databinding - this allows the bound layout access
-        // to all the model in the VieWModel
-        binding.profileViewModel = viewModel
-
-        // Specify the fragment view as the lifecycle owner of the binding.
-        // This is used so that the binding can observe LiveData updates
-        binding.lifecycleOwner = viewLifecycleOwner
-
-        // Observe if an event was thrown
-        viewModel.event.observe(
-            viewLifecycleOwner, {
-                it.consume { event ->
-                    when (event) {
-                        is ProfileViewModel.EventType.ShowMenuEvent ->
-                            showMenu(event.func, event.view)
-                        is ProfileViewModel.EventType.EditEmailEvent ->
-                            showEditEmailDialog(event.func)
-                        is ProfileViewModel.EventType.ChangePhotoEvent ->
-                            showImagePicker(event.func)
-                        is ProfileViewModel.EventType.EditNameEvent ->
-                            showEditNameDialog(event.func)
-                    }
-                }
-            }
-        )
+        // Observe possible events
+        observeEvents()
 
         return binding.root
     }
@@ -85,21 +52,19 @@ class ProfileFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
-            data?.data?.let { onImagePicked(it)?.withProgressBar(progress_bar) }
+            data?.data?.let { viewModel.updateUserPicture(it)?.withProgressBar(progress_bar) }
         }
     }
 
-    /**********************************************/
-    /** MenuItem.OnMenuItemClickListener methods **/
-    /**********************************************/
+    /**************************/
+    /** BaseFragment methods **/
+    /**************************/
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
-            R.id.action_sign_out -> {
-                executeSignOut()
-                true
-            }
-            else -> false
+    override fun handleEvent(event: BaseViewModel.Event) {
+        when (event) {
+            is ProfileViewModel.EventTypes.ShowPopupMenu -> showPopupMenu(event.view)
+            is ProfileViewModel.EventTypes.ShowImagePicker -> showImagePicker()
+            is ProfileViewModel.EventTypes.ShowEditNameDialog -> showEditNameDialog()
         }
     }
 
@@ -108,37 +73,37 @@ class ProfileFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     /***********************/
 
     /**
+     * Init the [binding] field.
+     */
+    private fun initDataBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        // Inflate view and obtain an instance of the binding class
+        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
+
+        // Set the viewmodel for databinding - this allows the bound layout access
+        // to all the model in the VieWModel
+        binding.viewModel = viewModel
+
+        // Specify the fragment view as the lifecycle owner of the binding.
+        // This is used so that the binding can observe LiveData updates
+        binding.lifecycleOwner = viewLifecycleOwner
+    }
+
+    /**
      * Show the settings menu as a popup menu attached to [v].
      */
-    private fun showMenu(func: (Context) -> Task<Void>?, v: View) {
-        onItemPicked = func
+    private fun showPopupMenu(v: View) {
         PopupMenu(context, v).apply {
-            // ProfileFragment implements OnMenuItemClickListener
-            setOnMenuItemClickListener(this@ProfileFragment)
+            // ProfileViewModel implements OnMenuItemClickListener
+            setOnMenuItemClickListener(viewModel)
             inflate(R.menu.profile_settings_menu)
             show()
         }
     }
 
     /**
-     * Sign out the user using the given [onItemPicked] and go back to [SplashActivity].
+     * Show the image picker.
      */
-    private fun executeSignOut() {
-        context?.let { context ->
-            onItemPicked(context)?.withProgressBar(progress_bar)
-                ?.addOnCompleteListener {
-                    // User is now signed out - go back to splash screen
-                    startActivity(Intent(context, SplashActivity::class.java))
-                    activity?.finish()
-                }
-        }
-    }
-
-    /**
-     * Show the image picker. Picked image will be set to [func] function.
-     */
-    private fun showImagePicker(func: (Uri) -> Task<Void>?) {
-        onImagePicked = func
+    private fun showImagePicker() {
         val intent =
             Intent(
                 Intent.ACTION_PICK,
@@ -147,11 +112,12 @@ class ProfileFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         startActivityForResult(intent, RC_PICK_IMAGE)
     }
 
+    // TODO make a generic dialog builder (changing input-text, title)
+
     /**
-     * Build a dialog builder for updating the current user's name, using [func] as the listener
-     * function of the positive button.
+     * Build a dialog builder for updating the current user's name.
      */
-    private fun showEditNameDialog(func: (String) -> Task<Void>?) {
+    private fun showEditNameDialog() {
         val dialogBuilder = AlertDialog.Builder(context)
 
         val input = EditText(context)
@@ -165,53 +131,13 @@ class ProfileFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
         dialogBuilder.setView(input)
 
         dialogBuilder.setTitle(getText(R.string.profile_edit_name_dialog_title))
-        dialogBuilder
-            .setPositiveButton(getText(R.string.dialogs_positive_button_text))
-            { dialog, _ ->
-                func(input.text.toString())?.withProgressBar(progress_bar)
-                dialog.cancel()
-            }
+        dialogBuilder.setPositiveButton(getText(R.string.dialogs_positive_button_text)) { dialog, _ ->
+            viewModel.updateUserName(input.text.toString())?.withProgressBar(progress_bar)
+            dialog.cancel()
+        }
 
         // Add the 'cancel' button
-        dialogBuilder
-            .setNegativeButton(getText(R.string.dialogs_negative_button_text))
-            { dialog, _ -> dialog.cancel() }
-
-        // Create the dialog and show it
-        dialogBuilder.create().show()
-    }
-
-    // TODO make a generic dialog builder (changing input-text, title)
-
-    /**
-     * Build a dialog builder for updating the current user's email, using [func] as the listener
-     * function of the positive button.
-     */
-    private fun showEditEmailDialog(func: (String) -> Task<Void>?) {
-        val dialogBuilder = AlertDialog.Builder(context)
-
-        val input = EditText(context)
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
-        input.layoutParams = lp
-        input.setText(viewModel.user.value?.email)
-
-        dialogBuilder.setView(input)
-
-        dialogBuilder.setTitle(getText(R.string.profile_edit_email_dialog_title))
-        dialogBuilder
-            .setPositiveButton(getText(R.string.dialogs_positive_button_text))
-            { dialog, _ ->
-                func(input.text.toString())?.withProgressBar(progress_bar)
-                dialog.cancel()
-            }
-
-        // Add the 'cancel' button
-        dialogBuilder
-            .setNegativeButton(getText(R.string.dialogs_negative_button_text))
-            { dialog, _ -> dialog.cancel() }
+        dialogBuilder.setNegativeButton(getText(R.string.dialogs_negative_button_text)) { dialog, _ -> dialog.cancel() }
 
         // Create the dialog and show it
         dialogBuilder.create().show()
