@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
@@ -33,13 +32,9 @@ class ProfileFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Init the ViewModel
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-
-        // Init the DataBinding
-        initDataBinding(inflater, container)
-
-        // Observe possible events
+        binding = getDataBinding(inflater, container)
+        binding.viewModel = viewModel
         observeEvents()
 
         return binding.root
@@ -67,22 +62,6 @@ class ProfileFragment : BaseFragment() {
     /***********************/
     /** private methods **/
     /***********************/
-
-    /**
-     * Init the [binding] field.
-     */
-    private fun initDataBinding(inflater: LayoutInflater, container: ViewGroup?) {
-        // Inflate view and obtain an instance of the binding class
-        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
-
-        // Set the viewmodel for databinding - this allows the bound layout access
-        // to all the model in the VieWModel
-        binding.viewModel = viewModel
-
-        // Specify the fragment view as the lifecycle owner of the binding.
-        // This is used so that the binding can observe LiveData updates
-        binding.lifecycleOwner = viewLifecycleOwner
-    }
 
     /**
      * Show the settings menu as a popup menu attached to [v].

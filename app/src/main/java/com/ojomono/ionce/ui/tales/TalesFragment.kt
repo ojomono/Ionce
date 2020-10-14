@@ -6,16 +6,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.LinearLayout
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
-import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.*
-import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_tales.progress_bar
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
@@ -46,17 +41,13 @@ class TalesFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Init the ViewModel
         viewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
-
-        // Init the DataBinding
-        initDataBinding(inflater, container)
+        binding = getDataBinding(inflater, container)
+        binding.viewModel = viewModel
+        observeEvents()
 
         // Init the adapter
         initAdapter()
-
-        // Observe possible events
-        observeEvents()
 
         return binding.root
     }
@@ -76,22 +67,6 @@ class TalesFragment : BaseFragment() {
     /*********************/
     /** private methods **/
     /*********************/
-
-    /**
-     * Init the [binding] field.
-     */
-    private fun initDataBinding(inflater: LayoutInflater, container: ViewGroup?) {
-        // Inflate view and obtain an instance of the binding class
-        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
-
-        // Set the viewmodel for databinding - this allows the bound layout access
-        // to all the model in the VieWModel
-        binding.viewModel = viewModel
-
-        // Specify the fragment view as the lifecycle owner of the binding.
-        // This is used so that the binding can observe LiveData updates
-        binding.lifecycleOwner = viewLifecycleOwner
-    }
 
     /**
      * Init the [binding] field.
