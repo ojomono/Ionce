@@ -14,10 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
 import com.ojomono.ionce.models.TaleItemModel
-import com.ojomono.ionce.utils.BaseFragment
-import com.ojomono.ionce.utils.BaseViewModel
-import com.ojomono.ionce.utils.withProgressBar
-import kotlinx.android.synthetic.main.fragment_tales.*
+import com.ojomono.ionce.utils.*
+import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.fragment_tales.progress_bar
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
 /**
@@ -67,21 +66,11 @@ class TalesFragment : BaseFragment() {
     /**************************/
 
     override fun handleEvent(event: BaseViewModel.Event) {
-        // Build the right dialog UI
-        val dialogBuilder = when (event) {
-            is TalesViewModel.EventType.ShowAddTaleDialog -> buildAddDialog()
-            is TalesViewModel.EventType.ShowEditTaleDialog -> buildUpdateDialog(event.taleItem)
-            is TalesViewModel.EventType.ShowDeleteTaleDialog -> buildDeleteDialog(event.id)
-            else -> null
+        when (event) {
+            is TalesViewModel.EventType.ShowAddTaleDialog -> showAddTaleDialog()
+            is TalesViewModel.EventType.ShowEditTaleDialog -> showUpdateTaleDialog(event.taleTitle)
+            is TalesViewModel.EventType.ShowDeleteTaleDialog -> showDeleteTaleDialog(event.taleTitle)
         }
-
-        // Add the 'cancel' button
-        dialogBuilder
-            ?.setNegativeButton(getText(R.string.dialogs_negative_button_text))
-            { dialog, _ -> dialog.cancel() }
-
-        // Create the dialog and show it
-        dialogBuilder?.create()?.show()
     }
 
     /*********************/
@@ -137,75 +126,43 @@ class TalesFragment : BaseFragment() {
     }
 
     /**
-     * Build a dialog builder for adding a new tale.
+     * Show dialog for adding a new tale.
      */
-    private fun buildAddDialog(): AlertDialog.Builder {
-        val dialogBuilder = AlertDialog.Builder(context)
-
-        val input = EditText(context)
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
-        input.layoutParams = lp
-
-        dialogBuilder.setView(input)
-
-        dialogBuilder.setTitle(getText(R.string.tales_add_dialog_title))
-        dialogBuilder.setMessage(getText(R.string.tales_add_dialog_message))
-        dialogBuilder
-            .setPositiveButton(getText(R.string.dialogs_positive_button_text))
-            { dialog, _ ->
-                viewModel.addTale(input.text.toString())?.withProgressBar(progress_bar)
-                dialog.cancel()
-            }
-        return dialogBuilder
-    }
+    private fun showAddTaleDialog() =
+        AlertDialog.Builder(context)
+            .setTitle(R.string.tales_add_dialog_title)
+            .setMessage(R.string.tales_add_dialog_message)
+            .setInputAndSaveButton(viewModel::addTale, progress_bar)
+            .setCancelButton()
+            .create()
+            .show()
 
     /**
-     * Build a dialog builder for updating the given tale [taleItem].
+     * Show dialog for updating the tale with title [taleTitle].
      */
-    private fun buildUpdateDialog(taleItem: TaleItemModel): AlertDialog.Builder {
-        val dialogBuilder = AlertDialog.Builder(context)
-
-        val input = EditText(context)
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
-        input.layoutParams = lp
-        input.setText(taleItem.title)
-
-        dialogBuilder.setView(input)
-
-        dialogBuilder.setTitle(getText(R.string.tales_update_dialog_title))
-        dialogBuilder
-            .setPositiveButton(getText(R.string.dialogs_positive_button_text))
-            { dialog, _ ->
-                // If we change original item, adapter's new list and old list would be the same and
-                // it will not refresh. Thus a copy is needed.
-                viewModel.updateTale(taleItem.copy(title = input.text.toString()))
-                    ?.withProgressBar(progress_bar)
-                dialog.cancel()
-            }
-        return dialogBuilder
-    }
+    private fun showUpdateTaleDialog(taleTitle: String) =
+        AlertDialog.Builder(context)
+            .setTitle(R.string.tales_update_dialog_title)
+            .setInputAndSaveButton(viewModel::updateTale, progress_bar, taleTitle)
+            .setCancelButton(viewModel::clearClickedTale)
+            .create()
+            .show()
 
     /**
-     * Build a dialog builder for deleting tale with the given [id].
+     * Show dialog for deleting the tale with title [taleTitle].
      */
-    private fun buildDeleteDialog(id: String): AlertDialog.Builder {
-        val dialogBuilder = AlertDialog.Builder(context)
-        dialogBuilder.setTitle(getText(R.string.tales_delete_dialog_title))
-        dialogBuilder.setMessage(getText(R.string.tales_delete_dialog_message))
-        dialogBuilder
+    private fun showDeleteTaleDialog(taleTitle: String) =
+        AlertDialog.Builder(context)
+            .setTitle(R.string.tales_delete_dialog_title)
+            .setMessage(getString(R.string.tales_delete_dialog_message, taleTitle))
             .setPositiveButton(getText(R.string.tales_delete_dialog_positive_button_text))
             { dialog, _ ->
-                viewModel.deleteTale(id)?.withProgressBar(progress_bar)
+                viewModel.deleteTale()?.withProgressBar(progress_bar)
                 dialog.cancel()
             }
-        return dialogBuilder
-    }
+            .setCancelButton(viewModel::clearClickedTale)
+            .create()
+            .show()
 
     /**********************/
     /** Companion object **/

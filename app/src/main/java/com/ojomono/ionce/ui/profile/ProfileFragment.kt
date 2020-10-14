@@ -5,16 +5,12 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
-import com.ojomono.ionce.utils.BaseFragment
-import com.ojomono.ionce.utils.BaseViewModel
-import com.ojomono.ionce.utils.withProgressBar
+import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 
@@ -112,36 +108,19 @@ class ProfileFragment : BaseFragment() {
         startActivityForResult(intent, RC_PICK_IMAGE)
     }
 
-    // TODO make a generic dialog builder (changing input-text, title)
-
     /**
-     * Build a dialog builder for updating the current user's name.
+     * Show dialog for updating the current user's name.
      */
-    private fun showEditNameDialog() {
-        val dialogBuilder = AlertDialog.Builder(context)
-
-        val input = EditText(context)
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
-        input.layoutParams = lp
-        input.setText(viewModel.user.value?.displayName)
-
-        dialogBuilder.setView(input)
-
-        dialogBuilder.setTitle(getText(R.string.profile_edit_name_dialog_title))
-        dialogBuilder.setPositiveButton(getText(R.string.dialogs_positive_button_text)) { dialog, _ ->
-            viewModel.updateUserName(input.text.toString())?.withProgressBar(progress_bar)
-            dialog.cancel()
-        }
-
-        // Add the 'cancel' button
-        dialogBuilder.setNegativeButton(getText(R.string.dialogs_negative_button_text)) { dialog, _ -> dialog.cancel() }
-
-        // Create the dialog and show it
-        dialogBuilder.create().show()
-    }
+    private fun showEditNameDialog() =
+        AlertDialog.Builder(context)
+            .setTitle(R.string.profile_edit_name_dialog_title)
+            .setInputAndSaveButton(
+                viewModel::updateUserName,
+                progress_bar,
+                viewModel.user.value?.displayName ?: ""
+            ).setCancelButton()
+            .create()
+            .show()
 
     /***************/
     /** Constants **/

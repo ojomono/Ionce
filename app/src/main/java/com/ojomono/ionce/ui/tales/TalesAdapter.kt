@@ -126,8 +126,8 @@ class TalesAdapter(private val clickListener: TalesListener) :
      * The interface for listening to taleItem events.
      */
     interface TalesListener {
-        fun onEdit(taleItem: TaleItemModel) // Edit icon clicked
-        fun onDelete(id: String)            // Delete icon clicked
+        fun onEdit(taleItem: TaleItemModel)     // Edit icon clicked
+        fun onDelete(taleItem: TaleItemModel)   // Delete icon clicked
     }
 
     /**

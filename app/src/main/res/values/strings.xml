@@ -45,7 +45,7 @@
     <string name="tales_add_dialog_message">Enter Title Below</string>
     <string name="tales_update_dialog_title">Update Tale</string>
     <string name="tales_delete_dialog_title">Delete</string>
-    <string name="tales_delete_dialog_message">Confirm delete?</string>
+    <string name="tales_delete_dialog_message">Are you sur you want to delete "%1$s"?</string>
     <string name="tales_delete_dialog_positive_button_text">Delete</string>
 
     <!-- Roll screen -->

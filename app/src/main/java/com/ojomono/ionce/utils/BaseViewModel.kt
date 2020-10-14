@@ -19,7 +19,7 @@ abstract class BaseViewModel : ViewModel() {
     /**
      * Post the given [event] to the observable holder. Call to "raise" the event.
      */
-    fun postEvent(event: Event) {
+    protected fun postEvent(event: Event) {
         _events.postValue(OneTimeEvent(event))
     }
 }
