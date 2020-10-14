@@ -48,7 +48,7 @@ object Database {
     }
 
     /********************/
-    /** Public methods **/
+    /** public methods **/
     /********************/
 
     /**
@@ -99,46 +99,14 @@ object Database {
     }
 
     /**
-     * Overwrite the tale document with id=[id] to have the given [title]. If [id] is empty, create
-     * a new document with a generated id and title=[title]. Return the set [Task].
+     * Create a new document with a generated id and title=[title].title.
      */
-    fun setTale(id: String = "", title: String): Task<Transaction>? {
-        var task: Task<Transaction>? = null
-
-        // Setting a tale is possible only if a user is logged in
-        // (== his document reference is not null)
-        userDocRef?.let { userRef ->
-            // Create reference for wanted tale, for use inside the transaction - if an id was given
-            // get the existing document, else reference a new one.
-            val talesCol = userRef.collection(CP_TALES)
-            val taleRef =
-                if (id.isEmpty()) talesCol.document() else talesCol.document(id)
-            val tale = TaleModel(taleRef.id, title)
-
-            // In a transaction, set the tale's document and update the user's tale list
-            task = db.runTransaction { transaction ->
-                val user: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
-                user?.let {
-                    // Update user's list
-                    user.setTale(TaleItemModel(tale))
-
-                    // Commit to Firestore
-                    transaction.update(userRef, user::tales.name, user.tales)
-                    transaction.set(taleRef, tale)
-                }
-            }
-            task?.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
-                ?.addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
-        }
-
-        return task
-    }
+    fun createTale(title: String) = setTale("", title)
 
     /**
-     * Overwrite the tale document with id=[taleItem].id to have the given [taleItem]'s title. If [taleItem].id
-     * is empty, create a new document with a generated id and title=[taleItem].title.
+     * Overwrite the tale document with id=[taleItem].id to have the given [taleItem]'s title.
      */
-    fun setTale(taleItem: TaleItemModel) = setTale(taleItem.id, taleItem.title)
+    fun updateTale(taleItem: TaleItemModel) = setTale(taleItem.id, taleItem.title)
 
     /**
      * Delete the tale document with id=[id].
@@ -171,8 +139,44 @@ object Database {
         return task
     }
 
+    /*********************/
+    /** private methods **/
+    /*********************/
+
     /**
-     * Delete the tale document with id=[taleItem].id.
+     * Overwrite the tale document with id=[id] to have the given [title]. If [id] is empty, create
+     * a new document with a generated id and title=[title]. Return the set [Task].
      */
-    fun deleteTale(taleItem: TaleItemModel) = deleteTale(taleItem.id)
+    private fun setTale(id: String = "", title: String): Task<Transaction>? {
+        var task: Task<Transaction>? = null
+
+        // Setting a tale is possible only if a user is logged in
+        // (== his document reference is not null)
+        userDocRef?.let { userRef ->
+            // Create reference for wanted tale, for use inside the transaction - if an id was given
+            // get the existing document, else reference a new one.
+            val talesCol = userRef.collection(CP_TALES)
+            val taleRef =
+                if (id.isEmpty()) talesCol.document() else talesCol.document(id)
+            val tale = TaleModel(taleRef.id, title)
+
+            // In a transaction, set the tale's document and update the user's tale list
+            task = db.runTransaction { transaction ->
+                val user: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
+                user?.let {
+                    // Update user's list
+                    user.setTale(TaleItemModel(tale))
+
+                    // Commit to Firestore
+                    transaction.update(userRef, user::tales.name, user.tales)
+                    transaction.set(taleRef, tale)
+                }
+            }
+            task?.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
+                ?.addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
+        }
+
+        return task
+    }
+
 }

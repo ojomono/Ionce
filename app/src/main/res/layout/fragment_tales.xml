@@ -5,7 +5,7 @@
 
     <data>
         <variable
-            name="talesViewModel"
+            name="viewModel"
             type="com.ojomono.ionce.ui.tales.TalesViewModel" />
     </data>
 
@@ -23,7 +23,7 @@
             android:textColor="@color/colorOnPrimary"
             android:textSize="@dimen/tales_hint_text_size"
             android:text="@string/tales_hint_text"
-            app:hintTextVisibility="@{talesViewModel.tales}"
+            app:hintTextVisibility="@{viewModel.tales}"
             tools:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -34,7 +34,7 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             app:layoutManager="LinearLayoutManager"
-            app:talesListVisibility="@{talesViewModel.tales}"
+            app:talesListVisibility="@{viewModel.tales}"
             tools:context=".ui.tales.TalesFragment"
             tools:listitem="@layout/item_tale"
             tools:visibility="visible"/>
@@ -48,7 +48,8 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/tales_fab_layout_margin"
-            android:onClick="@{() -> talesViewModel.onAdd()}"
+            android:onClick="@{() -> viewModel.onAdd()}"
+            android:contentDescription="@string/tales_add_fab_content_description"
             app:elevation="@dimen/tales_fab_elevation" />
 
         <ProgressBar

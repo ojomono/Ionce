@@ -1,51 +1,57 @@
 package com.ojomono.ionce.ui.tales
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.Transaction
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.models.TaleItemModel
-import com.ojomono.ionce.utils.OneTimeEvent
+import com.ojomono.ionce.utils.BaseViewModel
 
-class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
+class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
     // The user's tales list
     val tales: LiveData<List<TaleItemModel>> = Database.userTales
 
-    // One time event for the fragment to listen to
-    private val _itemEvent = MutableLiveData<OneTimeEvent<EventType>>()
-    val itemEvent: LiveData<OneTimeEvent<EventType>> = _itemEvent
+    // The tale currently being edited or deleted
+    private var clickedTale: TaleItemModel? = null
 
     // Types of supported events
-    sealed class EventType(val onOk: (taleItem: TaleItemModel) -> Task<Transaction>?) {
-        class AddItemEvent() : EventType(Database::setTale)
-        class UpdateItemEvent(val taleItem: TaleItemModel) : EventType(Database::setTale)
-        class DeleteItemEvent(val taleItem: TaleItemModel) : EventType(Database::deleteTale)
+    sealed class EventType() : Event {
+        class ShowEditTaleDialog(val taleTitle: String) : EventType()
+        class ShowDeleteTaleDialog(val taleTitle: String) : EventType()
+        object ShowAddTaleDialog : EventType()
     }
 
-    /**
-     * Show dialog for new tale creation.
-     */
-    fun onAdd() {
-        _itemEvent.value = OneTimeEvent(EventType.AddItemEvent())
-    }
+    /************************/
+    /** post event methods **/
+    /************************/
 
-    /****************************************/
-    /** TalesAdapter.TalesListener methods **/
-    /****************************************/
+    fun onAdd() = postEvent(EventType.ShowAddTaleDialog)
 
-    /**
-     * Show dialog for tale title update.
-     */
     override fun onEdit(taleItem: TaleItemModel) {
-        _itemEvent.value = OneTimeEvent(EventType.UpdateItemEvent(taleItem))
+        clickedTale = taleItem
+        postEvent(EventType.ShowEditTaleDialog(taleItem.title))
     }
 
-    /**
-     * Show dialog for tale deletion.
-     */
     override fun onDelete(taleItem: TaleItemModel) {
-        _itemEvent.value = OneTimeEvent(EventType.DeleteItemEvent(taleItem))
+        clickedTale = taleItem
+        postEvent(EventType.ShowDeleteTaleDialog(taleItem.title))
     }
+
+    /*******************/
+    /** logic methods **/
+    /*******************/
+
+    fun clearClickedTale() {
+        clickedTale = null
+    }
+
+    fun addTale(title: String) = Database.createTale(title)
+
+    fun updateTale(title: String) =
+    // Copy is needed because if we change the original item, adapter's new list and old list would
+        // be the same and it will not refresh. Thus a copy is needed.
+        clickedTale?.copy(title = title)
+            ?.let { Database.updateTale(it)?.addOnCompleteListener { clearClickedTale() } }
+
+    fun deleteTale() =
+        clickedTale
+            ?.let { Database.deleteTale(it.id)?.addOnCompleteListener { clearClickedTale() } }
 }

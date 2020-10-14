@@ -7,7 +7,7 @@
     <data>
 
         <variable
-            name="profileViewModel"
+            name="viewModel"
             type="com.ojomono.ionce.ui.profile.ProfileViewModel" />
     </data>
 
@@ -29,7 +29,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/bg_circle_border"
-                android:onClick="@{() -> profileViewModel.onChangePhoto()}">
+                android:onClick="@{() -> viewModel.onPictureClicked()}">
 
                 <ImageView
                     android:id="@+id/image_profile_picture"
@@ -41,7 +41,7 @@
                     android:padding="3dp"
                     android:scaleType="centerCrop"
                     android:contentDescription="@string/profile_user_image_content_description"
-                    app:userPhotoSrc="@{profileViewModel.user}"
+                    app:userPhotoSrc="@{viewModel.user}"
                     tools:src="@drawable/ic_user" />
 
                 <ImageView
@@ -67,7 +67,7 @@
                 android:paddingBottom="@dimen/profile_name_padding_bottom"
                 android:gravity="center"
                 android:background="@drawable/bg_ripple"
-                android:onClick="@{() -> profileViewModel.onEditName()}">
+                android:onClick="@{() -> viewModel.onNameClicked()}">
 
                 <TextView
                     android:id="@+id/text_name"
@@ -79,7 +79,7 @@
                     android:fontFamily="sans-serif-light"
                     android:textColor="@color/colorOnPrimary"
                     android:textSize="32sp"
-                    android:text="@{profileViewModel.user.displayName}"
+                    android:text="@{viewModel.user.displayName}"
                     tools:text="Joey Tribbiani" />
 
                 <ImageView
@@ -102,7 +102,7 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_settings_white_24"
                 android:contentDescription="@string/profile_settings_icon_content_description"
-                android:onClick="@{(view) -> profileViewModel.onShowMenu(view)}" />
+                android:onClick="@{(view) -> viewModel.onSettingsClicked(view)}" />
 
         </RelativeLayout>
 
@@ -145,7 +145,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="18sp"
-                        android:text="@{profileViewModel.user.email}"
+                        android:text="@{viewModel.user.email}"
                         tools:text="joey@sharenofood.com" />
 
                 </LinearLayout>
@@ -195,7 +195,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="18sp"
-                        android:text="@{profileViewModel.user.phoneNumber}"
+                        android:text="@{viewModel.user.phoneNumber}"
                         tools:text="+1-202-555-0157" />
 
                 </LinearLayout>
@@ -245,7 +245,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="18sp"
-                        app:twitterLinkText="@{profileViewModel.user}"
+                        app:twitterLinkText="@{viewModel.user}"
                         tools:text="\@joeytribbiani" />
 
                 </LinearLayout>
@@ -295,7 +295,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="18sp"
-                        app:facebookLinkText="@{profileViewModel.user}"
+                        app:facebookLinkText="@{viewModel.user}"
                         tools:text="facebook.com/joeytrib" />
 
                 </LinearLayout>
@@ -345,7 +345,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="18sp"
-                        app:googleLinkText="@{profileViewModel.user}"
+                        app:googleLinkText="@{viewModel.user}"
                         tools:text="Joey Tribbiani" />
 
                 </LinearLayout>

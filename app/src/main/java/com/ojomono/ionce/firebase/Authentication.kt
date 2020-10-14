@@ -1,6 +1,5 @@
 package com.ojomono.ionce.firebase
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -226,12 +225,9 @@ object Authentication {
     }
 
     /**
-     * sign out of Firebase Authentication as well as all social identity providers, and return the
-     * sign out [Task].
+     * sign out of Firebase Authentication as well as all social identity providers.
      */
-    fun signOut(context: Context): Task<Void> {
-        return authUI.signOut(context)
-    }
+    fun signOut() = firebaseAuth.signOut()
 
     /*********************/
     /** Private methods **/
