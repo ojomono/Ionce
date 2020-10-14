@@ -20,13 +20,13 @@ class ProfileFragment : BaseFragment() {
     /** Fields **/
     /************/
 
-    private val layoutId = R.layout.fragment_profile
-    private lateinit var binding: FragmentProfileBinding
+    override val layoutId = R.layout.fragment_profile
+    override lateinit var binding: FragmentProfileBinding
     override lateinit var viewModel: ProfileViewModel
 
-    /**********************/
-    /** Fragment methods **/
-    /**********************/
+    /***********************/
+    /** Lifecycle methods **/
+    /***********************/
 
     override fun onCreateView(
         inflater: LayoutInflater,

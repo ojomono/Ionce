@@ -24,8 +24,8 @@ import kotlinx.android.synthetic.main.fragment_tales.view.*
  */
 class TalesFragment : BaseFragment() {
 
-    private val layoutId = R.layout.fragment_tales
-    private lateinit var binding: FragmentTalesBinding
+    override val layoutId = R.layout.fragment_tales
+    override lateinit var binding: FragmentTalesBinding
     override lateinit var viewModel: TalesViewModel
     private var columnCount = 1
 

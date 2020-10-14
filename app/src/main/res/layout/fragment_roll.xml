@@ -5,7 +5,7 @@
 
     <data>
         <variable
-            name="rollViewModel"
+            name="viewModel"
             type="com.ojomono.ionce.ui.roll.RollViewModel" />
     </data>
 
@@ -35,10 +35,10 @@
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:textColor="@color/colorOnPrimary"
             android:textSize="@dimen/roll_tale_text_size"
-            app:hintText="@{rollViewModel.tales}"
-            app:hintTextVisibility="@{rollViewModel.text}"
+            app:hintText="@{viewModel.tales}"
+            app:hintTextVisibility="@{viewModel.text}"
             tools:text="@string/roll_hint_default_text"
-            tools:visibility="gone"/>
+            tools:visibility="gone" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_tale"
@@ -47,7 +47,7 @@
             android:layout_weight="1"
             android:layout_marginVertical="@dimen/activity_vertical_margin"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-            app:taleCardVisibility="@{rollViewModel.text}"
+            app:taleCardVisibility="@{viewModel.text}"
             tools:visibility="visible">
 
             <TextView
@@ -58,7 +58,7 @@
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                 android:textColor="@color/colorOnSurface"
                 android:textSize="@dimen/roll_tale_text_size"
-                android:text="@{rollViewModel.text}"
+                android:text="@{viewModel.text}"
                 tools:text="I went there!"/>
 
         </androidx.cardview.widget.CardView>
@@ -70,7 +70,7 @@
             android:layout_marginVertical="@dimen/activity_vertical_margin"
             android:gravity="center"
             android:background="@drawable/bg_circle_ripple"
-            android:onClick="@{() -> rollViewModel.onRoll()}"
+            android:onClick="@{() -> viewModel.onRoll()}"
             android:textColor="@color/colorOnSurface"
             android:textSize="@dimen/roll_button_text_size"
             android:text="@string/roll_button_text"

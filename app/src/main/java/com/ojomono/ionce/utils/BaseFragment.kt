@@ -1,5 +1,6 @@
 package com.ojomono.ionce.utils
 
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 
 /**
@@ -7,6 +8,12 @@ import androidx.fragment.app.Fragment
  */
 abstract class BaseFragment : Fragment() {
 
+    /************/
+    /** Fields **/
+    /************/
+
+    abstract val layoutId: Int
+    abstract val binding: ViewDataBinding
     abstract val viewModel: BaseViewModel
 
     /**********************/
