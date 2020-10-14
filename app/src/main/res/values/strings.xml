@@ -40,6 +40,7 @@
     <string name="tales_header_text">My Tales</string>
     <string name="tales_edit_icon_content_description">Edit tale</string>
     <string name="tales_delete_icon_content_description">Delete tale</string>
+    <string name="tales_add_fab_content_description">New tale</string>
     <string name="tales_add_dialog_title">New Tale</string>
     <string name="tales_add_dialog_message">Enter Title Below</string>
     <string name="tales_update_dialog_title">Update Tale</string>

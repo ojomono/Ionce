@@ -62,9 +62,9 @@ class ProfileFragment : BaseFragment() {
 
     override fun handleEvent(event: BaseViewModel.Event) {
         when (event) {
-            is ProfileViewModel.EventTypes.ShowPopupMenu -> showPopupMenu(event.view)
-            is ProfileViewModel.EventTypes.ShowImagePicker -> showImagePicker()
-            is ProfileViewModel.EventTypes.ShowEditNameDialog -> showEditNameDialog()
+            is ProfileViewModel.EventType.ShowPopupMenu -> showPopupMenu(event.view)
+            is ProfileViewModel.EventType.ShowImagePicker -> showImagePicker()
+            is ProfileViewModel.EventType.ShowEditNameDialog -> showEditNameDialog()
         }
     }
 

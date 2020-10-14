@@ -25,10 +25,10 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     }
 
     // Types of supported events
-    sealed class EventTypes() : Event {
-        class ShowPopupMenu(val view: View) : Event
-        object ShowImagePicker : Event
-        object ShowEditNameDialog : Event
+    sealed class EventType() : Event {
+        class ShowPopupMenu(val view: View) : EventType()
+        object ShowImagePicker : EventType()
+        object ShowEditNameDialog : EventType()
     }
 
     /************************/
@@ -36,9 +36,9 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     /************************/
 
     // TODO onChangePhoto should open picture activity to view photo. Actions should be there.
-    fun onSettingsClicked(view: View) = postEvent(EventTypes.ShowPopupMenu(view))
-    fun onPictureClicked() = postEvent(EventTypes.ShowImagePicker)
-    fun onNameClicked() = postEvent(EventTypes.ShowEditNameDialog)
+    fun onSettingsClicked(view: View) = postEvent(EventType.ShowPopupMenu(view))
+    fun onPictureClicked() = postEvent(EventType.ShowImagePicker)
+    fun onNameClicked() = postEvent(EventType.ShowEditNameDialog)
 
     /**********************************************/
     /** MenuItem.OnMenuItemClickListener methods **/

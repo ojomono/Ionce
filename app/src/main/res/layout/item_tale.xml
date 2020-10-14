@@ -59,7 +59,7 @@
                 android:src="@drawable/ic_delete_black_24"
                 android:padding="5dp"
                 android:contentDescription="@string/tales_delete_icon_content_description"
-                android:onClick="@{() -> clickListener.onDelete(taleItem)}" />
+                android:onClick="@{() -> clickListener.onDelete(taleItem.id)}" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

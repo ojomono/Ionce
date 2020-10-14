@@ -1,51 +1,37 @@
 package com.ojomono.ionce.ui.tales
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.Transaction
+import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.models.TaleItemModel
-import com.ojomono.ionce.utils.OneTimeEvent
+import com.ojomono.ionce.utils.BaseViewModel
 
-class TalesViewModel : ViewModel(), TalesAdapter.TalesListener {
+class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
     // The user's tales list
     val tales: LiveData<List<TaleItemModel>> = Database.userTales
 
-    // One time event for the fragment to listen to
-    private val _itemEvent = MutableLiveData<OneTimeEvent<EventType>>()
-    val itemEvent: LiveData<OneTimeEvent<EventType>> = _itemEvent
-
     // Types of supported events
-    sealed class EventType(val onOk: (taleItem: TaleItemModel) -> Task<Transaction>?) {
-        class AddItemEvent() : EventType(Database::setTale)
-        class UpdateItemEvent(val taleItem: TaleItemModel) : EventType(Database::setTale)
-        class DeleteItemEvent(val taleItem: TaleItemModel) : EventType(Database::deleteTale)
+    sealed class EventType() : Event {
+        object ShowAddTaleDialog : EventType()
+        class ShowEditTaleDialog(val taleItem: TaleItemModel) : EventType()
+        class ShowDeleteTaleDialog(val id: String) : EventType()
     }
 
-    /**
-     * Show dialog for new tale creation.
-     */
-    fun onAdd() {
-        _itemEvent.value = OneTimeEvent(EventType.AddItemEvent())
-    }
+    /************************/
+    /** post event methods **/
+    /************************/
 
-    /****************************************/
-    /** TalesAdapter.TalesListener methods **/
-    /****************************************/
+    fun onAdd() = postEvent(EventType.ShowAddTaleDialog)
+    override fun onEdit(taleItem: TaleItemModel) = postEvent(EventType.ShowEditTaleDialog(taleItem))
+    override fun onDelete(id: String) = postEvent(EventType.ShowDeleteTaleDialog(id))
 
-    /**
-     * Show dialog for tale title update.
-     */
-    override fun onEdit(taleItem: TaleItemModel) {
-        _itemEvent.value = OneTimeEvent(EventType.UpdateItemEvent(taleItem))
-    }
+    /*******************/
+    /** logic methods **/
+    /*******************/
 
-    /**
-     * Show dialog for tale deletion.
-     */
-    override fun onDelete(taleItem: TaleItemModel) {
-        _itemEvent.value = OneTimeEvent(EventType.DeleteItemEvent(taleItem))
-    }
+    fun addTale(title: String) = Database.createTale(title)
+    fun updateTale(taleItem: TaleItemModel) = Database.updateTale(taleItem)
+    fun deleteTale(id: String) = Database.deleteTale(id)
+
 }
