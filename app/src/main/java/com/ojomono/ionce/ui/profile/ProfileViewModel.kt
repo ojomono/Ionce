@@ -11,13 +11,8 @@ import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.utils.BaseViewModel
 
 class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
-
-    /************/
-    /** Fields **/
-    /************/
-
     // Current logged in user
-    val user: LiveData<FirebaseUser?> = Authentication.currentUser
+    val user: LiveData<FirebaseUser?> = Authentication.currentUser  // TODO: Use a Repository class
 
     // Refresh the user data (in case the name/photo/... was changed on another device)
     init {

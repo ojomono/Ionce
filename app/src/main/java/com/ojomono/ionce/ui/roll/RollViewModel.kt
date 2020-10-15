@@ -9,7 +9,7 @@ import com.ojomono.ionce.utils.BaseViewModel
 
 class RollViewModel : BaseViewModel() {
     // The user's tales list
-    val tales: LiveData<List<TaleItemModel>> = Database.userTales
+    val tales: LiveData<List<TaleItemModel>> = Database.userTales   // TODO: Use a Repository class
 
     // The rolled tale's title
     private val _text = MutableLiveData<String>()

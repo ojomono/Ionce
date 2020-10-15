@@ -7,7 +7,7 @@ import com.ojomono.ionce.utils.BaseViewModel
 
 class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
     // The user's tales list
-    val tales: LiveData<List<TaleItemModel>> = Database.userTales
+    val tales: LiveData<List<TaleItemModel>> = Database.userTales   // TODO: Use a Repository class
 
     // The tale currently being edited or deleted
     private var clickedTale: TaleItemModel? = null
