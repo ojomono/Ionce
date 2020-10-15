@@ -22,16 +22,15 @@
     <string name="profile_user_image_content_description">Profile picture</string>
     <string name="profile_settings_icon_content_description">Settings</string>
     <string name="profile_edit_photo_content_description">Change Photo</string>
-    <string name="profile_edit_name_content_description">Edit name</string>
-    <string name="profile_edit_email_content_description">Edit email</string>
-    <string name="profile_edit_phone_content_description">Edit phone</string>
-    <string name="profile_edit_twitter_content_description">Edit twitter</string>
-    <string name="profile_edit_facebook_content_description">Edit facebook</string>
-    <string name="profile_edit_google_content_description">Edit google</string>
-    <string name="profile_email_header_text">Email</string>
-    <string name="profile_phone_header_text">Phone</string>
-    <string name="profile_twitter_header_text">Twitter</string>
-    <string name="profile_facebook_header_text">Facebook</string>
+    <string name="profile_edit_name_content_description">Edit Name</string>
+    <string name="profile_providers_add_content_description">Link %1$s Provider</string>
+    <string name="profile_providers_delete_content_description">Unlink %1$s Provider</string>
+    <string name="profile_providers_default_content_description">Relink provider</string>
+    <string name="profile_email_provider_name">Email</string>
+    <string name="profile_phone_provider_name">Phone</string>
+    <string name="profile_twitter_provider_name">Twitter</string>
+    <string name="profile_facebook_provider_name">Facebook</string>
+    <string name="profile_google_provider_name">Google</string>
     <string name="profile_edit_name_dialog_title">Update user name</string>
     <string name="profile_edit_email_dialog_title">Update email</string>
 
