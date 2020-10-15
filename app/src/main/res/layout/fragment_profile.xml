@@ -245,7 +245,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="18sp"
-                        app:twitterLinkText="@{viewModel.user}"
+                        android:text="@{viewModel.twitterUserInfo.displayName}"
                         tools:text="\@joeytribbiani" />
 
                 </LinearLayout>
@@ -295,7 +295,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="18sp"
-                        app:facebookLinkText="@{viewModel.user}"
+                        android:text="@{viewModel.facebookUserInfo.displayName}"
                         tools:text="facebook.com/joeytrib" />
 
                 </LinearLayout>
@@ -345,7 +345,7 @@
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="18sp"
-                        app:googleLinkText="@{viewModel.user}"
+                        android:text="@{viewModel.googleUserInfo.displayName}"
                         tools:text="Joey Tribbiani" />
 
                 </LinearLayout>

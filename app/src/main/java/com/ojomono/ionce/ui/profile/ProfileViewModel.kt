@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.PopupMenu
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages here
+import com.google.firebase.auth.UserInfo        // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.utils.BaseViewModel
@@ -14,16 +15,25 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     // Current logged in user
     val user: LiveData<FirebaseUser?> = Authentication.currentUser  // TODO: Use a Repository class
 
-    // Refresh the user data (in case the name/photo/... was changed on another device)
-    init {
-        Authentication.reloadCurrentUser()
-    }
+    // User info of the different providers                         // TODO: Use a Repository class
+    val googleUserInfo: LiveData<UserInfo> = Authentication.googleUserInfo
+    val facebookUserInfo: LiveData<UserInfo> = Authentication.facebookUserInfo
+    val twitterUserInfo: LiveData<UserInfo> = Authentication.twitterUserInfo
 
     // Types of supported events
     sealed class EventType() : Event {
         class ShowPopupMenu(val view: View) : EventType()
         object ShowImagePicker : EventType()
         object ShowEditNameDialog : EventType()
+    }
+
+    /********************/
+    /** Initialization **/
+    /********************/
+
+    // Refresh the user data (in case the name/photo/... was changed on another device)
+    init {
+        Authentication.reloadCurrentUser()
     }
 
     /************************/

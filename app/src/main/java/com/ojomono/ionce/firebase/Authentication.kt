@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.Task
@@ -50,6 +51,20 @@ object Authentication {
             value = firebaseAuth.currentUser
         }
     val currentUser: LiveData<FirebaseUser?> = _currentUser
+
+    // Current user's providers data
+    val googleUserInfo: LiveData<UserInfo> =
+        Transformations.map(currentUser) {
+            it?.providerData?.find { data -> data.providerId == GoogleAuthProvider.PROVIDER_ID }
+        }
+    val facebookUserInfo: LiveData<UserInfo> =
+        Transformations.map(currentUser) {
+            it?.providerData?.find { data -> data.providerId == FacebookAuthProvider.PROVIDER_ID }
+        }
+    val twitterUserInfo: LiveData<UserInfo> =
+        Transformations.map(currentUser) {
+            it?.providerData?.find { data -> data.providerId == TwitterAuthProvider.PROVIDER_ID }
+        }
 
     /*********************/
     /** Sign in methods **/
