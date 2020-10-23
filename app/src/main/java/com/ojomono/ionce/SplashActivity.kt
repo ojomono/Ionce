@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.auth.api.credentials.Credentials
 import com.ojomono.ionce.firebase.Authentication
 
 class SplashActivity : AppCompatActivity() {

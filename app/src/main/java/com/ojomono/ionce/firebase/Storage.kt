@@ -1,5 +1,6 @@
 package com.ojomono.ionce.firebase
 
+// TODO: Avoid Android imports and move to separated module when needed for more UI platforms
 import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase

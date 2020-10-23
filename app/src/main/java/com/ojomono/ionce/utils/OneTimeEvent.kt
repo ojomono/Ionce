@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @author aminography (https://gist.github.com/JoseAlcerreca/e0bba240d9b3cffa258777f12e5c0ae9)
  * referenced from: https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
  */
-open class OneTimeEvent<out T>(private val value: T) {
+class OneTimeEvent<out T>(private val value: T) {
 
     private val isConsumed = AtomicBoolean(false)
 

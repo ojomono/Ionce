@@ -1,5 +1,6 @@
 package com.ojomono.ionce.firebase
 
+// TODO: Avoid Android imports and move to separated module when needed for more UI platforms
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -38,6 +39,7 @@ object Authentication {
     /** Fields **/
     /************/
 
+    // TODO move AuthUI to SplashActivity to avoid importing Intent here
     // The Firebase Authentication and it's pre-built UI instances
     private val authUI = AuthUI.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance().apply {
@@ -45,6 +47,8 @@ object Authentication {
         addAuthStateListener { _currentUser.value = currentUser }
     }
 
+    // TODO replace liveData s with callbackFlows / StateFlows when they become non-experimental
+    //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
     // Current logged in user
     private val _currentUser: MutableLiveData<FirebaseUser?> =
         MutableLiveData<FirebaseUser?>().apply {
@@ -69,6 +73,7 @@ object Authentication {
     /*********************/
     /** Sign in methods **/
     /*********************/
+    // TODO this section will probably move to SplashActivity
 
     /**
      * Build an intent that will open the FirebaseUI sign-in screen. If possible, enable email link
