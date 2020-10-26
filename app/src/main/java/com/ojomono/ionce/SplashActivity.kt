@@ -11,10 +11,6 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-    }
-
-    override fun onStart() {
-        super.onStart()
 
         // If no user is logged in, open sign-in screen
         if (Authentication.currentUser.value == null)

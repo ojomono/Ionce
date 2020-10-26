@@ -6,7 +6,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.auth.FirebaseAuthUserCollisionException  // TODO avoid importing firebase packages here
+import com.google.firebase.auth.OAuthProvider       // TODO avoid importing firebase packages here
+import com.google.firebase.auth.TwitterAuthProvider // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
 import com.ojomono.ionce.utils.*
@@ -56,6 +60,7 @@ class ProfileFragment : BaseFragment() {
             is ProfileViewModel.EventType.ShowPopupMenu -> showPopupMenu(event.view)
             is ProfileViewModel.EventType.ShowImagePicker -> showImagePicker()
             is ProfileViewModel.EventType.ShowEditNameDialog -> showEditNameDialog()
+            is ProfileViewModel.EventType.ShowLinkWithTwitter -> showLinkWithTwitter()
         }
     }
 
@@ -100,6 +105,26 @@ class ProfileFragment : BaseFragment() {
             ).setCancelButton()
             .create()
             .show()
+
+    /**
+     * Show activity for linking with Twitter.
+     */
+    private fun showLinkWithTwitter() {
+        val provider = OAuthProvider.newBuilder(TwitterAuthProvider.PROVIDER_ID)
+
+        activity?.let {
+            viewModel.user.value
+                ?.startActivityForLinkWithProvider(it, provider.build())
+                ?.withProgressBar(progress_bar)
+                ?.addOnSuccessListener { viewModel.refresh() }
+                ?.addOnFailureListener { e ->
+                    // Handle failure.
+                    if (e is FirebaseAuthUserCollisionException)
+                    // TODO merge users in case of collision.
+                        Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
 
     /***************/
     /** Constants **/

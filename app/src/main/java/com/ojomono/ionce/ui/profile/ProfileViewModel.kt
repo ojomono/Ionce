@@ -25,6 +25,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
         class ShowPopupMenu(val view: View) : EventType()
         object ShowImagePicker : EventType()
         object ShowEditNameDialog : EventType()
+        object ShowLinkWithTwitter : EventType()
     }
 
     /********************/
@@ -33,17 +34,18 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
 
     // Refresh the user data (in case the name/photo/... was changed on another device)
     init {
-        Authentication.reloadCurrentUser()
+        refresh()
     }
 
-    /************************/
-    /** post event methods **/
-    /************************/
+    /**********************/
+    /** on click methods **/
+    /**********************/
 
     // TODO onChangePhoto should open picture activity to view photo. Actions should be there.
     fun onSettingsClicked(view: View) = postEvent(EventType.ShowPopupMenu(view))
     fun onPictureClicked() = postEvent(EventType.ShowImagePicker)
     fun onNameClicked() = postEvent(EventType.ShowEditNameDialog)
+    fun onTwitterClicked() = postEvent(EventType.ShowLinkWithTwitter)
 
     /**********************************************/
     /** MenuItem.OnMenuItemClickListener methods **/
@@ -63,6 +65,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     /** logic methods **/
     /*******************/
 
+    fun refresh() = Authentication.reloadCurrentUser()
     fun updateUserPicture(uri: Uri) = Authentication.updatePhotoUrl(uri, true)
     fun updateUserName(name: String) = Authentication.updateDisplayName(name)
 

@@ -11,9 +11,10 @@ import androidx.lifecycle.Transformations
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.Task
-import com.ojomono.ionce.R
 import com.google.firebase.auth.*
+import com.ojomono.ionce.R
 import com.ojomono.ionce.utils.TAG
+
 
 /**
  * Handles all interactions with Firebase authentication.
