@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.PopupMenu
 import androidx.lifecycle.LiveData
 import com.facebook.AccessToken
-import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages here
 import com.google.firebase.auth.UserInfo        // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
@@ -28,6 +27,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
         object ShowImagePicker : EventType()
         object ShowEditNameDialog : EventType()
         object ShowLinkWithTwitter : EventType()
+        object ShowLinkWithGoogle : EventType()
     }
 
     /********************/
@@ -48,6 +48,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun onPictureClicked() = postEvent(EventType.ShowImagePicker)
     fun onNameClicked() = postEvent(EventType.ShowEditNameDialog)
     fun onTwitterClicked() = postEvent(EventType.ShowLinkWithTwitter)
+    fun onGoogleClicked() = postEvent(EventType.ShowLinkWithGoogle)
 
     /**********************************************/
     /** MenuItem.OnMenuItemClickListener methods **/
@@ -70,8 +71,6 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun refresh() = Authentication.reloadCurrentUser()
     fun updateUserPicture(uri: Uri) = Authentication.updatePhotoUrl(uri, true)
     fun updateUserName(name: String) = Authentication.updateDisplayName(name)
-
-    fun handleFacebookAccessToken(token: AccessToken) =
-        Authentication.linkWithCredential(FacebookAuthProvider.getCredential(token.token))
-
+    fun handleFacebookAccessToken(token: AccessToken) = Authentication.linkWithFacebook(token)
+    fun handleGoogleAccessToken(token: String) = Authentication.linkWithGoogle(token)
 }

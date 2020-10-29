@@ -8,6 +8,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.facebook.AccessToken
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.Task
@@ -246,15 +247,16 @@ object Authentication {
     }
 
     /**
-     * Link the current user to the given credential.
+     * Link the current user to Facebook account.
      */
-    fun linkWithCredential(credential: AuthCredential) =
-        firebaseAuth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "linkWithCredential:success")
-                _currentUser.value = task.result?.user
-            } else Log.w(TAG, "linkWithCredential:failure", task.exception)
-        }
+    fun linkWithFacebook(token: AccessToken) =
+        linkWithCredential(FacebookAuthProvider.getCredential(token.token))
+
+    /**
+     * Link the current user to Google account.
+     */
+    fun linkWithGoogle(googleIdToken: String) =
+        linkWithCredential(GoogleAuthProvider.getCredential(googleIdToken, null))
 
     /**
      * sign out of Firebase Authentication as well as all social identity providers.
@@ -277,4 +279,16 @@ object Authentication {
                 }
             }
     }
+
+    /**
+     * Link the current user to the given credential.
+     */
+    private fun linkWithCredential(credential: AuthCredential) =
+        firebaseAuth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "linkWithCredential:success")
+                _currentUser.value = task.result?.user
+            } else Log.w(TAG, "linkWithCredential:failure", task.exception)
+        }
+
 }
