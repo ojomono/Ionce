@@ -246,6 +246,17 @@ object Authentication {
     }
 
     /**
+     * Link the current user to the given credential.
+     */
+    fun linkWithCredential(credential: AuthCredential) =
+        firebaseAuth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "linkWithCredential:success")
+                _currentUser.value = task.result?.user
+            } else Log.w(TAG, "linkWithCredential:failure", task.exception)
+        }
+
+    /**
      * sign out of Firebase Authentication as well as all social identity providers.
      */
     fun signOut() = firebaseAuth.signOut()

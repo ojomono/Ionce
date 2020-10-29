@@ -4,10 +4,15 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
 import com.google.firebase.auth.FirebaseAuthUserCollisionException  // TODO avoid importing firebase packages here
 import com.google.firebase.auth.OAuthProvider       // TODO avoid importing firebase packages here
 import com.google.firebase.auth.TwitterAuthProvider // TODO avoid importing firebase packages here
@@ -27,6 +32,8 @@ class ProfileFragment : BaseFragment() {
     override lateinit var binding: FragmentProfileBinding
     override lateinit var viewModel: ProfileViewModel
 
+    private lateinit var facebookCallbackManager: CallbackManager
+
     /***********************/
     /** Lifecycle methods **/
     /***********************/
@@ -41,6 +48,9 @@ class ProfileFragment : BaseFragment() {
         binding.viewModel = viewModel
         observeEvents()
 
+        // Initialize Facebook Login button
+        initFacebookLoginButton()
+
         return binding.root
     }
 
@@ -49,6 +59,9 @@ class ProfileFragment : BaseFragment() {
         if (requestCode == RC_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             data?.data?.let { viewModel.updateUserPicture(it)?.withProgressBar(progress_bar) }
         }
+
+        // Pass the activity result back to the Facebook SDK
+        facebookCallbackManager.onActivityResult(requestCode, resultCode, data)
     }
 
     /**************************/
@@ -67,6 +80,37 @@ class ProfileFragment : BaseFragment() {
     /***********************/
     /** private methods **/
     /***********************/
+
+    /**
+     * Initialize the Facebook login button callback.
+     */
+    private fun initFacebookLoginButton() {
+        facebookCallbackManager = CallbackManager.Factory.create()
+
+        binding.buttonFacebookLogin.setPermissions(FP_EMAIL, FP_PUBLIC_PROFILE)
+        binding.buttonFacebookLogin.fragment = this
+        binding.buttonFacebookLogin.registerCallback(
+            facebookCallbackManager,
+            object : FacebookCallback<LoginResult> {
+                override fun onSuccess(loginResult: LoginResult) {
+                    Log.d(TAG, "facebook:onSuccess:$loginResult")
+                    viewModel.handleFacebookAccessToken(loginResult.accessToken)
+                }
+
+                override fun onCancel() {
+                    Log.d(TAG, "facebook:onCancel")
+                }
+
+                override fun onError(error: FacebookException) {
+                    Log.d(TAG, "facebook:onError", error)
+                }
+            })
+
+        // Redirect clicks on the Facebook provider linear layout to the login button
+        binding.linearFacebookProvider.setOnClickListener {
+            binding.buttonFacebookLogin.callOnClick()
+        }
+    }
 
     /**
      * Show the settings menu as a popup menu attached to [v].
@@ -133,5 +177,9 @@ class ProfileFragment : BaseFragment() {
     companion object {
         // Request codes
         const val RC_PICK_IMAGE = 1
+
+        // Facebook login button permissions
+        const val FP_EMAIL = "email"
+        const val FP_PUBLIC_PROFILE = "public_profile"
     }
 }

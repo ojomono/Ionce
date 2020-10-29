@@ -5,6 +5,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import androidx.lifecycle.LiveData
+import com.facebook.AccessToken
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages here
 import com.google.firebase.auth.UserInfo        // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
@@ -68,5 +70,8 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun refresh() = Authentication.reloadCurrentUser()
     fun updateUserPicture(uri: Uri) = Authentication.updatePhotoUrl(uri, true)
     fun updateUserName(name: String) = Authentication.updateDisplayName(name)
+
+    fun handleFacebookAccessToken(token: AccessToken) =
+        Authentication.linkWithCredential(FacebookAuthProvider.getCredential(token.token))
 
 }

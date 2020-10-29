@@ -266,6 +266,7 @@
                 android:background="@color/gray" />
 
             <LinearLayout
+                android:id="@+id/linear_facebook_provider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="@dimen/profile_providers_padding_horizontal"
@@ -295,6 +296,14 @@
                         android:textSize="18sp"
                         android:text="@{viewModel.facebookUserInfo.displayName}"
                         tools:text="facebook.com/joeytrib" />
+
+                    <com.facebook.login.widget.LoginButton xmlns:facebook="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/button_facebook_login"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:visibility="gone"
+                        facebook:com_facebook_login_text="@string/profile_facebook_login_button_text" />
 
                 </LinearLayout>
 

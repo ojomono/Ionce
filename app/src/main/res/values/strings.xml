@@ -31,6 +31,7 @@
     <string name="profile_twitter_provider_name">Twitter</string>
     <string name="profile_facebook_provider_name">Facebook</string>
     <string name="profile_google_provider_name">Google</string>
+    <string name="profile_facebook_login_button_text">Link Facebook Account</string>
     <string name="profile_edit_name_dialog_title">Update user name</string>
     <string name="profile_edit_email_dialog_title">Update email</string>
 
