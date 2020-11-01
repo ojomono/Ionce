@@ -172,7 +172,8 @@
                 android:paddingTop="@dimen/profile_providers_padding_top"
                 android:paddingBottom="@dimen/activity_vertical_margin"
                 android:orientation="horizontal"
-                android:background="@drawable/bg_ripple">
+                android:background="@drawable/bg_ripple"
+                android:onClick="@{() -> viewModel.onPhoneClicked()}">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -197,6 +198,15 @@
                         tools:text="+1-202-555-0157" />
 
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="@dimen/profile_icons_sizes"
+                    android:layout_height="@dimen/profile_icons_sizes"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"
+                    android:contentDescription="@string/profile_providers_default_content_description"
+                    app:providerNameResId="@{@string/profile_phone_provider_name}"
+                    app:providerData="@{viewModel.phoneUserInfo}" />
 
                 <ImageView
                     android:layout_width="@dimen/profile_icons_sizes"
@@ -343,7 +353,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/profile_google_header_text"
+                        android:text="@string/profile_google_provider_name"
                         android:textColor="@color/colorPrimary"
                         android:textSize="13sp" />
 

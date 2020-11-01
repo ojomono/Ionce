@@ -23,8 +23,9 @@
             android:textColor="@color/colorOnPrimary"
             android:textSize="@dimen/tales_hint_text_size"
             android:text="@string/tales_hint_text"
+            android:gravity="center"
             app:hintTextVisibility="@{viewModel.tales}"
-            tools:visibility="gone"/>
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_tales_list"
@@ -37,7 +38,7 @@
             app:talesListVisibility="@{viewModel.tales}"
             tools:context=".ui.tales.TalesFragment"
             tools:listitem="@layout/item_tale"
-            tools:visibility="visible"/>
+            tools:visibility="gone" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_tale"

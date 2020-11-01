@@ -35,11 +35,44 @@ fun <T> Task<T>.withProgressBar(progressBar: ProgressBar): Task<T> {
  * a save button to save it's final value using the given [onSave] function and showing the given
  * [progressBar] until save is done.
  */
-fun AlertDialog.Builder.setInputAndSaveButton(
+fun AlertDialog.Builder.setInputAndCustomButton(
     onSave: (String) -> Task<*>?,
     progressBar: ProgressBar,
     defaultInputText: String = ""
 ): AlertDialog.Builder {
+    // Set input field
+    val input = setInputView(defaultInputText)
+
+    // Add the save button
+    return setPositiveButton(context.getText(R.string.dialogs_positive_button_text)) { dialog, _ ->
+        onSave(input.text.toString())?.withProgressBar(progressBar)
+        dialog.cancel()
+    }
+}
+
+/**
+ * This extension allows us to add a text input field (with default text = [defaultInputText]) and
+ * a custom button to use it's final value using the given [onPositive].
+ */
+fun AlertDialog.Builder.setInputAndCustomButton(
+    onPositive: (String) -> Unit,
+    buttonTextResId: Int,
+    defaultInputText: String = ""
+): AlertDialog.Builder {
+    // Set input field
+    val input = setInputView(defaultInputText)
+
+    // Add the save button
+    return setPositiveButton(context.getText(buttonTextResId)) { dialog, _ ->
+        onPositive(input.text.toString())
+        dialog.cancel()
+    }
+}
+
+/**
+ * This extension is used to set a basic input view dialog with default text = [defaultInputText].
+ */
+private fun AlertDialog.Builder.setInputView(defaultInputText: String = ""): EditText {
     // Build input field
     val input = EditText(context)
     val lp = LinearLayout.LayoutParams(
@@ -49,14 +82,9 @@ fun AlertDialog.Builder.setInputAndSaveButton(
     input.layoutParams = lp
     if (defaultInputText.isNotEmpty()) input.setText(defaultInputText)
 
-    // Add the input field
+    // Add the input field and return it
     setView(input)
-
-    // Add the save button
-    return setPositiveButton(context.getText(R.string.dialogs_positive_button_text)) { dialog, _ ->
-        onSave(input.text.toString())?.withProgressBar(progressBar)
-        dialog.cancel()
-    }
+    return input
 }
 
 /**

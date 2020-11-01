@@ -107,7 +107,7 @@ class TalesFragment : BaseFragment() {
         AlertDialog.Builder(context)
             .setTitle(R.string.tales_add_dialog_title)
             .setMessage(R.string.tales_add_dialog_message)
-            .setInputAndSaveButton(viewModel::addTale, progress_bar)
+            .setInputAndCustomButton(viewModel::addTale, progress_bar)
             .setCancelButton()
             .create()
             .show()
@@ -118,7 +118,7 @@ class TalesFragment : BaseFragment() {
     private fun showUpdateTaleDialog(taleTitle: String) =
         AlertDialog.Builder(context)
             .setTitle(R.string.tales_update_dialog_title)
-            .setInputAndSaveButton(viewModel::updateTale, progress_bar, taleTitle)
+            .setInputAndCustomButton(viewModel::updateTale, progress_bar, taleTitle)
             .setCancelButton(viewModel::clearClickedTale)
             .create()
             .show()

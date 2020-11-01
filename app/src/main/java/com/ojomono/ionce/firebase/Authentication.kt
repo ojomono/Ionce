@@ -71,6 +71,10 @@ object Authentication {
         Transformations.map(currentUser) {
             it?.providerData?.find { data -> data.providerId == TwitterAuthProvider.PROVIDER_ID }
         }
+    val phoneUserInfo: LiveData<UserInfo> =
+        Transformations.map(currentUser) {
+            it?.providerData?.find { data -> data.providerId == PhoneAuthProvider.PROVIDER_ID }
+        }
 
     /*********************/
     /** Sign in methods **/
@@ -245,6 +249,11 @@ object Authentication {
                 }
             }
     }
+
+    /**
+     * Link the current user to phone number.
+     */
+    fun linkWithPhone(credential: PhoneAuthCredential) = linkWithCredential(credential)
 
     /**
      * Link the current user to Facebook account.
