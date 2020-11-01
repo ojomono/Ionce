@@ -15,18 +15,13 @@ class RollViewModel : BaseViewModel() {
     private val _text = MutableLiveData<String>()
     val text: LiveData<String> = _text
 
-    // Types of supported events
-    sealed class EventType() : Event {
-        class ShowErrorMessage(val messageResId: Int) : EventType()
-    }
-
     /**
      * Show a random tale title from the user's tales.
      */
     fun onRoll() {
         // If the user have no tales yet - show him an error toast
         if (tales.value.isNullOrEmpty())
-            postEvent(EventType.ShowErrorMessage(R.string.roll_error_no_tales))
+            showErrorMessage(R.string.roll_error_no_tales)
         // If he has some - get a random one and show it's title
         else _text.value = tales.value?.random()?.title
     }

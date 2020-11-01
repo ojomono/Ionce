@@ -32,47 +32,15 @@ fun <T> Task<T>.withProgressBar(progressBar: ProgressBar): Task<T> {
 
 /**
  * This extension allows us to add a text input field (with default text = [defaultInputText]) and
- * a save button to save it's final value using the given [onSave] function and showing the given
- * [progressBar] until save is done.
+ * a positive button (with text = [buttonTextResId]) to call the [onPositive] function with on the
+ * value in the input field.
  */
-fun AlertDialog.Builder.setInputAndCustomButton(
-    onSave: (String) -> Task<*>?,
-    progressBar: ProgressBar,
-    defaultInputText: String = ""
+fun <T> AlertDialog.Builder.setInputAndPositiveButton(
+    onPositive: (String) -> T,
+    defaultInputText: String = "",
+    buttonTextResId: Int = R.string.dialogs_positive_button_text_default
 ): AlertDialog.Builder {
-    // Set input field
-    val input = setInputView(defaultInputText)
 
-    // Add the save button
-    return setPositiveButton(context.getText(R.string.dialogs_positive_button_text)) { dialog, _ ->
-        onSave(input.text.toString())?.withProgressBar(progressBar)
-        dialog.cancel()
-    }
-}
-
-/**
- * This extension allows us to add a text input field (with default text = [defaultInputText]) and
- * a custom button to use it's final value using the given [onPositive].
- */
-fun AlertDialog.Builder.setInputAndCustomButton(
-    onPositive: (String) -> Unit,
-    buttonTextResId: Int,
-    defaultInputText: String = ""
-): AlertDialog.Builder {
-    // Set input field
-    val input = setInputView(defaultInputText)
-
-    // Add the save button
-    return setPositiveButton(context.getText(buttonTextResId)) { dialog, _ ->
-        onPositive(input.text.toString())
-        dialog.cancel()
-    }
-}
-
-/**
- * This extension is used to set a basic input view dialog with default text = [defaultInputText].
- */
-private fun AlertDialog.Builder.setInputView(defaultInputText: String = ""): EditText {
     // Build input field
     val input = EditText(context)
     val lp = LinearLayout.LayoutParams(
@@ -82,9 +50,14 @@ private fun AlertDialog.Builder.setInputView(defaultInputText: String = ""): Edi
     input.layoutParams = lp
     if (defaultInputText.isNotEmpty()) input.setText(defaultInputText)
 
-    // Add the input field and return it
+    // Add the input field
     setView(input)
-    return input
+
+    // Add the save button
+    return setPositiveButton(context.getText(buttonTextResId)) { dialog, _ ->
+        onPositive(input.text.toString())
+        dialog.cancel()
+    }
 }
 
 /**

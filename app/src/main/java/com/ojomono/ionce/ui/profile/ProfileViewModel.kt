@@ -16,7 +16,6 @@ import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException    // TODO avoid importing firebase packages here
 import com.google.firebase.FirebaseTooManyRequestsException // TODO avoid importing firebase packages here
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
@@ -37,6 +36,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
 
     // Fields needed for linking with providers
     var phoneNumberToVerify: String = ""
+    var storedVerificationId: String = ""
     val facebookCallbackManager: CallbackManager = CallbackManager.Factory.create()
     lateinit var googleSignInClient: GoogleSignInClient
 
@@ -44,20 +44,19 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     sealed class EventType() : Event {
         class ShowPopupMenu(val view: View) : EventType()
         object ShowImagePicker : EventType()
-        object ShowEditNameDialog : EventType()
-        object ShowTypePhoneDialog : EventType()
+        object ShowNameEditDialog : EventType()
+        object ShowPhoneNumberDialog : EventType()
+        object ShowVerificationCodeDialog : EventType()
         object ShowLinkWithTwitter : EventType()
         object ShowLinkWithGoogle : EventType()
-        class ShowProgressBar(val task: Task<*>) : EventType()
-        class ShowErrorMessage(val messageResId: Int) : EventType()
     }
 
     /********************/
     /** Initialization **/
     /********************/
 
-    // Refresh the user data (in case the name/photo/... was changed on another device)
     init {
+        // Refresh the user data (in case the name/photo/... was changed on another device)
         refresh()
     }
 
@@ -68,8 +67,8 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     // TODO onPictureClicked should open picture activity to view photo. Actions should be there.
     fun onSettingsClicked(view: View) = postEvent(EventType.ShowPopupMenu(view))
     fun onPictureClicked() = postEvent(EventType.ShowImagePicker)
-    fun onNameClicked() = postEvent(EventType.ShowEditNameDialog)
-    fun onPhoneClicked() = postEvent(EventType.ShowTypePhoneDialog)
+    fun onNameClicked() = postEvent(EventType.ShowNameEditDialog)
+    fun onPhoneClicked() = postEvent(EventType.ShowPhoneNumberDialog)
     fun onTwitterClicked() = postEvent(EventType.ShowLinkWithTwitter)
     fun onGoogleClicked() = postEvent(EventType.ShowLinkWithGoogle)
 
@@ -102,8 +101,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun getFacebookCallback() = object : FacebookCallback<LoginResult> {
         override fun onSuccess(loginResult: LoginResult) {
             Log.d(TAG, "facebook:onSuccess:$loginResult")
-            val task = handleFacebookAccessToken(loginResult.accessToken)
-            if (task != null) postEvent(EventType.ShowProgressBar(task))    // Show progress bar
+            handleFacebookAccessToken(loginResult.accessToken)?.withProgressBar()
         }
 
         override fun onCancel() {
@@ -124,12 +122,14 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     /**
      * Update user photo to given [uri].
      */
-    fun updateUserPicture(uri: Uri) = Authentication.updatePhotoUrl(uri, true)
+    fun updateUserPicture(uri: Uri) =
+        Authentication.updatePhotoUrl(uri, true)?.withProgressBar()
 
     /**
      * Update user displayed name to given [name].
      */
-    fun updateUserName(name: String) = Authentication.updateDisplayName(name)
+    fun updateUserName(name: String) =
+        Authentication.updateDisplayName(name)?.withProgressBar()
 
     /**
      * Get the callback object for the phone verification process.
@@ -139,7 +139,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 Log.d(TAG, "onVerificationCompleted:$credential")
-                Authentication.linkWithPhone(credential)
+                Authentication.linkWithCredential(credential)?.withProgressBar()
                 phoneNumberToVerify = ""    // Clear flag
             }
 
@@ -155,7 +155,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
                     }
                 }
 
-                postEvent(EventType.ShowErrorMessage(R.string.profile_phone_verify_failed_message))
+                showErrorMessage(R.string.profile_phone_verify_failed_message)
                 phoneNumberToVerify = ""    // Clear flag
             }
 
@@ -164,35 +164,35 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
                 token: PhoneAuthProvider.ForceResendingToken
             ) {
                 Log.d(TAG, "onCodeSent:$verificationId")
-
-                // Save verification ID and resending token so we can use them later
-//                var storedVerificationId = verificationId
-//                var resendToken = token
-
-                // ...
+                storedVerificationId = verificationId
+                postEvent(EventType.ShowVerificationCodeDialog)
             }
         }
 
     /**
+     * Connect current user with phone number (if [code] matches the [storedVerificationId]).
+     */
+    fun handlePhoneVerificationCode(code: String) =
+        Authentication.linkWithPhone(storedVerificationId, code)?.withProgressBar()
+            ?.addOnCompleteListener { phoneNumberToVerify = ""    /* Clear flag */ }
+
+    /**
      * Connect current user with Facebook account with given [token].
      */
-    fun handleFacebookAccessToken(token: AccessToken) = Authentication.linkWithFacebook(token)
+    fun handleFacebookAccessToken(token: AccessToken) =
+        Authentication.linkWithFacebook(token)?.withProgressBar()
 
     /**
      * Connect current user with Google account (token in [intent]).
      */
     fun handleGoogleResult(intent: Intent?) {
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        val googleSignInTask =
-            GoogleSignIn.getSignedInAccountFromIntent(intent)
+        val task = GoogleSignIn.getSignedInAccountFromIntent(intent)
         try {
             // Google Sign In was successful, authenticate with Firebase
-            googleSignInTask.getResult(ApiException::class.java)?.let { account ->
+            task.getResult(ApiException::class.java)?.let { account ->
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                account.idToken?.let {
-                    val task = Authentication.linkWithGoogle(it)
-                    if (task != null) postEvent(EventType.ShowProgressBar(task))
-                }
+                account.idToken?.let { Authentication.linkWithGoogle(it)?.withProgressBar() }
             }
         } catch (e: ApiException) {
             // Google Sign In failed, update UI appropriately

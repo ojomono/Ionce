@@ -2,6 +2,8 @@ package com.ojomono.ionce.utils
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -18,15 +20,7 @@ abstract class BaseFragment : Fragment() {
     abstract val layoutId: Int
     abstract val binding: ViewDataBinding
     abstract val viewModel: BaseViewModel
-
-    /**********************/
-    /** abstract methods **/
-    /**********************/
-
-    /**
-     * Handle a "raised" event. Implement with: "when(event) { ... }" to handle all possible events.
-     */
-    abstract fun handleEvent(event: BaseViewModel.Event)
+    abstract val progressBar: ProgressBar?
 
     /***********************/
     /** protected methods **/
@@ -37,6 +31,17 @@ abstract class BaseFragment : Fragment() {
      */
     protected fun observeEvents() {
         viewModel.events.observe(viewLifecycleOwner) { it.consume { event -> handleEvent(event) } }
+    }
+
+    /**
+     * Handle a "raised" event. Implement with: "when(event) { ... }" to handle all possible events.
+     */
+    protected open fun handleEvent(event: BaseViewModel.Event) {
+        when (event) {
+            is BaseViewModel.ShowProgressBar -> progressBar?.let { event.task.withProgressBar(it) }
+            is BaseViewModel.ShowErrorMessage ->
+                Toast.makeText(context, event.messageResId, Toast.LENGTH_SHORT).show()
+        }
     }
 
     /*********************/

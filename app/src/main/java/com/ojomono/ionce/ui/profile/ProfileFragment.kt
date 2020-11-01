@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -28,6 +29,7 @@ class ProfileFragment : BaseFragment() {
     override val layoutId = R.layout.fragment_profile
     override lateinit var binding: FragmentProfileBinding
     override lateinit var viewModel: ProfileViewModel
+    override lateinit var progressBar: ProgressBar
 
     /***********************/
     /** Lifecycle methods **/
@@ -41,6 +43,7 @@ class ProfileFragment : BaseFragment() {
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel
+        progressBar = binding.progressBar
         observeEvents()
 
         // If we are in the middle of a phone number verification - continue it
@@ -70,17 +73,15 @@ class ProfileFragment : BaseFragment() {
     /**************************/
 
     override fun handleEvent(event: BaseViewModel.Event) {
+        super.handleEvent(event)
         when (event) {
             is ProfileViewModel.EventType.ShowPopupMenu -> showPopupMenu(event.view)
             is ProfileViewModel.EventType.ShowImagePicker -> showImagePicker()
-            is ProfileViewModel.EventType.ShowEditNameDialog -> showEditNameDialog()
-            is ProfileViewModel.EventType.ShowTypePhoneDialog -> showPhoneVerifyDialog()
+            is ProfileViewModel.EventType.ShowNameEditDialog -> showNameEditDialog()
+            is ProfileViewModel.EventType.ShowPhoneNumberDialog -> showPhoneVerifyDialog()
+            is ProfileViewModel.EventType.ShowVerificationCodeDialog -> showVerificationCodeDialog()
             is ProfileViewModel.EventType.ShowLinkWithTwitter -> showLinkWithTwitter()
             is ProfileViewModel.EventType.ShowLinkWithGoogle -> showLinkWithGoogle()
-            is ProfileViewModel.EventType.ShowProgressBar ->
-                event.task.withProgressBar(progress_bar)
-            is ProfileViewModel.EventType.ShowErrorMessage ->
-                Toast.makeText(context, event.messageResId, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -135,18 +136,16 @@ class ProfileFragment : BaseFragment() {
     /**
      * Update user's picture to given [uri] image.
      */
-    private fun onImagePicked(uri: Uri?) =
-        uri?.let { viewModel.updateUserPicture(it)?.withProgressBar(progress_bar) }
+    private fun onImagePicked(uri: Uri?) = uri?.let { viewModel.updateUserPicture(it) }
 
     /**
      * Show dialog for updating the current user's name.
      */
-    private fun showEditNameDialog() =
+    private fun showNameEditDialog() =
         AlertDialog.Builder(context)
             .setTitle(R.string.profile_name_edit_dialog_title)
-            .setInputAndCustomButton(
+            .setInputAndPositiveButton(
                 viewModel::updateUserName,
-                progress_bar,
                 viewModel.user.value?.displayName ?: ""
             ).setCancelButton()
             .create()
@@ -159,9 +158,9 @@ class ProfileFragment : BaseFragment() {
         AlertDialog.Builder(context)
             .setTitle(R.string.profile_phone_verify_dialog_title)
             .setMessage(R.string.profile_phone_verify_dialog_message)
-            .setInputAndCustomButton(
+            .setInputAndPositiveButton(
                 ::verifyPhoneNumber,
-                R.string.profile_phone_verify_dialog_button
+                buttonTextResId = R.string.profile_phone_verify_dialog_button
             )
             .setCancelButton()
             .create()
@@ -182,6 +181,26 @@ class ProfileFragment : BaseFragment() {
         // Save phone number for instance state changes
         viewModel.phoneNumberToVerify = phoneNumber
     }
+
+    /**
+     * Present the user an interface that prompts them to type the verification code from the SMS
+     * message.
+     */
+    private fun showVerificationCodeDialog() =
+        AlertDialog.Builder(context)
+            .setMessage(
+                getString(
+                    R.string.profile_verification_code_dialog_message,
+                    viewModel.phoneNumberToVerify
+                )
+            )
+            .setInputAndPositiveButton(
+                viewModel::handlePhoneVerificationCode,
+                buttonTextResId = R.string.profile_phone_verify_dialog_button
+            )
+            .setCancelButton()
+            .create()
+            .show()
 
     /**
      * Show activity for linking with Twitter.

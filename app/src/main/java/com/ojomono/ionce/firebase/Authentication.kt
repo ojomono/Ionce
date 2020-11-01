@@ -251,9 +251,21 @@ object Authentication {
     }
 
     /**
+     * Link the current user to the given [credential].
+     */
+    fun linkWithCredential(credential: AuthCredential) =
+        firebaseAuth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "linkWithCredential:success")
+                _currentUser.value = task.result?.user
+            } else Log.w(TAG, "linkWithCredential:failure", task.exception)
+        }
+
+    /**
      * Link the current user to phone number.
      */
-    fun linkWithPhone(credential: PhoneAuthCredential) = linkWithCredential(credential)
+    fun linkWithPhone(verificationId: String, code: String) =
+        linkWithCredential(PhoneAuthProvider.getCredential(verificationId, code))
 
     /**
      * Link the current user to Facebook account.
@@ -288,16 +300,5 @@ object Authentication {
                 }
             }
     }
-
-    /**
-     * Link the current user to the given credential.
-     */
-    private fun linkWithCredential(credential: AuthCredential) =
-        firebaseAuth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "linkWithCredential:success")
-                _currentUser.value = task.result?.user
-            } else Log.w(TAG, "linkWithCredential:failure", task.exception)
-        }
 
 }
