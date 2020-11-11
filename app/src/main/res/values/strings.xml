@@ -38,6 +38,8 @@
     <string name="profile_phone_verify_dialog_button">Verify</string>
     <string name="profile_phone_verify_failed_message">Phone number verification has failed.</string>
     <string name="profile_verification_code_dialog_message">Enter the 6-digit code we sent to %1$s</string>
+    <string name="profile_email_link_dialog_title">Link email address</string>
+    <string name="profile_email_link_dialog_button">Next</string>
 
     <!-- Tales screen -->
     <string name="tales_hint_text">You don\'t have any tales yet.\nYou can add some with the \'+\' button in the bottom-right corner.</string>

@@ -3,8 +3,12 @@ package com.ojomono.ionce
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.dynamiclinks.ktx.dynamicLinks
+import com.google.firebase.ktx.Firebase
 import com.ojomono.ionce.firebase.Authentication
+import com.ojomono.ionce.utils.TAG
 
 class SplashActivity : AppCompatActivity() {
 
@@ -14,12 +18,14 @@ class SplashActivity : AppCompatActivity() {
 
         // If no user is logged in, open sign-in screen
         if (Authentication.currentUser.value == null)
-            startActivityForResult(
-                Authentication.buildSignInIntent(packageName, intent),
-                RC_SIGN_IN
-            )
-        // Open main activity for the logged-in user
-        else startMainActivity()
+            startActivityForResult(Authentication.buildSignInIntent(intent), RC_SIGN_IN)
+        else {
+            // Check for any other dynamic link
+            handleDynamicLinks()
+
+            // Open main activity
+            startMainActivity()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -46,6 +52,19 @@ class SplashActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun handleDynamicLinks() =
+        Firebase.dynamicLinks
+            .getDynamicLink(intent)
+            .addOnSuccessListener(this) { pendingDynamicLinkData ->
+                // Get deep link from result (may be null if no link is found)
+                if (pendingDynamicLinkData != null) {
+                    // Right now, app supports only one kind of link - link user with email
+                    val deepLink = pendingDynamicLinkData.link.toString()
+                    if (deepLink.isNotEmpty()) Authentication.linkWithEmail(deepLink)
+                }
+            }
+            .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }
 
     private fun startMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))

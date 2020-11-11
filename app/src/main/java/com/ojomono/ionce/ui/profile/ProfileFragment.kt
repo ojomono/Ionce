@@ -78,6 +78,7 @@ class ProfileFragment : BaseFragment() {
             is ProfileViewModel.EventType.ShowPopupMenu -> showPopupMenu(event.view)
             is ProfileViewModel.EventType.ShowImagePicker -> showImagePicker()
             is ProfileViewModel.EventType.ShowNameEditDialog -> showNameEditDialog()
+            is ProfileViewModel.EventType.ShowEmailAddressDialog -> showEmailAddressDialog()
             is ProfileViewModel.EventType.ShowPhoneNumberDialog -> showPhoneVerifyDialog()
             is ProfileViewModel.EventType.ShowVerificationCodeDialog -> showVerificationCodeDialog()
             is ProfileViewModel.EventType.ShowLinkWithTwitter -> showLinkWithTwitter()
@@ -148,6 +149,20 @@ class ProfileFragment : BaseFragment() {
                 viewModel::updateUserName,
                 viewModel.user.value?.displayName ?: ""
             ).setCancelButton()
+            .create()
+            .show()
+
+    /**
+     * Present the user an interface that prompts them to type their email address.
+     */
+    private fun showEmailAddressDialog() =
+        AlertDialog.Builder(context)
+            .setTitle(R.string.profile_email_link_dialog_title)
+            .setInputAndPositiveButton(
+                viewModel::sendSignInLinkToEmail,
+                buttonTextResId = R.string.profile_email_link_dialog_button
+            )
+            .setCancelButton()
             .create()
             .show()
 

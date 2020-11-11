@@ -29,10 +29,11 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     val user: LiveData<FirebaseUser?> = Authentication.currentUser  // TODO: Use a Repository class
 
     // User info of the different providers                         // TODO: Use a Repository class
-    val googleUserInfo: LiveData<UserInfo> = Authentication.googleUserInfo
-    val facebookUserInfo: LiveData<UserInfo> = Authentication.facebookUserInfo
-    val twitterUserInfo: LiveData<UserInfo> = Authentication.twitterUserInfo
+    val emailUserInfo: LiveData<UserInfo> = Authentication.emailUserInfo
     val phoneUserInfo: LiveData<UserInfo> = Authentication.phoneUserInfo
+    val twitterUserInfo: LiveData<UserInfo> = Authentication.twitterUserInfo
+    val facebookUserInfo: LiveData<UserInfo> = Authentication.facebookUserInfo
+    val googleUserInfo: LiveData<UserInfo> = Authentication.googleUserInfo
 
     // Fields needed for linking with providers
     var phoneNumberToVerify: String = ""
@@ -45,6 +46,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
         class ShowPopupMenu(val view: View) : EventType()
         object ShowImagePicker : EventType()
         object ShowNameEditDialog : EventType()
+        object ShowEmailAddressDialog : EventType()
         object ShowPhoneNumberDialog : EventType()
         object ShowVerificationCodeDialog : EventType()
         object ShowLinkWithTwitter : EventType()
@@ -68,6 +70,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun onSettingsClicked(view: View) = postEvent(EventType.ShowPopupMenu(view))
     fun onPictureClicked() = postEvent(EventType.ShowImagePicker)
     fun onNameClicked() = postEvent(EventType.ShowNameEditDialog)
+    fun onEmailClicked() = postEvent(EventType.ShowEmailAddressDialog)
     fun onPhoneClicked() = postEvent(EventType.ShowPhoneNumberDialog)
     fun onTwitterClicked() = postEvent(EventType.ShowLinkWithTwitter)
     fun onGoogleClicked() = postEvent(EventType.ShowLinkWithGoogle)
@@ -130,6 +133,12 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
      */
     fun updateUserName(name: String) =
         Authentication.updateDisplayName(name)?.withProgressBar()
+
+    /**
+     * Send a sign-in link to the given [email].
+     */
+    fun sendSignInLinkToEmail(email: String) =
+        Authentication.sendSignInLinkToEmail(email)?.withProgressBar()
 
     /**
      * Get the callback object for the phone verification process.
