@@ -1,5 +1,6 @@
 package com.ojomono.ionce.firebase
 
+// TODO: Avoid Android imports and move to separated module when needed for more UI platforms
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -37,6 +38,9 @@ object Database {
     private var userDocRef: DocumentReference? = null
     private var userDocument: DocumentSnapshot? = null
     private var registration: ListenerRegistration? = null
+
+    // TODO replace liveData with callbackFlow / StateFlow when they become non-experimental
+    //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
 
     // Current user's tales list
     private val _userTales = MutableLiveData<List<TaleItemModel>>()

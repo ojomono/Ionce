@@ -32,14 +32,15 @@ fun <T> Task<T>.withProgressBar(progressBar: ProgressBar): Task<T> {
 
 /**
  * This extension allows us to add a text input field (with default text = [defaultInputText]) and
- * a save button to save it's final value using the given [onSave] function and showing the given
- * [progressBar] until save is done.
+ * a positive button (with text = [buttonTextResId]) to call the [onPositive] function with on the
+ * value in the input field.
  */
-fun AlertDialog.Builder.setInputAndSaveButton(
-    onSave: (String) -> Task<*>?,
-    progressBar: ProgressBar,
-    defaultInputText: String = ""
+fun <T> AlertDialog.Builder.setInputAndPositiveButton(
+    onPositive: (String) -> T,
+    defaultInputText: String = "",
+    buttonTextResId: Int = R.string.dialogs_positive_button_text_default
 ): AlertDialog.Builder {
+
     // Build input field
     val input = EditText(context)
     val lp = LinearLayout.LayoutParams(
@@ -53,8 +54,8 @@ fun AlertDialog.Builder.setInputAndSaveButton(
     setView(input)
 
     // Add the save button
-    return setPositiveButton(context.getText(R.string.dialogs_positive_button_text)) { dialog, _ ->
-        onSave(input.text.toString())?.withProgressBar(progressBar)
+    return setPositiveButton(context.getText(buttonTextResId)) { dialog, _ ->
+        onPositive(input.text.toString())
         dialog.cancel()
     }
 }

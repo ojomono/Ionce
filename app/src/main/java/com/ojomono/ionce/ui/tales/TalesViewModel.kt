@@ -7,7 +7,7 @@ import com.ojomono.ionce.utils.BaseViewModel
 
 class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
     // The user's tales list
-    val tales: LiveData<List<TaleItemModel>> = Database.userTales
+    val tales: LiveData<List<TaleItemModel>> = Database.userTales   // TODO: Use a Repository class
 
     // The tale currently being edited or deleted
     private var clickedTale: TaleItemModel? = null
@@ -43,15 +43,21 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
         clickedTale = null
     }
 
-    fun addTale(title: String) = Database.createTale(title)
+    fun addTale(title: String) = Database.createTale(title)?.withProgressBar()
 
     fun updateTale(title: String) =
     // Copy is needed because if we change the original item, adapter's new list and old list would
         // be the same and it will not refresh. Thus a copy is needed.
         clickedTale?.copy(title = title)
-            ?.let { Database.updateTale(it)?.addOnCompleteListener { clearClickedTale() } }
+            ?.let {
+                Database.updateTale(it)?.withProgressBar()
+                    ?.addOnCompleteListener { clearClickedTale() }
+            }
 
     fun deleteTale() =
         clickedTale
-            ?.let { Database.deleteTale(it.id)?.addOnCompleteListener { clearClickedTale() } }
+            ?.let {
+                Database.deleteTale(it.id)?.withProgressBar()
+                    ?.addOnCompleteListener { clearClickedTale() }
+            }
 }

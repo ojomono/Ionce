@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
 import com.ojomono.ionce.utils.*
-import kotlinx.android.synthetic.main.fragment_tales.progress_bar
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
 /**
@@ -22,6 +22,7 @@ class TalesFragment : BaseFragment() {
     override val layoutId = R.layout.fragment_tales
     override lateinit var binding: FragmentTalesBinding
     override lateinit var viewModel: TalesViewModel
+    override lateinit var progressBar: ProgressBar
     private var columnCount = 1
 
     /***********************/
@@ -44,6 +45,7 @@ class TalesFragment : BaseFragment() {
         viewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
         binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel
+        progressBar = binding.progressBar
         observeEvents()
 
         // Init the adapter
@@ -57,6 +59,7 @@ class TalesFragment : BaseFragment() {
     /**************************/
 
     override fun handleEvent(event: BaseViewModel.Event) {
+        super.handleEvent(event)
         when (event) {
             is TalesViewModel.EventType.ShowAddTaleDialog -> showAddTaleDialog()
             is TalesViewModel.EventType.ShowEditTaleDialog -> showUpdateTaleDialog(event.taleTitle)
@@ -107,7 +110,7 @@ class TalesFragment : BaseFragment() {
         AlertDialog.Builder(context)
             .setTitle(R.string.tales_add_dialog_title)
             .setMessage(R.string.tales_add_dialog_message)
-            .setInputAndSaveButton(viewModel::addTale, progress_bar)
+            .setInputAndPositiveButton(viewModel::addTale)
             .setCancelButton()
             .create()
             .show()
@@ -118,7 +121,7 @@ class TalesFragment : BaseFragment() {
     private fun showUpdateTaleDialog(taleTitle: String) =
         AlertDialog.Builder(context)
             .setTitle(R.string.tales_update_dialog_title)
-            .setInputAndSaveButton(viewModel::updateTale, progress_bar, taleTitle)
+            .setInputAndPositiveButton(viewModel::updateTale, taleTitle)
             .setCancelButton(viewModel::clearClickedTale)
             .create()
             .show()
@@ -132,7 +135,7 @@ class TalesFragment : BaseFragment() {
             .setMessage(getString(R.string.tales_delete_dialog_message, taleTitle))
             .setPositiveButton(getText(R.string.tales_delete_dialog_positive_button_text))
             { dialog, _ ->
-                viewModel.deleteTale()?.withProgressBar(progress_bar)
+                viewModel.deleteTale()
                 dialog.cancel()
             }
             .setCancelButton(viewModel::clearClickedTale)
