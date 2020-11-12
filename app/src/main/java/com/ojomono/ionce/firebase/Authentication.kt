@@ -256,17 +256,6 @@ object Authentication {
     }
 
     /**
-     * Link the current user to the given [credential].
-     */
-    fun linkWithCredential(credential: AuthCredential) =
-        auth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "linkWithCredential:success")
-                _currentUser.value = task.result?.user
-            } else Log.w(TAG, "linkWithCredential:failure", task.exception)
-        }
-
-    /**
      * Link the current user to email address.
      */
     fun linkWithEmail(emailLink: String) =
@@ -278,6 +267,7 @@ object Authentication {
     /**
      * Link the current user to phone number.
      */
+    fun linkWithPhone(credential: AuthCredential) = linkWithCredential(credential)
     fun linkWithPhone(verificationId: String, code: String) =
         linkWithCredential(PhoneAuthProvider.getCredential(verificationId, code))
 
@@ -292,6 +282,15 @@ object Authentication {
      */
     fun linkWithGoogle(googleIdToken: String) =
         linkWithCredential(GoogleAuthProvider.getCredential(googleIdToken, null))
+
+    /**
+     * Unlink the current user from the given [providerNameResId].
+     */
+    fun unlinkProvider(providerNameResId: Int) =
+        auth.currentUser?.unlink(getProviderId(providerNameResId))
+            ?.addOnCompleteListener { task ->
+                if (task.isSuccessful) _currentUser.value = task.result?.user
+            }
 
     /**
      * sign out of Firebase Authentication as well as all social identity providers.
@@ -314,5 +313,29 @@ object Authentication {
                 }
             }
     }
+
+    /**
+     * Link the current user to the given [credential].
+     */
+    private fun linkWithCredential(credential: AuthCredential) =
+        auth.currentUser?.linkWithCredential(credential)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "linkWithCredential:success")
+                _currentUser.value = task.result?.user
+            } else Log.w(TAG, "linkWithCredential:failure", task.exception)
+        }
+
+    /**
+     * Get the provider id matching the given [providerNameResId].
+     */
+    private fun getProviderId(providerNameResId: Int) =
+        when (providerNameResId) {
+            R.string.profile_google_provider_name -> GoogleAuthProvider.PROVIDER_ID
+            R.string.profile_facebook_provider_name -> FacebookAuthProvider.PROVIDER_ID
+            R.string.profile_twitter_provider_name -> TwitterAuthProvider.PROVIDER_ID
+            R.string.profile_email_provider_name -> EmailAuthProvider.PROVIDER_ID
+            R.string.profile_phone_provider_name -> PhoneAuthProvider.PROVIDER_ID
+            else -> ""
+        }
 
 }

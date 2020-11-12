@@ -82,7 +82,10 @@ class ProfileFragment : BaseFragment() {
             is ProfileViewModel.EventType.ShowPhoneNumberDialog -> showPhoneVerifyDialog()
             is ProfileViewModel.EventType.ShowVerificationCodeDialog -> showVerificationCodeDialog()
             is ProfileViewModel.EventType.ShowLinkWithTwitter -> showLinkWithTwitter()
+            is ProfileViewModel.EventType.ShowLinkWithFacebook -> showLinkWithFacebook()
             is ProfileViewModel.EventType.ShowLinkWithGoogle -> showLinkWithGoogle()
+            is ProfileViewModel.EventType.ShowUnlinkProviderDialog ->
+                showUnlinkProviderDialog(event.providerNameResId)
         }
     }
 
@@ -93,40 +96,40 @@ class ProfileFragment : BaseFragment() {
     /**
      * Initialize the Facebook login button callback.
      */
-    private fun initFacebookLoginButton() = binding.buttonFacebookLogin.apply {
-        setPermissions(FP_EMAIL, FP_PUBLIC_PROFILE)
-        fragment = this@ProfileFragment
-        registerCallback(viewModel.facebookCallbackManager, viewModel.getFacebookCallback())
-
-        // Redirect clicks on the Facebook provider linear layout to the login button
-        binding.linearFacebookProvider.setOnClickListener { callOnClick() }
-    }
+    private fun initFacebookLoginButton() =
+        binding.buttonFacebookLogin.apply {
+            setPermissions(FP_EMAIL, FP_PUBLIC_PROFILE)
+            fragment = this@ProfileFragment
+            registerCallback(viewModel.facebookCallbackManager, viewModel.getFacebookCallback())
+        }
 
     /**
      * Initialize the Google sign in client.
      */
-    private fun initGoogleSignInClient() = activity?.let {
+    private fun initGoogleSignInClient() =
+        activity?.let {
 
-        // Configure Google Sign In
-        val gso =
-            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
+            // Configure Google Sign In
+            val gso =
+                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build()
 
-        // Build a GoogleSignInClient with the options specified by gso.
-        viewModel.googleSignInClient = GoogleSignIn.getClient(it, gso)
-    }
+            // Build a GoogleSignInClient with the options specified by gso.
+            viewModel.googleSignInClient = GoogleSignIn.getClient(it, gso)
+        }
 
     /**
      * Show the settings menu as a popup menu attached to [v].
      */
-    private fun showPopupMenu(v: View) = PopupMenu(context, v).apply {
-        // ProfileViewModel implements OnMenuItemClickListener
-        setOnMenuItemClickListener(viewModel)
-        inflate(R.menu.profile_settings_menu)
-        show()
-    }
+    private fun showPopupMenu(v: View) =
+        PopupMenu(context, v).apply {
+            // ProfileViewModel implements OnMenuItemClickListener
+            setOnMenuItemClickListener(viewModel)
+            inflate(R.menu.profile_settings_menu)
+            show()
+        }
 
     /**
      * Show the image picker.
@@ -184,18 +187,19 @@ class ProfileFragment : BaseFragment() {
     /**
      * Verify the given [phoneNumber].
      */
-    private fun verifyPhoneNumber(phoneNumber: String) = activity?.let {
-        val options = PhoneAuthOptions.newBuilder()
-            .setPhoneNumber(phoneNumber)       // Phone number to verify
-            .setTimeout(PHONE_VERIFICATION_TIMEOUT, TimeUnit.SECONDS) // Timeout and unit
-            .setActivity(it)                 // Activity (for callback binding)
-            .setCallbacks(viewModel.getPhoneVerificationCallbacks())    // OnVerificationStateChangedCallbacks
-            .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
+    private fun verifyPhoneNumber(phoneNumber: String) =
+        activity?.let {
+            val options = PhoneAuthOptions.newBuilder()
+                .setPhoneNumber(phoneNumber)       // Phone number to verify
+                .setTimeout(PHONE_VERIFICATION_TIMEOUT, TimeUnit.SECONDS) // Timeout and unit
+                .setActivity(it)                 // Activity (for callback binding)
+                .setCallbacks(viewModel.getPhoneVerificationCallbacks())    // OnVerificationStateChangedCallbacks
+                .build()
+            PhoneAuthProvider.verifyPhoneNumber(options)
 
-        // Save phone number for instance state changes
-        viewModel.phoneNumberToVerify = phoneNumber
-    }
+            // Save phone number for instance state changes
+            viewModel.phoneNumberToVerify = phoneNumber
+        }
 
     /**
      * Present the user an interface that prompts them to type the verification code from the SMS
@@ -220,26 +224,54 @@ class ProfileFragment : BaseFragment() {
     /**
      * Show activity for linking with Twitter.
      */
-    private fun showLinkWithTwitter() = activity?.let {
-        val provider = OAuthProvider.newBuilder(TwitterAuthProvider.PROVIDER_ID)
+    private fun showLinkWithTwitter() =
+        activity?.let {
+            val provider =
+                OAuthProvider.newBuilder(TwitterAuthProvider.PROVIDER_ID)
 
-        viewModel.user.value
-            ?.startActivityForLinkWithProvider(it, provider.build())
-            ?.withProgressBar(progress_bar)
-            ?.addOnSuccessListener { viewModel.refresh() }
-            ?.addOnFailureListener { e ->
-                // Handle failure.
-                if (e is FirebaseAuthUserCollisionException)
-                // TODO merge users in case of collision.
-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-            }
-    }
+            viewModel.user.value
+                ?.startActivityForLinkWithProvider(it, provider.build())
+                ?.withProgressBar(progress_bar)
+                ?.addOnSuccessListener { viewModel.refresh() }
+                ?.addOnFailureListener { e ->
+                    // Handle failure.
+                    if (e is FirebaseAuthUserCollisionException)
+                    // TODO merge users in case of collision.
+                        Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+        }
+
+    /**
+     * Show activity for linking with Facebook.
+     */
+    private fun showLinkWithFacebook() = binding.buttonFacebookLogin.callOnClick()
 
     /**
      * Show activity for linking with Google.
      */
     private fun showLinkWithGoogle() =
         startActivityForResult(viewModel.googleSignInClient.signInIntent, RC_LINK_GOOGLE)
+
+    /**
+     * Show dialog for verifying decision to unlink given [providerNameResId].
+     */
+    private fun showUnlinkProviderDialog(providerNameResId: Int) =
+        AlertDialog.Builder(context)
+            .setTitle(R.string.profile_unlink_provider_dialog_title)
+            .setMessage(
+                getString(
+                    R.string.profile_unlink_provider_dialog_message,
+                    getString(providerNameResId)
+                )
+            )
+            .setPositiveButton(getText(R.string.profile_unlink_provider_positive_button_text))
+            { dialog, _ ->
+                viewModel.unlinkProvider(providerNameResId)
+                dialog.cancel()
+            }
+            .setCancelButton()
+            .create()
+            .show()
 
     /***************/
     /** Constants **/

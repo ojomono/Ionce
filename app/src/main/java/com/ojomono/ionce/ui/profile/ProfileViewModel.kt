@@ -50,7 +50,9 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
         object ShowPhoneNumberDialog : EventType()
         object ShowVerificationCodeDialog : EventType()
         object ShowLinkWithTwitter : EventType()
+        object ShowLinkWithFacebook : EventType()
         object ShowLinkWithGoogle : EventType()
+        class ShowUnlinkProviderDialog(val providerNameResId: Int) : EventType()
     }
 
     /********************/
@@ -70,10 +72,30 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun onSettingsClicked(view: View) = postEvent(EventType.ShowPopupMenu(view))
     fun onPictureClicked() = postEvent(EventType.ShowImagePicker)
     fun onNameClicked() = postEvent(EventType.ShowNameEditDialog)
-    fun onEmailClicked() = postEvent(EventType.ShowEmailAddressDialog)
-    fun onPhoneClicked() = postEvent(EventType.ShowPhoneNumberDialog)
-    fun onTwitterClicked() = postEvent(EventType.ShowLinkWithTwitter)
-    fun onGoogleClicked() = postEvent(EventType.ShowLinkWithGoogle)
+
+    /**
+     * Handler method for all Providers shown on screen. Determine the right event according to the
+     * clicked [view] id, and whether or not the matching userInfo exists (provider linked).
+     */
+    fun onProviderClicked(view: View) =
+        when (view.id) {
+            R.id.linear_email_provider ->
+                if (emailUserInfo.value == null) EventType.ShowEmailAddressDialog
+                else EventType.ShowUnlinkProviderDialog(R.string.profile_email_provider_name)
+            R.id.linear_phone_provider ->
+                if (phoneUserInfo.value == null) EventType.ShowPhoneNumberDialog
+                else EventType.ShowUnlinkProviderDialog(R.string.profile_phone_provider_name)
+            R.id.linear_twitter_provider ->
+                if (twitterUserInfo.value == null) EventType.ShowLinkWithTwitter
+                else EventType.ShowUnlinkProviderDialog(R.string.profile_twitter_provider_name)
+            R.id.linear_facebook_provider ->
+                if (facebookUserInfo.value == null) EventType.ShowLinkWithFacebook
+                else EventType.ShowUnlinkProviderDialog(R.string.profile_facebook_provider_name)
+            R.id.linear_google_provider ->
+                if (googleUserInfo.value == null) EventType.ShowLinkWithGoogle
+                else EventType.ShowUnlinkProviderDialog(R.string.profile_google_provider_name)
+            else -> null    // If an error is needed - use BaseViewModel's "showErrorMessage"
+        }?.let { postEvent(it) }
 
     /**********************************************/
     /** MenuItem.OnMenuItemClickListener methods **/
@@ -148,7 +170,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 Log.d(TAG, "onVerificationCompleted:$credential")
-                Authentication.linkWithCredential(credential)?.withProgressBar()
+                Authentication.linkWithPhone(credential)?.withProgressBar()
                 phoneNumberToVerify = ""    // Clear flag
             }
 
@@ -179,20 +201,20 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
         }
 
     /**
-     * Connect current user with phone number (if [code] matches the [storedVerificationId]).
+     * Link current user with phone number (if [code] matches the [storedVerificationId]).
      */
     fun handlePhoneVerificationCode(code: String) =
         Authentication.linkWithPhone(storedVerificationId, code)?.withProgressBar()
             ?.addOnCompleteListener { phoneNumberToVerify = ""    /* Clear flag */ }
 
     /**
-     * Connect current user with Facebook account with given [token].
+     * Link current user with Facebook account with given [token].
      */
     fun handleFacebookAccessToken(token: AccessToken) =
         Authentication.linkWithFacebook(token)?.withProgressBar()
 
     /**
-     * Connect current user with Google account (token in [intent]).
+     * Link current user with Google account (token in [intent]).
      */
     fun handleGoogleResult(intent: Intent?) {
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -208,4 +230,10 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
             Log.w(TAG, "Google sign in failed", e)
         }
     }
+
+    /**
+     * Unlink current user with the given [providerNameResId].
+     */
+    fun unlinkProvider(providerNameResId: Int) =
+        Authentication.unlinkProvider(providerNameResId)?.withProgressBar()
 }

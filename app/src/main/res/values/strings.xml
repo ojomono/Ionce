@@ -40,6 +40,9 @@
     <string name="profile_verification_code_dialog_message">Enter the 6-digit code we sent to %1$s</string>
     <string name="profile_email_link_dialog_title">Link email address</string>
     <string name="profile_email_link_dialog_button">Next</string>
+    <string name="profile_unlink_provider_dialog_title">Unlink Provider</string>
+    <string name="profile_unlink_provider_dialog_message">Are you sure you want to unlink your %1$s account?</string>
+    <string name="profile_unlink_provider_positive_button_text">unlink</string>
 
     <!-- Tales screen -->
     <string name="tales_hint_text">You don\'t have any tales yet.\nYou can add some with the \'+\' button in the bottom-right corner.</string>
@@ -64,4 +67,5 @@
     <!-- Dialogs -->
     <string name="dialogs_positive_button_text_default">Save</string>
     <string name="dialogs_negative_button_text">Cancel</string>
+
 </resources>
