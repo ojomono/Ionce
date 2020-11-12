@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
+import java.lang.Exception
 
 /**
  * A [ViewModel] that holds events as part of it's state. It allows views to observe those events.
@@ -15,7 +16,8 @@ abstract class BaseViewModel : ViewModel() {
 
     // Common event types
     class ShowProgressBar(val task: Task<*>) : Event
-    class ShowErrorMessage(val messageResId: Int) : Event
+    class ShowErrorMessage(val e: Exception) : Event
+    class ShowErrorMessageByResId(val messageResId: Int) : Event
 
     // The observable event holder. Observe from view class to "catch" the events.
     private val _events = MutableLiveData<OneTimeEvent<Event>>()
@@ -29,6 +31,11 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     // Common event posting aliases
-    protected fun Task<*>.withProgressBar() = apply { postEvent(ShowProgressBar(this)) }
-    protected fun showErrorMessage(messageResId: Int) = postEvent(ShowErrorMessage(messageResId))
+    protected fun Task<*>.withProgressBar() =
+        apply { postEvent(ShowProgressBar(this)) }
+
+    protected fun showErrorMessage(e: Exception) = postEvent(ShowErrorMessage(e))
+    protected fun showErrorMessage(messageResId: Int) =
+        postEvent(ShowErrorMessageByResId(messageResId))
+
 }

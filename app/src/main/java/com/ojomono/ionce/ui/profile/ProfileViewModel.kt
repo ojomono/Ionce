@@ -21,6 +21,7 @@ import com.google.firebase.FirebaseTooManyRequestsException // TODO avoid import
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
+import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.utils.BaseViewModel
 import com.ojomono.ionce.utils.TAG
 
@@ -126,7 +127,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun getFacebookCallback() = object : FacebookCallback<LoginResult> {
         override fun onSuccess(loginResult: LoginResult) {
             Log.d(TAG, "facebook:onSuccess:$loginResult")
-            handleFacebookAccessToken(loginResult.accessToken)?.withProgressBar()
+            handleFacebookAccessToken(loginResult.accessToken)
         }
 
         override fun onCancel() {
@@ -204,14 +205,16 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
      * Link current user with phone number (if [code] matches the [storedVerificationId]).
      */
     fun handlePhoneVerificationCode(code: String) =
-        Authentication.linkWithPhone(storedVerificationId, code)?.withProgressBar()
+        Authentication.linkWithPhone(storedVerificationId, code)
+            ?.handleCollision(::showErrorMessage)?.withProgressBar()
             ?.addOnCompleteListener { phoneNumberToVerify = ""    /* Clear flag */ }
 
     /**
      * Link current user with Facebook account with given [token].
      */
     fun handleFacebookAccessToken(token: AccessToken) =
-        Authentication.linkWithFacebook(token)?.withProgressBar()
+        Authentication.linkWithFacebook(token)
+            ?.handleCollision(::showErrorMessage)?.withProgressBar()
 
     /**
      * Link current user with Google account (token in [intent]).
@@ -223,7 +226,10 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
             // Google Sign In was successful, authenticate with Firebase
             task.getResult(ApiException::class.java)?.let { account ->
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                account.idToken?.let { Authentication.linkWithGoogle(it)?.withProgressBar() }
+                account.idToken?.let {
+                    Authentication.linkWithGoogle(it)
+                        ?.handleCollision(::showErrorMessage)?.withProgressBar()
+                }
             }
         } catch (e: ApiException) {
             // Google Sign In failed, update UI appropriately

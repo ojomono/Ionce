@@ -261,7 +261,7 @@ object Authentication {
     fun linkWithEmail(emailLink: String) =
         if (emailToVerify.isNotEmpty()) {
             linkWithCredential(EmailAuthProvider.getCredentialWithLink(emailToVerify, emailLink))
-            emailToVerify = ""  // Clear field
+                ?.addOnCompleteListener { emailToVerify = ""  /* Clear field */ }
         } else null
 
     /**
@@ -323,6 +323,7 @@ object Authentication {
                 Log.d(TAG, "linkWithCredential:success")
                 _currentUser.value = task.result?.user
             } else Log.w(TAG, "linkWithCredential:failure", task.exception)
+            // TODO merge accounts in case of collision.
         }
 
     /**
@@ -336,6 +337,18 @@ object Authentication {
             R.string.profile_email_provider_name -> EmailAuthProvider.PROVIDER_ID
             R.string.profile_phone_provider_name -> PhoneAuthProvider.PROVIDER_ID
             else -> ""
+        }
+
+    /****************/
+    /** Extensions **/
+    /****************/
+
+    /**
+     * Handle the FirebaseAuthUserCollisionException using the given [handlerFunc].
+     */
+    fun Task<AuthResult>.handleCollision(handlerFunc: (Exception) -> Unit) =
+        apply {
+            addOnFailureListener { if (it is FirebaseAuthUserCollisionException) handlerFunc(it) }
         }
 
 }

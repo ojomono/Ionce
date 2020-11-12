@@ -40,6 +40,8 @@ abstract class BaseFragment : Fragment() {
         when (event) {
             is BaseViewModel.ShowProgressBar -> progressBar?.let { event.task.withProgressBar(it) }
             is BaseViewModel.ShowErrorMessage ->
+                Toast.makeText(context, event.e.message, Toast.LENGTH_SHORT).show()
+            is BaseViewModel.ShowErrorMessageByResId ->
                 Toast.makeText(context, event.messageResId, Toast.LENGTH_SHORT).show()
         }
     }

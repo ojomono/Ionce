@@ -236,8 +236,8 @@ class ProfileFragment : BaseFragment() {
                 ?.addOnFailureListener { e ->
                     // Handle failure.
                     if (e is FirebaseAuthUserCollisionException)
-                    // TODO merge users in case of collision.
                         Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                    // TODO merge accounts in case of collision.
                 }
         }
 

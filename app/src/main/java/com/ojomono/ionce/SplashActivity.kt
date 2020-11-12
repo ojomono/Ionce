@@ -4,11 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 import com.ojomono.ionce.firebase.Authentication
+import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.utils.TAG
+import com.ojomono.ionce.utils.withProgressBar
+import kotlinx.android.synthetic.main.activity_splash.*
 
 class SplashActivity : AppCompatActivity() {
 
@@ -61,7 +65,11 @@ class SplashActivity : AppCompatActivity() {
                 if (pendingDynamicLinkData != null) {
                     // Right now, app supports only one kind of link - link user with email
                     val deepLink = pendingDynamicLinkData.link.toString()
-                    if (deepLink.isNotEmpty()) Authentication.linkWithEmail(deepLink)
+                    if (deepLink.isNotEmpty())
+                        Authentication.linkWithEmail(deepLink)?.withProgressBar(progress_bar)
+                            ?.handleCollision {
+                                Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                            }
                 }
             }
             .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }
