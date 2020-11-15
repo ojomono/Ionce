@@ -81,20 +81,35 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun onProviderClicked(view: View) =
         when (view.id) {
             R.id.linear_email_provider ->
-                if (emailUserInfo.value == null) EventType.ShowEmailAddressDialog
-                else EventType.ShowUnlinkProviderDialog(R.string.profile_email_provider_name)
+                determineEventForProviderClick(
+                    emailUserInfo,
+                    EventType.ShowEmailAddressDialog,
+                    R.string.profile_email_provider_name
+                )
             R.id.linear_phone_provider ->
-                if (phoneUserInfo.value == null) EventType.ShowPhoneNumberDialog
-                else EventType.ShowUnlinkProviderDialog(R.string.profile_phone_provider_name)
+                determineEventForProviderClick(
+                    phoneUserInfo,
+                    EventType.ShowPhoneNumberDialog,
+                    R.string.profile_phone_provider_name
+                )
             R.id.linear_twitter_provider ->
-                if (twitterUserInfo.value == null) EventType.ShowLinkWithTwitter
-                else EventType.ShowUnlinkProviderDialog(R.string.profile_twitter_provider_name)
+                determineEventForProviderClick(
+                    twitterUserInfo,
+                    EventType.ShowLinkWithTwitter,
+                    R.string.profile_twitter_provider_name
+                )
             R.id.linear_facebook_provider ->
-                if (facebookUserInfo.value == null) EventType.ShowLinkWithFacebook
-                else EventType.ShowUnlinkProviderDialog(R.string.profile_facebook_provider_name)
+                determineEventForProviderClick(
+                    facebookUserInfo,
+                    EventType.ShowLinkWithFacebook,
+                    R.string.profile_facebook_provider_name
+                )
             R.id.linear_google_provider ->
-                if (googleUserInfo.value == null) EventType.ShowLinkWithGoogle
-                else EventType.ShowUnlinkProviderDialog(R.string.profile_google_provider_name)
+                determineEventForProviderClick(
+                    googleUserInfo,
+                    EventType.ShowLinkWithGoogle,
+                    R.string.profile_google_provider_name
+                )
             else -> null    // If an error is needed - use BaseViewModel's "showErrorMessage"
         }?.let { postEvent(it) }
 
@@ -242,4 +257,43 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
      */
     fun unlinkProvider(providerNameResId: Int) =
         Authentication.unlinkProvider(providerNameResId)?.withProgressBar()
+
+
+    /*********************/
+    /** private methods **/
+    /*********************/
+
+    /**
+     * Determine if the [providerData] needs to be linked (using the given [linkEvent]) or unlinked
+     * (using the common unlink event with [nameResId]), and check if possible.
+     */
+    private fun determineEventForProviderClick(
+        providerData: LiveData<UserInfo>,
+        linkEvent: EventType,
+        nameResId: Int
+    ) =
+        user.value?.providerData?.size?.let {
+
+            when {
+                // If the provider is not linked yet, return it's "link event"
+                providerData.value == null -> linkEvent
+
+                // If it's linked but it's the only provider (aside from the default "firebase") -
+                // return an error event
+                it <= MIN_NUMBER_OF_PROVIDERS ->
+                    ShowErrorMessageByResId(R.string.profile_error_last_provider)
+
+                // If it's linked and is not the only provider - return the "unlink event"
+                else -> EventType.ShowUnlinkProviderDialog(nameResId)
+            }
+        }
+
+    /***************/
+    /** Constants **/
+    /***************/
+
+    companion object {
+        // Used for checking if unlinking should be allowed
+        const val MIN_NUMBER_OF_PROVIDERS = 2   // Default ("firebase") + 1 (real provider)
+    }
 }
