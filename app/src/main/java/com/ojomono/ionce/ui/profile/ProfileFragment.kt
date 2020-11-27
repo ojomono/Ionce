@@ -39,7 +39,7 @@ class ProfileFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel

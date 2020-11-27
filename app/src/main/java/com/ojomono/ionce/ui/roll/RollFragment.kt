@@ -28,7 +28,7 @@ class RollFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel = ViewModelProvider(this).get(RollViewModel::class.java)
         binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel

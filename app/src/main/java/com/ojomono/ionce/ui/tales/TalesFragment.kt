@@ -41,7 +41,7 @@ class TalesFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
         binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel

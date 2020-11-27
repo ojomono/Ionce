@@ -42,7 +42,7 @@
                     android:scaleType="centerCrop"
                     android:contentDescription="@string/profile_user_image_content_description"
                     app:userPhotoSrc="@{viewModel.user}"
-                    tools:src="@drawable/ic_user" />
+                    tools:src="@drawable/ic_profile_black_24" />
 
                 <ImageView
                     android:layout_width="@dimen/profile_icons_sizes"
