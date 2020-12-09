@@ -2,17 +2,19 @@ package com.ojomono.ionce.ui.tales
 
 import android.app.AlertDialog
 import android.os.Bundle
-import androidx.recyclerview.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
 import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_tales.view.*
+
 
 /**
  * A fragment representing a list of Tales.
@@ -48,8 +50,8 @@ class TalesFragment : BaseFragment() {
         progressBar = binding.progressBar
         observeEvents()
 
-        // Init the adapter
-        initAdapter()
+        // Populate the recycler view
+        populateRecyclerView()
 
         return binding.root
     }
@@ -72,18 +74,27 @@ class TalesFragment : BaseFragment() {
     /*********************/
 
     /**
-     * Init the [binding] field.
+     * Populate the recycler view.
      */
-    private fun initAdapter() {
-        val adapter = TalesAdapter(viewModel)
+    private fun populateRecyclerView() {
         with(binding.root.recycler_tales_list) {
+            // Choose layout manager
             layoutManager = when {
                 columnCount <= 1 -> LinearLayoutManager(context)
                 else -> buildGridLayoutManager()
             }
-            this.adapter = adapter
+
+            // Init the adapter
+            val talesAdapter = TalesAdapter(viewModel)
+            adapter = talesAdapter
+
+//            // Add  Item touch helper to the recycler view
+//            val itemTouchHelper = ItemTouchHelper(TalesTouchCallback(talesAdapter))
+//            itemTouchHelper.attachToRecyclerView(this)
+
+            // Observe changes in tales list
             viewModel.tales.observe(viewLifecycleOwner, {
-                it?.let { adapter.addHeaderAndSubmitList(it) }
+                it?.let { talesAdapter.addHeaderAndSubmitList(it) }
             })
         }
     }
