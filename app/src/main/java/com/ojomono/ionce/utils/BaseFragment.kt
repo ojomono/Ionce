@@ -1,6 +1,7 @@
 package com.ojomono.ionce.utils
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -39,16 +40,15 @@ abstract class BaseFragment : Fragment() {
     protected open fun handleEvent(event: BaseViewModel.Event) {
         when (event) {
             is BaseViewModel.ShowProgressBar -> progressBar?.let { event.task.withProgressBar(it) }
-            is BaseViewModel.ShowErrorMessage ->
-                Toast.makeText(context, event.e.message, Toast.LENGTH_SHORT).show()
+            is BaseViewModel.ShowErrorMessage -> showErrorMessage(event.e.message)
             is BaseViewModel.ShowErrorMessageByResId ->
-                Toast.makeText(context, event.messageResId, Toast.LENGTH_SHORT).show()
+                showErrorMessage(getString(event.messageResId))
         }
     }
 
-    /*********************/
-    /** private methods **/
-    /*********************/
+    /***********************/
+    /** protected methods **/
+    /***********************/
 
     /**
      * Init the [binding] field. Notice connecting to ViewModel still needed!
@@ -65,5 +65,18 @@ abstract class BaseFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         return binding
+    }
+
+    /***********************/
+    /** private methods **/
+    /***********************/
+
+    /**
+     * Show the given error [message] and hide the progress bar.
+     */
+    private fun showErrorMessage(message: String?) {
+        // The error is probably the result of the operation - so make sure the progress bar is gone
+        progressBar?.apply { visibility = View.GONE }
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }

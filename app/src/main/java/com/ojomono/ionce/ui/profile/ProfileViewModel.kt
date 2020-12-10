@@ -50,6 +50,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
         object ShowEmailAddressDialog : EventType()
         object ShowPhoneNumberDialog : EventType()
         object ShowVerificationCodeDialog : EventType()
+        object DismissCurrentDialog : EventType()
         object ShowLinkWithTwitter : EventType()
         object ShowLinkWithFacebook : EventType()
         object ShowLinkWithGoogle : EventType()
@@ -188,6 +189,9 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
                 Log.d(TAG, "onVerificationCompleted:$credential")
                 Authentication.linkWithPhone(credential)?.withProgressBar()
                 phoneNumberToVerify = ""    // Clear flag
+
+                // If verified automatically, no need for the manual dialog
+                postEvent(EventType.DismissCurrentDialog)
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -212,7 +216,10 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
             ) {
                 Log.d(TAG, "onCodeSent:$verificationId")
                 storedVerificationId = verificationId
-                postEvent(EventType.ShowVerificationCodeDialog)
+                // If phone number is empty maybe the automatic verification already completed
+                // and anyway there is nothing to compare to...
+                if (phoneNumberToVerify.isNotEmpty())
+                    postEvent(EventType.ShowVerificationCodeDialog)
             }
         }
 
