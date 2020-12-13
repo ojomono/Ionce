@@ -58,8 +58,8 @@
     <!-- Roll screen -->
     <string name="roll_button_text">&roll_button_text;</string>
     <string name="roll_preface_text">&general_tale_preface;</string>
-    <string name="roll_hint_default_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
-    <string name="roll_hint_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab.</string>
+    <string name="roll_hint_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
+    <string name="roll_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab.</string>
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
 
     <!-- Dialogs -->
