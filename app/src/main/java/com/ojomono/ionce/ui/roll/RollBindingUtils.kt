@@ -1,16 +1,20 @@
 package com.ojomono.ionce.ui.roll
 
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
-import com.ojomono.ionce.R
 import com.ojomono.ionce.models.TaleItemModel
 
-@BindingAdapter("hintText")
-fun TextView.setHintText(tales: List<TaleItemModel>?) {
-    text = if (tales.isNullOrEmpty()) resources.getString(R.string.roll_hint_no_tales_text)
-    else resources.getString(R.string.roll_hint_default_text)
+@BindingAdapter("noTalesTextVisibility")
+fun TextView.setNoTalesTextVisibility(tales: List<TaleItemModel>?) {
+    visibility = if (tales.isNullOrEmpty()) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("rollScreenVisibility")
+fun LinearLayout.setRollScreenVisibility(tales: List<TaleItemModel>?) {
+    visibility = if (!tales.isNullOrEmpty()) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("hintTextVisibility")

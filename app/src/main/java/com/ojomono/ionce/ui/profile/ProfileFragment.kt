@@ -31,6 +31,9 @@ class ProfileFragment : BaseFragment() {
     override lateinit var viewModel: ProfileViewModel
     override lateinit var progressBar: ProgressBar
 
+    // Current displayed dialog
+    private var currentDialog: AlertDialog? = null
+
     /***********************/
     /** Lifecycle methods **/
     /***********************/
@@ -39,7 +42,7 @@ class ProfileFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
         binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel
@@ -81,6 +84,7 @@ class ProfileFragment : BaseFragment() {
             is ProfileViewModel.EventType.ShowEmailAddressDialog -> showEmailAddressDialog()
             is ProfileViewModel.EventType.ShowPhoneNumberDialog -> showPhoneVerifyDialog()
             is ProfileViewModel.EventType.ShowVerificationCodeDialog -> showVerificationCodeDialog()
+            is ProfileViewModel.EventType.DismissCurrentDialog -> dismissCurrentDialog()
             is ProfileViewModel.EventType.ShowLinkWithTwitter -> showLinkWithTwitter()
             is ProfileViewModel.EventType.ShowLinkWithFacebook -> showLinkWithFacebook()
             is ProfileViewModel.EventType.ShowLinkWithGoogle -> showLinkWithGoogle()
@@ -197,6 +201,9 @@ class ProfileFragment : BaseFragment() {
                 .build()
             PhoneAuthProvider.verifyPhoneNumber(options)
 
+            // Show progress bar until verification complete
+            progressBar.visibility = View.VISIBLE
+
             // Save phone number for instance state changes
             viewModel.phoneNumberToVerify = phoneNumber
         }
@@ -205,21 +212,34 @@ class ProfileFragment : BaseFragment() {
      * Present the user an interface that prompts them to type the verification code from the SMS
      * message.
      */
-    private fun showVerificationCodeDialog() =
-        AlertDialog.Builder(context)
-            .setMessage(
-                getString(
-                    R.string.profile_verification_code_dialog_message,
-                    viewModel.phoneNumberToVerify
+    private fun showVerificationCodeDialog() {
+        // Hide progress bar showed in: verifyPhoneNumber fun
+        progressBar.visibility = View.GONE
+
+        currentDialog =
+            AlertDialog.Builder(context)
+                .setMessage(
+                    getString(
+                        R.string.profile_verification_code_dialog_message,
+                        viewModel.phoneNumberToVerify
+                    )
                 )
-            )
-            .setInputAndPositiveButton(
-                viewModel::handlePhoneVerificationCode,
-                buttonTextResId = R.string.profile_phone_verify_dialog_button
-            )
-            .setCancelButton()
-            .create()
-            .show()
+                .setInputAndPositiveButton(
+                    viewModel::handlePhoneVerificationCode,
+                    buttonTextResId = R.string.profile_phone_verify_dialog_button
+                )
+                .setCancelButton()
+                .create()
+        currentDialog?.show()
+    }
+
+    /**
+     * Dismiss the current displayed dialog.
+     */
+    private fun dismissCurrentDialog() {
+        currentDialog?.dismiss()
+        currentDialog = null
+    }
 
     /**
      * Show activity for linking with Twitter.

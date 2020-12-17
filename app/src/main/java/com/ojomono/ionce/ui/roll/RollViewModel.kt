@@ -8,8 +8,8 @@ import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.BaseViewModel
 
 class RollViewModel : BaseViewModel() {
-    // The user's tales list
-    val tales: LiveData<List<TaleItemModel>> = Database.userTales   // TODO: Use a Repository class
+    // The user's tales list    // TODO: Use a Repository class
+    val tales: LiveData<MutableList<TaleItemModel>> = Database.userTales
 
     // The rolled tale's title
     private val _text = MutableLiveData<String>()

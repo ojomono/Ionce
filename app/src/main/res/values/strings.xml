@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE resources [
-    <!ENTITY title_tales "Tales">
-    <!ENTITY roll_button_text "ROLL!">
-    ]>
+<!DOCTYPE resources [<!ENTITY title_tales "My Tales"><!ENTITY roll_button_text "ROLL!"><!ENTITY general_tale_preface "That one time when…">]>
 
 <resources>
     <!-- Application -->
-    <string name="app_name">Ionce</string>
+    <string name="app_name">I once</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">301355424319660</string>
@@ -43,15 +40,16 @@
     <string name="profile_unlink_provider_dialog_title">Unlink Provider</string>
     <string name="profile_unlink_provider_dialog_message">Are you sure you want to unlink your %1$s account?</string>
     <string name="profile_unlink_provider_positive_button_text">unlink</string>
+    <string name="profile_error_last_provider">You must have at least 1 provider.</string>
 
     <!-- Tales screen -->
     <string name="tales_hint_text">You don\'t have any tales yet.\nYou can add some with the \'+\' button in the bottom-right corner.</string>
-    <string name="tales_header_text">My Tales</string>
+    <string name="tales_header_text">&general_tale_preface;</string>
     <string name="tales_edit_icon_content_description">Edit tale</string>
     <string name="tales_delete_icon_content_description">Delete tale</string>
     <string name="tales_add_fab_content_description">New tale</string>
     <string name="tales_add_dialog_title">New Tale</string>
-    <string name="tales_add_dialog_message">Enter Title Below</string>
+    <string name="tales_add_dialog_message">&general_tale_preface;</string>
     <string name="tales_update_dialog_title">Update Tale</string>
     <string name="tales_delete_dialog_title">Delete</string>
     <string name="tales_delete_dialog_message">Are you sure you want to delete tale: \'%1$s\'?</string>
@@ -59,9 +57,9 @@
 
     <!-- Roll screen -->
     <string name="roll_button_text">&roll_button_text;</string>
-    <string name="roll_preface_text">That one time when…</string>
-    <string name="roll_hint_default_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
-    <string name="roll_hint_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab.</string>
+    <string name="roll_preface_text">&general_tale_preface;</string>
+    <string name="roll_hint_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
+    <string name="roll_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab.</string>
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
 
     <!-- Dialogs -->

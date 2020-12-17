@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 /**
  * [RecyclerView.Adapter] that can display a [TaleItemModel] taleItem.
  */
-class TalesAdapter(private val clickListener: TalesListener) :
+class TalesAdapter(private val listener: TalesListener) :
     ListAdapter<TalesAdapter.DataItem, RecyclerView.ViewHolder>(TalesDiffCallback()) {
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
@@ -53,7 +53,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
         when (holder) {
             is ViewHolder -> {
                 val talesItem = getItem(position) as DataItem.TaleItem
-                holder.bind(talesItem.model, clickListener)
+                holder.bind(talesItem.model, listener)
             }
         }
     }
@@ -68,6 +68,13 @@ class TalesAdapter(private val clickListener: TalesListener) :
             else -> super.getItemViewType(position)
         }
     }
+
+    /**
+     * Modify the tales list that an item is moved from [fromPosition] to [toPosition].
+     */
+    fun onRowMoved(fromPosition: Int, toPosition: Int) =
+        // Only the adapter knows about the header - so the positions in the actual list are -1
+        if (toPosition > 0) listener.onMoved(fromPosition - 1, toPosition - 1) else null
 
     /**
      * Provide a reference to the views for each header item.
@@ -128,6 +135,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
     interface TalesListener {
         fun onEdit(taleItem: TaleItemModel)     // Edit icon clicked
         fun onDelete(taleItem: TaleItemModel)   // Delete icon clicked
+        fun onMoved(fromPosition: Int, toPosition: Int)  // Row dragged and dropped
     }
 
     /**
@@ -146,7 +154,7 @@ class TalesAdapter(private val clickListener: TalesListener) :
     }
 
     companion object {
-        private const val ITEM_VIEW_TYPE_HEADER = 0
-        private const val ITEM_VIEW_TYPE_ITEM = 1
+        const val ITEM_VIEW_TYPE_HEADER = 0
+        const val ITEM_VIEW_TYPE_ITEM = 1
     }
 }

@@ -14,8 +14,13 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable,Signature
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+# This rule will properly ProGuard all the model classes in the package com.ojomono.ionce.models
+-keepclassmembers class com.ojomono.ionce.models.* {
+      *;
+    }

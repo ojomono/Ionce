@@ -27,6 +27,9 @@ object Database {
     private const val CP_USERS = "users"
     private const val CP_TALES = "tales"
 
+    // Field Names
+    private const val FN_TALES = "tales"
+
     /************/
     /** Fields **/
     /************/
@@ -43,8 +46,8 @@ object Database {
     //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
 
     // Current user's tales list
-    private val _userTales = MutableLiveData<List<TaleItemModel>>()
-    val userTales: LiveData<List<TaleItemModel>> = _userTales
+    private val _userTales = MutableLiveData<MutableList<TaleItemModel>>()
+    val userTales: LiveData<MutableList<TaleItemModel>> = _userTales
 
     // If a user is already logged-in - get it's document
     init {
@@ -126,8 +129,11 @@ object Database {
 
             // In a transaction, delete the tale document and remove it from user's tales list
             task = db.runTransaction { transaction ->
-                val user: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
-                user?.let {
+                val userModel: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
+                userModel?.let { user ->
+                    // Get the tales order set on the screen
+                    userTales.value?.let { user.tales = it }
+
                     // Update user's list
                     user.deleteTale(id)
 
@@ -142,6 +148,14 @@ object Database {
 
         return task
     }
+
+    /**
+     * Update the current users tales list so it holds the current tales order.
+     */
+    fun saveTalesOrder() =
+        userDocRef?.update(FN_TALES, userTales.value)
+            ?.addOnSuccessListener { Log.d(TAG, "userDocRef successfully updated!") }
+            ?.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
 
     /*********************/
     /** private methods **/
@@ -166,8 +180,11 @@ object Database {
 
             // In a transaction, set the tale's document and update the user's tale list
             task = db.runTransaction { transaction ->
-                val user: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
-                user?.let {
+                val userModel: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
+                userModel?.let { user ->
+                    // Get the tales order set on the screen
+                    userTales.value?.let { user.tales = it }
+
                     // Update user's list
                     user.setTale(TaleItemModel(tale))
 
