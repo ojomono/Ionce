@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
@@ -193,22 +194,29 @@ class ProfileFragment : BaseFragment() {
      * Verify the given [phoneNumber].
      */
     private fun verifyPhoneNumber(phoneNumber: String) =
-        activity?.let {
-            val options = PhoneAuthOptions.newBuilder()
-                .setPhoneNumber(phoneNumber)       // Phone number to verify
-                .setTimeout(PHONE_VERIFICATION_TIMEOUT, TimeUnit.SECONDS) // Timeout and unit
-                .setActivity(it)                 // Activity (for callback binding)
-                .setCallbacks(getPhoneVerificationCallbacks())    // OnVerificationStateChangedCallbacks
-                .build()
-            PhoneAuthProvider.verifyPhoneNumber(options)
+        // The phone number should be in a format that can be parsed into E.164 format
+        if (PhoneNumberUtils.isWellFormedSmsAddress(phoneNumber))
+            activity?.let {
+                val options = PhoneAuthOptions.newBuilder()
+                    .setPhoneNumber(phoneNumber)       // Phone number to verify
+                    .setTimeout(PHONE_VERIFICATION_TIMEOUT, TimeUnit.SECONDS) // Timeout and unit
+                    .setActivity(it)                 // Activity (for callback binding)
+                    .setCallbacks(getPhoneVerificationCallbacks())    // OnVerificationStateChangedCallbacks
+                    .build()
+                PhoneAuthProvider.verifyPhoneNumber(options)
 
-            // Show progress bar until verification complete (manually as we don't have a task)
-            // This is hidden in each callback option from: getPhoneVerificationCallbacks()
-            progressBar.visibility = View.VISIBLE
+                // Show progress bar until verification complete (manually as we don't have a task)
+                // This is hidden in each callback option from: getPhoneVerificationCallbacks()
+                progressBar.visibility = View.VISIBLE
 
-            // Save phone number for instance state changes
-            viewModel.phoneNumberToVerify = phoneNumber
-        }
+                // Save phone number for instance state changes
+                viewModel.phoneNumberToVerify = phoneNumber
+            }
+        else Toast.makeText(
+            context,
+            R.string.profile_phone_verify_invalid_credential_message,
+            Toast.LENGTH_SHORT
+        ).show()
 
     // TODO Move getPhoneVerificationCallbacks to ProfileViewModel. in onVerificationCompleted,
     //  there is a need to raise two different events in the same function (withProgressBar &
@@ -243,7 +251,7 @@ class ProfileFragment : BaseFragment() {
                 Log.w(TAG, "onVerificationFailed", e)
                 Toast.makeText(
                     context,
-                    R.string.profile_phone_verify_failed_message,
+                    viewModel.getPhoneVerificationFailedMessage(e),
                     Toast.LENGTH_SHORT
                 ).show()
                 viewModel.phoneNumberToVerify = ""    // Clear flag
