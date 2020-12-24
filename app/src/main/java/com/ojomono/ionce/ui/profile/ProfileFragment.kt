@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import android.widget.ProgressBar
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.FirebaseException    // TODO avoid importing firebase packages here
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
@@ -83,8 +85,6 @@ class ProfileFragment : BaseFragment() {
             is ProfileViewModel.EventType.ShowNameEditDialog -> showNameEditDialog()
             is ProfileViewModel.EventType.ShowEmailAddressDialog -> showEmailAddressDialog()
             is ProfileViewModel.EventType.ShowPhoneNumberDialog -> showPhoneVerifyDialog()
-            is ProfileViewModel.EventType.ShowVerificationCodeDialog -> showVerificationCodeDialog()
-            is ProfileViewModel.EventType.DismissCurrentDialog -> dismissCurrentDialog()
             is ProfileViewModel.EventType.ShowLinkWithTwitter -> showLinkWithTwitter()
             is ProfileViewModel.EventType.ShowLinkWithFacebook -> showLinkWithFacebook()
             is ProfileViewModel.EventType.ShowLinkWithGoogle -> showLinkWithGoogle()
@@ -167,7 +167,8 @@ class ProfileFragment : BaseFragment() {
             .setTitle(R.string.profile_email_link_dialog_title)
             .setInputAndPositiveButton(
                 viewModel::sendSignInLinkToEmail,
-                buttonTextResId = R.string.profile_email_link_dialog_button
+                viewModel.user.value?.email ?: "",
+                R.string.profile_email_link_dialog_button
             )
             .setCancelButton()
             .create()
@@ -197,15 +198,70 @@ class ProfileFragment : BaseFragment() {
                 .setPhoneNumber(phoneNumber)       // Phone number to verify
                 .setTimeout(PHONE_VERIFICATION_TIMEOUT, TimeUnit.SECONDS) // Timeout and unit
                 .setActivity(it)                 // Activity (for callback binding)
-                .setCallbacks(viewModel.getPhoneVerificationCallbacks())    // OnVerificationStateChangedCallbacks
+                .setCallbacks(getPhoneVerificationCallbacks())    // OnVerificationStateChangedCallbacks
                 .build()
             PhoneAuthProvider.verifyPhoneNumber(options)
 
-            // Show progress bar until verification complete
+            // Show progress bar until verification complete (manually as we don't have a task)
+            // This is hidden in each callback option from: getPhoneVerificationCallbacks()
             progressBar.visibility = View.VISIBLE
 
             // Save phone number for instance state changes
             viewModel.phoneNumberToVerify = phoneNumber
+        }
+
+    // TODO Move getPhoneVerificationCallbacks to ProfileViewModel. in onVerificationCompleted,
+    //  there is a need to raise two different events in the same function (withProgressBar &
+    //  dismissCurrentDialog) which can result in overriding. In order to move it, a separate
+    //  event-holder-LiveData should be set in BaseViewModel: Separating the progress bar events
+    //  from the rest. Also notice the manual hiding of the progress bar in all callbacks.
+
+    /**
+     * Get the callback object for the phone verification process.
+     */
+    private fun getPhoneVerificationCallbacks() =
+
+        object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                // Hide progress bar showed in: verifyPhoneNumber fun
+                progressBar.visibility = View.GONE
+
+                Log.d(TAG, "onVerificationCompleted:$credential")
+                viewModel.handlePhoneVerificationComplete(credential)?.withProgressBar(progressBar)
+                viewModel.phoneNumberToVerify = ""    // Clear flag
+
+                // If verified automatically, no need for the manual dialog
+                currentDialog?.dismiss()
+                currentDialog = null
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                // Hide progress bar showed in: verifyPhoneNumber fun
+                progressBar.visibility = View.GONE
+
+                Log.w(TAG, "onVerificationFailed", e)
+                Toast.makeText(
+                    context,
+                    R.string.profile_phone_verify_failed_message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                viewModel.phoneNumberToVerify = ""    // Clear flag
+            }
+
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken
+            ) {
+                // Hide progress bar showed in: verifyPhoneNumber fun
+                progressBar.visibility = View.GONE
+
+                Log.d(TAG, "onCodeSent:$verificationId")
+                viewModel.storedVerificationId = verificationId
+                // If phone number is empty maybe the automatic verification already completed
+                // and anyway there is nothing to compare to...
+                if (viewModel.phoneNumberToVerify.isNotEmpty()) showVerificationCodeDialog()
+            }
         }
 
     /**
@@ -213,9 +269,6 @@ class ProfileFragment : BaseFragment() {
      * message.
      */
     private fun showVerificationCodeDialog() {
-        // Hide progress bar showed in: verifyPhoneNumber fun
-        progressBar.visibility = View.GONE
-
         currentDialog =
             AlertDialog.Builder(context)
                 .setMessage(
@@ -231,14 +284,6 @@ class ProfileFragment : BaseFragment() {
                 .setCancelButton()
                 .create()
         currentDialog?.show()
-    }
-
-    /**
-     * Dismiss the current displayed dialog.
-     */
-    private fun dismissCurrentDialog() {
-        currentDialog?.dismiss()
-        currentDialog = null
     }
 
     /**

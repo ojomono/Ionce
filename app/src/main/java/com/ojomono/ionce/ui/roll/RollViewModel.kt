@@ -21,7 +21,7 @@ class RollViewModel : BaseViewModel() {
     fun onRoll() {
         // If the user have no tales yet - show him an error toast
         if (tales.value.isNullOrEmpty())
-            showErrorMessage(R.string.roll_error_no_tales)
+            showMessageByResId(R.string.roll_error_no_tales)
         // If he has some - get a random one and show it's title
         else _text.value = tales.value?.random()?.title
     }

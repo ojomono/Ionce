@@ -15,9 +15,11 @@ abstract class BaseViewModel : ViewModel() {
     interface Event
 
     // Common event types
-    class ShowProgressBar(val task: Task<*>) : Event
-    class ShowErrorMessage(val e: Exception) : Event
-    class ShowErrorMessageByResId(val messageResId: Int) : Event
+    sealed class EventType() : Event {
+        class ShowProgressBar(val task: Task<*>) : EventType()
+        class ShowErrorMessage(val e: Exception) : EventType()
+        class ShowMessageByResId(val messageResId: Int, vararg val args: String) : EventType()
+    }
 
     // The observable event holder. Observe from view class to "catch" the events.
     private val _events = MutableLiveData<OneTimeEvent<Event>>()
@@ -32,10 +34,10 @@ abstract class BaseViewModel : ViewModel() {
 
     // Common event posting aliases
     protected fun Task<*>.withProgressBar() =
-        apply { postEvent(ShowProgressBar(this)) }
+        apply { postEvent(EventType.ShowProgressBar(this)) }
 
-    protected fun showErrorMessage(e: Exception) = postEvent(ShowErrorMessage(e))
-    protected fun showErrorMessage(messageResId: Int) =
-        postEvent(ShowErrorMessageByResId(messageResId))
+    protected fun showErrorMessage(e: Exception) = postEvent(EventType.ShowErrorMessage(e))
+    protected fun showMessageByResId(resId: Int, vararg args: String) =
+        postEvent(EventType.ShowMessageByResId(resId, *args))
 
 }

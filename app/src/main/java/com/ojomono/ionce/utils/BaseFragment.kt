@@ -39,10 +39,12 @@ abstract class BaseFragment : Fragment() {
      */
     protected open fun handleEvent(event: BaseViewModel.Event) {
         when (event) {
-            is BaseViewModel.ShowProgressBar -> progressBar?.let { event.task.withProgressBar(it) }
-            is BaseViewModel.ShowErrorMessage -> showErrorMessage(event.e.message)
-            is BaseViewModel.ShowErrorMessageByResId ->
-                showErrorMessage(getString(event.messageResId))
+            is BaseViewModel.EventType.ShowProgressBar ->
+                progressBar?.let { event.task.withProgressBar(it) }
+            is BaseViewModel.EventType.ShowErrorMessage ->
+                showMessage(event.e.message)
+            is BaseViewModel.EventType.ShowMessageByResId ->
+                showMessage(getString(event.messageResId, *event.args))
         }
     }
 
@@ -72,11 +74,8 @@ abstract class BaseFragment : Fragment() {
     /***********************/
 
     /**
-     * Show the given error [message] and hide the progress bar.
+     * Show the given [message].
      */
-    private fun showErrorMessage(message: String?) {
-        // The error is probably the result of the operation - so make sure the progress bar is gone
-        progressBar?.apply { visibility = View.GONE }
+    private fun showMessage(message: String?) =
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
 }

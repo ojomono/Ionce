@@ -243,16 +243,18 @@ object Authentication {
      * Send a sign-in link to the given [email].
      */
     fun sendSignInLinkToEmail(email: String): Task<Void>? {
-        emailToVerify = email   // Store for use when actually linking the email
-        val actionCodeSettings = actionCodeSettings {
-            url = DL_URL_DOMAIN + DL_LINK_WITH_EMAIL
-            handleCodeInApp = true  // This must be true
-            setAndroidPackageName(BuildConfig.APPLICATION_ID, true, null)
-        }
-        return auth.sendSignInLinkToEmail(email, actionCodeSettings)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) Log.d(TAG, "Email sent.")
+        var task: Task<Void>? = null
+        if (email.isNotEmpty()) {
+            emailToVerify = email   // Store for use when actually linking the email
+            val actionCodeSettings = actionCodeSettings {
+                url = DL_URL_DOMAIN + DL_LINK_WITH_EMAIL
+                handleCodeInApp = true  // This must be true
+                setAndroidPackageName(BuildConfig.APPLICATION_ID, true, null)
             }
+            task = auth.sendSignInLinkToEmail(email, actionCodeSettings)
+                .addOnCompleteListener { if (it.isSuccessful) Log.d(TAG, "Email sent.") }
+        }
+        return task
     }
 
     /**

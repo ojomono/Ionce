@@ -3,7 +3,9 @@ package com.ojomono.ionce.ui.profile
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
+import android.text.TextUtils
 import android.util.Log
+import android.util.Patterns
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
@@ -16,14 +18,13 @@ import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.FirebaseException    // TODO avoid importing firebase packages here
-import com.google.firebase.FirebaseTooManyRequestsException // TODO avoid importing firebase packages here
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.utils.BaseViewModel
 import com.ojomono.ionce.utils.TAG
+
 
 class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     // Current logged in user
@@ -49,8 +50,6 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
         object ShowNameEditDialog : EventType()
         object ShowEmailAddressDialog : EventType()
         object ShowPhoneNumberDialog : EventType()
-        object ShowVerificationCodeDialog : EventType()
-        object DismissCurrentDialog : EventType()
         object ShowLinkWithTwitter : EventType()
         object ShowLinkWithFacebook : EventType()
         object ShowLinkWithGoogle : EventType()
@@ -176,52 +175,14 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     /**
      * Send a sign-in link to the given [email].
      */
-    fun sendSignInLinkToEmail(email: String) =
-        Authentication.sendSignInLinkToEmail(email)?.withProgressBar()
-
-    /**
-     * Get the callback object for the phone verification process.
-     */
-    fun getPhoneVerificationCallbacks() =
-        object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                Log.d(TAG, "onVerificationCompleted:$credential")
-                Authentication.linkWithPhone(credential)?.withProgressBar()
-                phoneNumberToVerify = ""    // Clear flag
-
-                // If verified automatically, no need for the manual dialog
-                postEvent(EventType.DismissCurrentDialog)
-            }
-
-            override fun onVerificationFailed(e: FirebaseException) {
-                Log.w(TAG, "onVerificationFailed", e)
-
-                when (e) {
-                    is FirebaseAuthInvalidCredentialsException -> {
-                        // Invalid request
-                    }
-                    is FirebaseTooManyRequestsException -> {
-                        // The SMS quota for the project has been exceeded
-                    }
+    fun sendSignInLinkToEmail(email: String) {
+        if (email.isValidEmail())
+            Authentication.sendSignInLinkToEmail(email)?.withProgressBar()
+                ?.addOnCompleteListener {
+                    if (it.isSuccessful) showMessageByResId(R.string.profile_email_link_sent, email)
                 }
-
-                showErrorMessage(R.string.profile_phone_verify_failed_message)
-                phoneNumberToVerify = ""    // Clear flag
-            }
-
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken
-            ) {
-                Log.d(TAG, "onCodeSent:$verificationId")
-                storedVerificationId = verificationId
-                // If phone number is empty maybe the automatic verification already completed
-                // and anyway there is nothing to compare to...
-                if (phoneNumberToVerify.isNotEmpty())
-                    postEvent(EventType.ShowVerificationCodeDialog)
-            }
-        }
+        else showMessageByResId(R.string.profile_email_link_invalid_address)
+    }
 
     /**
      * Link current user with phone number (if [code] matches the [storedVerificationId]).
@@ -230,6 +191,12 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
         Authentication.linkWithPhone(storedVerificationId, code)
             ?.handleCollision(::showErrorMessage)?.withProgressBar()
             ?.addOnCompleteListener { phoneNumberToVerify = ""    /* Clear flag */ }
+
+    /**
+     * Link current user with phone number.
+     */
+    fun handlePhoneVerificationComplete(credential: AuthCredential) =
+        Authentication.linkWithPhone(credential)
 
     /**
      * Link current user with Facebook account with given [token].
@@ -288,12 +255,19 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
                 // If it's linked but it's the only provider (aside from the default "firebase") -
                 // return an error event
                 it <= MIN_NUMBER_OF_PROVIDERS ->
-                    ShowErrorMessageByResId(R.string.profile_error_last_provider)
+                    BaseViewModel.EventType.ShowMessageByResId(R.string.profile_error_last_provider)
 
                 // If it's linked and is not the only provider - return the "unlink event"
                 else -> EventType.ShowUnlinkProviderDialog(nameResId)
             }
         }
+
+    /**
+     * Check if the string is a valid email address.
+     */
+    private fun String.isValidEmail(): Boolean {
+        return !TextUtils.isEmpty(this) && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+    }
 
     /***************/
     /** Constants **/
