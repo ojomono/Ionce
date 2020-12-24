@@ -33,7 +33,9 @@
     <string name="profile_phone_verify_dialog_title">Verify phone number</string>
     <string name="profile_phone_verify_dialog_message">By tapping "Verify", an SMS may be sent. Message &amp; data rates may apply.</string>
     <string name="profile_phone_verify_dialog_button">Verify</string>
-    <string name="profile_phone_verify_failed_message">Phone number verification has failed.</string>
+    <string name="profile_phone_verify_invalid_credential_message">The format of the phone number provided is incorrect.</string>
+    <string name="profile_phone_verify_too_many_requests_message">Too many requests from this device (unusual activity). Please try again later.</string>
+    <string name="profile_phone_verify_default_error_message">Phone number verification has failed.</string>
     <string name="profile_verification_code_dialog_message">Enter the 6-digit code we sent to %1$s</string>
     <string name="profile_email_link_dialog_title">Link email address</string>
     <string name="profile_email_link_dialog_button">Next</string>

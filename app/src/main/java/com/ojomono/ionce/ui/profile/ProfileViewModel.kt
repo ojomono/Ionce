@@ -18,6 +18,8 @@ import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
@@ -185,18 +187,34 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     }
 
     /**
+     * Link current user with phone number.
+     */
+    fun handlePhoneVerificationComplete(credential: AuthCredential) =
+        Authentication.linkWithPhone(credential)
+
+    /**
+     * Get the error message string for each possible phone verification exception [e]. Default to
+     * null.
+     */
+    fun getPhoneVerificationFailedMessage(e: FirebaseException) =
+        when (e) {
+            // Invalid request
+            is FirebaseAuthInvalidCredentialsException ->
+                R.string.profile_phone_verify_invalid_credential_message
+            // The SMS quota for the project has been exceeded
+            is FirebaseTooManyRequestsException ->
+                R.string.profile_phone_verify_too_many_requests_message
+            // Other errors
+            else -> R.string.profile_phone_verify_default_error_message
+        }
+
+    /**
      * Link current user with phone number (if [code] matches the [storedVerificationId]).
      */
     fun handlePhoneVerificationCode(code: String) =
         Authentication.linkWithPhone(storedVerificationId, code)
             ?.handleCollision(::showErrorMessage)?.withProgressBar()
             ?.addOnCompleteListener { phoneNumberToVerify = ""    /* Clear flag */ }
-
-    /**
-     * Link current user with phone number.
-     */
-    fun handlePhoneVerificationComplete(credential: AuthCredential) =
-        Authentication.linkWithPhone(credential)
 
     /**
      * Link current user with Facebook account with given [token].
