@@ -3,7 +3,7 @@
 
 <resources>
     <!-- Application -->
-    <string name="app_name">I once</string>
+    <string name="app_name">I Once</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">301355424319660</string>

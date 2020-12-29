@@ -184,7 +184,8 @@ class ProfileFragment : BaseFragment() {
             .setMessage(R.string.profile_phone_verify_dialog_message)
             .setInputAndPositiveButton(
                 ::verifyPhoneNumber,
-                buttonTextResId = R.string.profile_phone_verify_dialog_button
+                viewModel.user.value?.phoneNumber ?: "",
+                R.string.profile_phone_verify_dialog_button
             )
             .setCancelButton()
             .create()
