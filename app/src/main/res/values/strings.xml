@@ -31,7 +31,7 @@
     <string name="profile_facebook_login_button_text">Link Facebook Account</string>
     <string name="profile_name_edit_dialog_title">Update user name</string>
     <string name="profile_phone_verify_dialog_title">Verify phone number</string>
-    <string name="profile_phone_verify_dialog_message">By tapping "Verify", an SMS may be sent. Message &amp; data rates may apply.</string>
+    <string name="profile_phone_verify_dialog_message">Enter your phone number in the format:\n[+][country code][area code][phone number]\n\nBy tapping "Verify", an SMS may be sent. Message &amp; data rates may apply.</string>
     <string name="profile_phone_verify_dialog_button">Verify</string>
     <string name="profile_phone_verify_invalid_credential_message">The format of the phone number provided is incorrect.</string>
     <string name="profile_phone_verify_too_many_requests_message">All requests from this device are temporarily blocked due to unusual activity (too many requests). Please try again later.</string>
