@@ -88,6 +88,7 @@ class TalesFragment : BaseFragment() {
             val talesAdapter = TalesAdapter(viewModel)
             adapter = talesAdapter
 
+            // For drag n' drop feature
 //            // Add  Item touch helper to the recycler view
 //            val itemTouchHelper = ItemTouchHelper(TalesTouchCallback(talesAdapter))
 //            itemTouchHelper.attachToRecyclerView(this)

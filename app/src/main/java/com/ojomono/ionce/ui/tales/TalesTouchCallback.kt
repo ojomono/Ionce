@@ -51,10 +51,9 @@ class TalesTouchCallback(private val adapter: TalesAdapter) : ItemTouchHelper.Ca
         // also completed its animation.
         // This is a good place to send update to your backend about changes
         oldPosition?.let {
-            if (it != viewHolder.adapterPosition) adapter.onRowMoved(
-                it,
-                viewHolder.adapterPosition
-            )
+            // TODO return when drag n' drop feature is enabled
+//            if (it != viewHolder.adapterPosition)
+//                adapter.onRowMoved(it, viewHolder.adapterPosition)
             oldPosition = null
         }
     }

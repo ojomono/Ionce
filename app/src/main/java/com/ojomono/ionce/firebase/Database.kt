@@ -4,6 +4,7 @@ package com.ojomono.ionce.firebase
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.facebook.internal.BoltsMeasurementEventListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
@@ -93,7 +94,7 @@ object Database {
             }
 
             // Listen for changes in the document
-            registration = userDocRef?.addSnapshotListener { snapshot, e ->
+            registration = userDocRef?.addSnapshotListener() { snapshot, e ->
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else {
                     userDocument = snapshot
@@ -118,8 +119,8 @@ object Database {
     /**
      * Delete the tale document with id=[id].
      */
-    fun deleteTale(id: String): Task<Transaction>? {
-        var task: Task<Transaction>? = null
+    fun deleteTale(id: String): Task<Void>? {
+        var task: Task<Void>? = null
 
         // Deleting a tale is possible only if a user is logged in
         // (== his document reference is not null)
@@ -127,35 +128,36 @@ object Database {
             // Create reference for wanted tale, for use inside the transaction
             val taleRef = userRef.collection(CP_TALES).document(id)
 
-            // In a transaction, delete the tale document and remove it from user's tales list
-            task = db.runTransaction { transaction ->
-                val userModel: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
-                userModel?.let { user ->
-                    // Get the tales order set on the screen
-                    userTales.value?.let { user.tales = it }
+            // Create an updated user's tales list
+            userTales.value?.let {
+                val tales = it.toMutableList().apply {
+                    // If given id is in the list - delete it
+                    val index = indexOfFirst { item -> item.id == id }
+                    if (index != -1) removeAt(index)
+                }
 
-                    // Update user's list
-                    user.deleteTale(id)
-
-                    // Commit to Firestore
-                    transaction.update(userRef, user::tales.name, user.tales)
-                    transaction.delete(taleRef)
+                // In a transaction, delete the tale document and remove it from user's tales list
+                task = db.runBatch { batch ->
+                    batch.update(userRef, UserModel::tales.name, tales)
+                    batch.delete(taleRef)
                 }
             }
-            task?.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
-                ?.addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
+
+            task?.addOnSuccessListener { Log.d(TAG, "Batch write success!") }
+                ?.addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
         }
 
         return task
     }
 
-    /**
-     * Update the current users tales list so it holds the current tales order.
-     */
-    fun saveTalesOrder() =
-        userDocRef?.update(FN_TALES, userTales.value)
-            ?.addOnSuccessListener { Log.d(TAG, "userDocRef successfully updated!") }
-            ?.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+    // For drag n' drop feature
+//    /**
+//     * Update the current users tales list so it holds the current tales order.
+//     */
+//    fun saveTalesOrder() =
+//        userDocRef?.update(FN_TALES, userTales.value)
+//            ?.addOnSuccessListener { Log.d(TAG, "userDocRef successfully updated!") }
+//            ?.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
 
     /*********************/
     /** private methods **/
@@ -165,39 +167,39 @@ object Database {
      * Overwrite the tale document with id=[id] to have the given [title]. If [id] is empty, create
      * a new document with a generated id and title=[title]. Return the set [Task].
      */
-    private fun setTale(id: String = "", title: String): Task<Transaction>? {
-        var task: Task<Transaction>? = null
+    private fun setTale(id: String = "", title: String): Task<Void>? {
+        var task: Task<Void>? = null
 
         // Setting a tale is possible only if a user is logged in
         // (== his document reference is not null)
         userDocRef?.let { userRef ->
-            // Create reference for wanted tale, for use inside the transaction - if an id was given
+            // Create reference for wanted tale, for use inside the batch - if an id was given
             // get the existing document, else reference a new one.
             val talesCol = userRef.collection(CP_TALES)
-            val taleRef =
-                if (id.isEmpty()) talesCol.document() else talesCol.document(id)
-            val tale = TaleModel(taleRef.id, title)
+            val taleRef = if (id.isEmpty()) talesCol.document() else talesCol.document(id)
+            val taleModel = TaleModel(taleRef.id, title)
+            val taleItem = TaleItemModel(taleModel)
 
-            // In a transaction, set the tale's document and update the user's tale list
-            task = db.runTransaction { transaction ->
-                val userModel: UserModel? = transaction.get(userRef).toObject(UserModel::class.java)
-                userModel?.let { user ->
-                    // Get the tales order set on the screen
-                    userTales.value?.let { user.tales = it }
+            // Create an updated user's tales list
+            userTales.value?.let {
+                val tales = it.toMutableList().apply {
+                    // If given taleItem is in the list (searched by id) - overwrite it with new
+                    // model, else add it
+                    val index = indexOfFirst { item -> item.id == taleItem.id }
+                    if (index == -1) add(taleItem)
+                    else this[index] = taleItem
+                }
 
-                    // Update user's list
-                    user.setTale(TaleItemModel(tale))
-
-                    // Commit to Firestore
-                    transaction.update(userRef, user::tales.name, user.tales)
-                    transaction.set(taleRef, tale)
+                // In a batch write, set the tale's document and update the user's tale list
+                task = db.runBatch { batch ->
+                    batch.update(userRef, UserModel::tales.name, tales)
+                    batch.set(taleRef, taleModel)
                 }
             }
-            task?.addOnSuccessListener { Log.d(TAG, "Transaction success!") }
-                ?.addOnFailureListener { e -> Log.w(TAG, "Transaction failure.", e) }
+            task?.addOnSuccessListener { Log.d(TAG, "Batch write success!") }
+                ?.addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
         }
 
         return task
     }
-
 }

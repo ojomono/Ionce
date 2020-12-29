@@ -47,38 +47,40 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
         clickedTale = null
     }
 
-    fun addTale(title: String) = Database.createTale(title)?.withProgressBar()
+    fun addTale(title: String) = Database.createTale(title)
 
-    override fun onMoved(fromPosition: Int, toPosition: Int) {
-        // Move the tale to it's right place in the LiveData list
-        tales.value?.let {
-            if (fromPosition < toPosition) {
-                for (i in fromPosition until toPosition) Collections.swap(it, i, i + 1)
-            } else {
-                for (i in fromPosition downTo toPosition + 1) Collections.swap(it, i, i - 1)
-            }
-        }
-        wasOrderChanged = true
-    }
+    // For drag n' drop feature
+//    override fun onMoved(fromPosition: Int, toPosition: Int) {
+//        // Move the tale to it's right place in the LiveData list
+//        tales.value?.let {
+//            if (fromPosition < toPosition) {
+//                for (i in fromPosition until toPosition) Collections.swap(it, i, i + 1)
+//            } else {
+//                for (i in fromPosition downTo toPosition + 1) Collections.swap(it, i, i - 1)
+//            }
+//        }
+//        wasOrderChanged = true
+//    }
 
     fun updateTale(title: String) =
     // Copy is needed because if we change the original item, adapter's new list and old list would
         // be the same and it will not refresh. Thus a copy is needed.
         clickedTale?.copy(title = title)
             ?.let {
-                Database.updateTale(it)?.withProgressBar()
-                    ?.addOnCompleteListener { clearClickedTale() }
+                Database.updateTale(it)
+                clearClickedTale()  // Not waiting for callback to support offline mode
             }
 
     fun deleteTale() =
         clickedTale
             ?.let {
-                Database.deleteTale(it.id)?.withProgressBar()
-                    ?.addOnCompleteListener { clearClickedTale() }
+                Database.deleteTale(it.id)
+                clearClickedTale()  // Not waiting for callback to support offline mode
             }
 
-    override fun onCleared() {
-        super.onCleared()
-        if (wasOrderChanged) Database.saveTalesOrder()?.withProgressBar()
-    }
+    // For drag n' drop feature
+//    override fun onCleared() {
+//        super.onCleared()
+//        if (wasOrderChanged) Database.saveTalesOrder()?.withProgressBar()
+//    }
 }
