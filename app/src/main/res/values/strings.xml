@@ -37,7 +37,7 @@
     <string name="profile_phone_verify_too_many_requests_message">All requests from this device are temporarily blocked due to unusual activity (too many requests). Please try again later.</string>
     <string name="profile_phone_verify_default_error_message">Phone number verification has failed.</string>
     <string name="profile_verification_code_dialog_message">Enter the 6-digit code we sent to %1$s</string>
-    <string name="profile_email_link_dialog_title">Link email address</string>
+    <string name="profile_email_link_dialog_message">Link email address</string>
     <string name="profile_email_link_dialog_button">Next</string>
     <string name="profile_email_link_sent">Email sent to: %1$s</string>
     <string name="profile_email_link_invalid_address">The email address is badly formatted.</string>
@@ -67,7 +67,7 @@
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
 
     <!-- Dialogs -->
-    <string name="dialogs_positive_button_text_default">Save</string>
-    <string name="dialogs_negative_button_text">Cancel</string>
+    <string name="dialog_save">Save</string>
+    <string name="dialog_cancel">Cancel</string>
 
 </resources>

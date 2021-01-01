@@ -34,9 +34,6 @@ class ProfileFragment : BaseFragment() {
     override lateinit var viewModel: ProfileViewModel
     override lateinit var progressBar: ProgressBar
 
-    // Current displayed dialog
-    private var currentDialog: AlertDialog? = null
-
     /***********************/
     /** Lifecycle methods **/
     /***********************/
@@ -151,45 +148,34 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for updating the current user's name.
      */
     private fun showNameEditDialog() =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.profile_name_edit_dialog_title)
-            .setInputAndPositiveButton(
-                viewModel::updateUserName,
-                viewModel.user.value?.displayName ?: ""
-            ).setCancelButton()
-            .create()
-            .show()
+        EditTextDialogFragment(
+            viewModel::updateUserName,
+            title = StringRes(R.string.profile_name_edit_dialog_title),
+            defaultInputText = StringRes(viewModel.user.value?.displayName ?: "")
+        ).show(parentFragmentManager, FT_NAME)
 
     /**
      * Present the user an interface that prompts them to type their email address.
      */
     private fun showEmailAddressDialog() =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.profile_email_link_dialog_title)
-            .setInputAndPositiveButton(
-                viewModel::sendSignInLinkToEmail,
-                viewModel.user.value?.email ?: "",
-                R.string.profile_email_link_dialog_button
-            )
-            .setCancelButton()
-            .create()
-            .show()
+        EditTextDialogFragment(
+            viewModel::sendSignInLinkToEmail,
+            message = StringRes(R.string.profile_email_link_dialog_message),
+            okButtonText = StringRes(R.string.profile_email_link_dialog_button),
+            defaultInputText = StringRes(viewModel.user.value?.email ?: "")
+        ).show(parentFragmentManager, FT_EMAIL)
 
     /**
      * Present the user an interface that prompts them to type their phone number.
      */
     private fun showPhoneVerifyDialog() =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.profile_phone_verify_dialog_title)
-            .setMessage(R.string.profile_phone_verify_dialog_message)
-            .setInputAndPositiveButton(
-                ::verifyPhoneNumber,
-                viewModel.user.value?.phoneNumber ?: "",
-                R.string.profile_phone_verify_dialog_button
-            )
-            .setCancelButton()
-            .create()
-            .show()
+        EditTextDialogFragment(
+            ::verifyPhoneNumber,
+            title = StringRes(R.string.profile_phone_verify_dialog_title),
+            message = StringRes(R.string.profile_phone_verify_dialog_message),
+            okButtonText = StringRes(R.string.profile_phone_verify_dialog_button),
+            defaultInputText = StringRes(viewModel.user.value?.phoneNumber ?: "")
+        ).show(parentFragmentManager, FT_PHONE_NUMBER)
 
     /**
      * Verify the given [phoneNumber].
@@ -241,8 +227,8 @@ class ProfileFragment : BaseFragment() {
                 viewModel.phoneNumberToVerify = ""    // Clear flag
 
                 // If verified automatically, no need for the manual dialog
-                currentDialog?.dismiss()
-                currentDialog = null
+                (parentFragmentManager.findFragmentByTag(FT_PHONE_CODE) as
+                        EditTextDialogFragment<*>).dismiss()
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -267,7 +253,7 @@ class ProfileFragment : BaseFragment() {
 
                 Log.d(TAG, "onCodeSent:$verificationId")
                 viewModel.storedVerificationId = verificationId
-                // If phone number is empty maybe the automatic verification already completed
+                // If phone number is EMPTY maybe the automatic verification already completed
                 // and anyway there is nothing to compare to...
                 if (viewModel.phoneNumberToVerify.isNotEmpty()) showVerificationCodeDialog()
             }
@@ -277,23 +263,17 @@ class ProfileFragment : BaseFragment() {
      * Present the user an interface that prompts them to type the verification code from the SMS
      * message.
      */
-    private fun showVerificationCodeDialog() {
-        currentDialog =
-            AlertDialog.Builder(context)
-                .setMessage(
-                    getString(
-                        R.string.profile_verification_code_dialog_message,
-                        viewModel.phoneNumberToVerify
-                    )
+    private fun showVerificationCodeDialog() =
+        EditTextDialogFragment(
+            viewModel::handlePhoneVerificationCode,
+            message = StringRes(
+                getString(
+                    R.string.profile_verification_code_dialog_message,
+                    viewModel.phoneNumberToVerify
                 )
-                .setInputAndPositiveButton(
-                    viewModel::handlePhoneVerificationCode,
-                    buttonTextResId = R.string.profile_phone_verify_dialog_button
-                )
-                .setCancelButton()
-                .create()
-        currentDialog?.show()
-    }
+            ),
+            okButtonText = StringRes(getString(R.string.profile_phone_verify_dialog_button))
+        ).show(parentFragmentManager, FT_PHONE_CODE)
 
     /**
      * Show activity for linking with Twitter.
@@ -359,6 +339,12 @@ class ProfileFragment : BaseFragment() {
         // Facebook login button permissions
         const val FP_EMAIL = "email"
         const val FP_PUBLIC_PROFILE = "public_profile"
+
+        // Fragment tags
+        const val FT_NAME = "name"
+        const val FT_EMAIL = "email"
+        const val FT_PHONE_NUMBER = "phone_number"
+        const val FT_PHONE_CODE = "phone_code"
 
         // others
         const val PHONE_VERIFICATION_TIMEOUT = 60L

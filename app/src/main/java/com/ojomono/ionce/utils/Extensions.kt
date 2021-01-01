@@ -31,40 +31,10 @@ fun <T> Task<T>.withProgressBar(progressBar: ProgressBar): Task<T> {
 }
 
 /**
- * This extension allows us to add a text input field (with default text = [defaultInputText]) and
- * a positive button (with text = [buttonTextResId]) to call the [onPositive] function with on the
- * value in the input field.
- */
-fun <T> AlertDialog.Builder.setInputAndPositiveButton(
-    onPositive: (String) -> T,
-    defaultInputText: String = "",
-    buttonTextResId: Int = R.string.dialogs_positive_button_text_default
-): AlertDialog.Builder {
-
-    // Build input field
-    val input = EditText(context)
-    val lp = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.MATCH_PARENT
-    )
-    input.layoutParams = lp
-    if (defaultInputText.isNotEmpty()) input.setText(defaultInputText)
-
-    // Add the input field
-    setView(input)
-
-    // Add the save button
-    return setPositiveButton(context.getText(buttonTextResId)) { dialog, _ ->
-        onPositive(input.text.toString())
-        dialog.cancel()
-    }
-}
-
-/**
  * This extension allows us to add a cancel button with optional functionality [onCancel].
  */
 fun AlertDialog.Builder.setCancelButton(onCancel: (() -> Unit)? = null): AlertDialog.Builder =
-    setNegativeButton(context.getText(R.string.dialogs_negative_button_text)) { dialog, _ ->
+    setNegativeButton(context.getText(R.string.dialog_cancel)) { dialog, _ ->
         if (onCancel != null) onCancel()
         dialog.cancel()
     }

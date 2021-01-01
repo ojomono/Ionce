@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
@@ -119,24 +118,22 @@ class TalesFragment : BaseFragment() {
      * Show dialog for adding a new tale.
      */
     private fun showAddTaleDialog() =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.tales_add_dialog_title)
-            .setMessage(R.string.tales_add_dialog_message)
-            .setInputAndPositiveButton(viewModel::addTale)
-            .setCancelButton()
-            .create()
-            .show()
+        EditTextDialogFragment(
+            viewModel::addTale,
+            title = StringRes(R.string.tales_add_dialog_title),
+            message = StringRes(R.string.tales_add_dialog_message)
+        ).show(parentFragmentManager, FT_ADD)
 
     /**
      * Show dialog for updating the tale with title [taleTitle].
      */
     private fun showUpdateTaleDialog(taleTitle: String) =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.tales_update_dialog_title)
-            .setInputAndPositiveButton(viewModel::updateTale, taleTitle)
-            .setCancelButton(viewModel::clearClickedTale)
-            .create()
-            .show()
+        EditTextDialogFragment(
+            viewModel::updateTale,
+            viewModel::clearClickedTale,
+            title = StringRes(R.string.tales_update_dialog_title),
+            defaultInputText = StringRes(taleTitle)
+        ).show(parentFragmentManager, FT_ADD)
 
     /**
      * Show dialog for deleting the tale with title [taleTitle].
@@ -160,6 +157,10 @@ class TalesFragment : BaseFragment() {
 
     companion object {
 
+        // Fragment tags
+        const val FT_ADD = "add"
+
+        // Column count
         const val ARG_COLUMN_COUNT = "column-count"
 
         @JvmStatic

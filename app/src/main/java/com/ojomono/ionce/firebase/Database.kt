@@ -164,7 +164,7 @@ object Database {
     /*********************/
 
     /**
-     * Overwrite the tale document with id=[id] to have the given [title]. If [id] is empty, create
+     * Overwrite the tale document with id=[id] to have the given [title]. If [id] is EMPTY, create
      * a new document with a generated id and title=[title]. Return the set [Task].
      */
     private fun setTale(id: String = "", title: String): Task<Void>? {
