@@ -19,11 +19,14 @@
     <dimen name="roll_hint_text_size">20sp</dimen>
     <dimen name="roll_tale_text_size">24sp</dimen>
 
-    <!-- Profile screen dimes -->
+    <!-- Profile screen dimens -->
     <dimen name="profile_icons_sizes">40dp</dimen>
     <dimen name="profile_image_size">120dp</dimen>
     <dimen name="profile_relative_image_size">138dp</dimen>
     <dimen name="profile_name_padding_bottom">20dp</dimen>
     <dimen name="profile_providers_padding_horizontal">30dp</dimen>
     <dimen name="profile_providers_padding_top">20dp</dimen>
+
+    <!-- Dialogs dimens -->
+    <dimen name="dialog_margin">20dp</dimen>
 </resources>

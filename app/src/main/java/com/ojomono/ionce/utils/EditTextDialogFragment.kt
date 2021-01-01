@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import com.ojomono.ionce.R
@@ -25,21 +26,28 @@ class EditTextDialogFragment<T>(
         return activity?.let { activity ->
             context?.let { context ->
 
-                // Build input field
+                // Init the input field and it's default value
                 val input = EditText(context)
+                if (defaultInputText != StringRes.EMPTY)
+                    input.setText(defaultInputText.inContext(context))
+
+                // Add the input field with wanted margins
+                val container = FrameLayout(activity)
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT
-                )
+                ).apply {
+                    marginEnd = resources.getDimensionPixelSize(R.dimen.dialog_margin)
+                    marginStart = resources.getDimensionPixelSize(R.dimen.dialog_margin)
+                }
                 input.layoutParams = lp
-                if (defaultInputText != StringRes.EMPTY)
-                    input.setText(defaultInputText.inContext(context))
+                container.addView(input)
 
                 // Use the Builder class for convenient dialog construction
                 val builder = AlertDialog.Builder(activity).apply {
                     if (title != StringRes.EMPTY) setTitle(title.inContext(context))
                     if (message != StringRes.EMPTY) setMessage(message.inContext(context))
-                    setView(input)
+                    setView(container)
                     setPositiveButton(okButtonText.inContext(context)) { _, _ ->
                         onPositive(input.text.toString())
                         dialog?.cancel()
