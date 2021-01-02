@@ -39,7 +39,7 @@
     <string name="profile_verification_code_dialog_message">Enter the 6-digit code we sent to %1$s</string>
     <string name="profile_email_link_dialog_message">Link email address</string>
     <string name="profile_email_link_dialog_button">Next</string>
-    <string name="profile_email_link_sent">Email sent to: %1$s</string>
+    <string name="profile_email_link_sent">A sign-in email with additional instructions was sent to \'%1$s\'. Check your email to complete account linking.</string>
     <string name="profile_email_link_invalid_address">The email address is badly formatted.</string>
     <string name="profile_unlink_provider_dialog_title">Unlink Provider</string>
     <string name="profile_unlink_provider_dialog_message">Are you sure you want to unlink your %1$s account?</string>

@@ -14,7 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.ojomono.ionce.MainActivity">
+        tools:context="com.ojomono.ionce.ui.main.MainActivity">
 
         <RelativeLayout
             android:id="@+id/relative_header"
