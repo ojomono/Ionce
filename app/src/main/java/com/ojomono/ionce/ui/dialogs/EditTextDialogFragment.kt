@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.widget.EditText
@@ -12,6 +13,7 @@ import android.widget.LinearLayout
 import com.ojomono.ionce.R
 import com.ojomono.ionce.utils.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
+
 
 /**
  * A simple dialog fragment used for getting a string input from the user.
@@ -35,8 +37,7 @@ class EditTextDialogFragment<T>(
             if (defaultInputText != StringResource.EMPTY)
                 input.setText(defaultInputText.inContext(context))
 
-            // Add the input field with wanted margins
-            val container = FrameLayout(context)
+            // Create the input field (with wanted margins)
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
@@ -45,6 +46,12 @@ class EditTextDialogFragment<T>(
                 marginStart = resources.getDimensionPixelSize(R.dimen.dialog_margin)
             }
             input.layoutParams = lp
+
+            // Activate automatic first letter capitalization
+            input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+
+            // Add input inside container (in order for the margins to show)
+            val container = FrameLayout(context)
             container.addView(input)
             builder.setView(container)
 
