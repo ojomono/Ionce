@@ -34,8 +34,8 @@ android {
         applicationId "com.ojomono.ionce"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 3
-        versionName "1.0"
+        versionCode 5
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -102,10 +102,10 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:5.0.0'
 
     // Cloud Firestore
-    implementation 'com.google.firebase:firebase-firestore-ktx:22.0.0'
+    implementation 'com.google.firebase:firebase-firestore-ktx:22.0.1'
 
     // Cloud Storage
-    implementation 'com.google.firebase:firebase-storage-ktx:19.2.0'
+    implementation 'com.google.firebase:firebase-storage-ktx:19.2.1'
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
