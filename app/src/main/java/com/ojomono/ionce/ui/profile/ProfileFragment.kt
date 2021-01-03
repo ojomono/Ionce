@@ -18,6 +18,8 @@ import com.google.firebase.FirebaseException    // TODO avoid importing firebase
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
+import com.ojomono.ionce.ui.dialogs.EditTextDialogFragment
+import com.ojomono.ionce.ui.dialogs.NoticeDialogFragment
 import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.util.concurrent.TimeUnit
@@ -149,9 +151,9 @@ class ProfileFragment : BaseFragment() {
      */
     private fun showNameEditDialog() =
         EditTextDialogFragment(
-            viewModel::updateUserName,
-            title = StringRes(R.string.profile_name_edit_dialog_title),
-            defaultInputText = StringRes(viewModel.user.value?.displayName ?: "")
+            title = StringResource(R.string.profile_name_edit_dialog_title),
+            onPositive = viewModel::updateUserName,
+            defaultInputText = StringResource(viewModel.user.value?.displayName ?: "")
         ).show(parentFragmentManager, FT_NAME)
 
     /**
@@ -159,10 +161,10 @@ class ProfileFragment : BaseFragment() {
      */
     private fun showEmailAddressDialog() =
         EditTextDialogFragment(
-            viewModel::sendSignInLinkToEmail,
-            message = StringRes(R.string.profile_email_link_dialog_message),
-            okButtonText = StringRes(R.string.profile_email_link_dialog_button),
-            defaultInputText = StringRes(viewModel.user.value?.email ?: "")
+            message = StringResource(R.string.profile_email_link_dialog_message),
+            onPositive = viewModel::sendSignInLinkToEmail,
+            okButtonText = StringResource(R.string.profile_email_link_dialog_button),
+            defaultInputText = StringResource(viewModel.user.value?.email ?: "")
         ).show(parentFragmentManager, FT_EMAIL)
 
     /**
@@ -170,11 +172,11 @@ class ProfileFragment : BaseFragment() {
      */
     private fun showPhoneVerifyDialog() =
         EditTextDialogFragment(
-            ::verifyPhoneNumber,
-            title = StringRes(R.string.profile_phone_verify_dialog_title),
-            message = StringRes(R.string.profile_phone_verify_dialog_message),
-            okButtonText = StringRes(R.string.profile_phone_verify_dialog_button),
-            defaultInputText = StringRes(viewModel.user.value?.phoneNumber ?: "")
+            title = StringResource(R.string.profile_phone_verify_dialog_title),
+            message = StringResource(R.string.profile_phone_verify_dialog_message),
+            onPositive = ::verifyPhoneNumber,
+            okButtonText = StringResource(R.string.profile_phone_verify_dialog_button),
+            defaultInputText = StringResource(viewModel.user.value?.phoneNumber ?: "")
         ).show(parentFragmentManager, FT_PHONE_NUMBER)
 
     /**
@@ -265,14 +267,14 @@ class ProfileFragment : BaseFragment() {
      */
     private fun showVerificationCodeDialog() =
         EditTextDialogFragment(
-            viewModel::handlePhoneVerificationCode,
-            message = StringRes(
+            message = StringResource(
                 getString(
                     R.string.profile_verification_code_dialog_message,
                     viewModel.phoneNumberToVerify
                 )
             ),
-            okButtonText = StringRes(getString(R.string.profile_phone_verify_dialog_button))
+            onPositive = viewModel::handlePhoneVerificationCode,
+            okButtonText = StringResource(getString(R.string.profile_phone_verify_dialog_button))
         ).show(parentFragmentManager, FT_PHONE_CODE)
 
     /**
@@ -310,22 +312,17 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for verifying decision to unlink given [providerNameResId].
      */
     private fun showUnlinkProviderDialog(providerNameResId: Int) =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.profile_unlink_provider_dialog_title)
-            .setMessage(
+        NoticeDialogFragment(
+            title = StringResource(R.string.profile_unlink_provider_dialog_title),
+            message = StringResource(
                 getString(
                     R.string.profile_unlink_provider_dialog_message,
                     getString(providerNameResId)
                 )
-            )
-            .setPositiveButton(getText(R.string.profile_unlink_provider_positive_button_text))
-            { dialog, _ ->
-                viewModel.unlinkProvider(providerNameResId)
-                dialog.cancel()
-            }
-            .setCancelButton()
-            .create()
-            .show()
+            ),
+            onPositive = { viewModel.unlinkProvider(providerNameResId) },
+            okButtonText = StringResource(getString(R.string.profile_unlink_provider_positive_button_text))
+        ).show(parentFragmentManager, FT_UNLINK)
 
     /***************/
     /** Constants **/
@@ -345,6 +342,7 @@ class ProfileFragment : BaseFragment() {
         const val FT_EMAIL = "email"
         const val FT_PHONE_NUMBER = "phone_number"
         const val FT_PHONE_CODE = "phone_code"
+        const val FT_UNLINK = "unlink"
 
         // others
         const val PHONE_VERIFICATION_TIMEOUT = 60L

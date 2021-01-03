@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
+import com.ojomono.ionce.ui.dialogs.EditTextDialogFragment
+import com.ojomono.ionce.ui.dialogs.NoticeDialogFragment
 import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
@@ -119,9 +121,9 @@ class TalesFragment : BaseFragment() {
      */
     private fun showAddTaleDialog() =
         EditTextDialogFragment(
-            viewModel::addTale,
-            title = StringRes(R.string.tales_add_dialog_title),
-            message = StringRes(R.string.tales_add_dialog_message)
+            title = StringResource(R.string.tales_add_dialog_title),
+            message = StringResource(R.string.tales_add_dialog_message),
+            onPositive = viewModel::addTale
         ).show(parentFragmentManager, FT_ADD)
 
     /**
@@ -129,27 +131,23 @@ class TalesFragment : BaseFragment() {
      */
     private fun showUpdateTaleDialog(taleTitle: String) =
         EditTextDialogFragment(
-            viewModel::updateTale,
-            viewModel::clearClickedTale,
-            title = StringRes(R.string.tales_update_dialog_title),
-            defaultInputText = StringRes(taleTitle)
-        ).show(parentFragmentManager, FT_ADD)
+            title = StringResource(R.string.tales_update_dialog_title),
+            onNegative = viewModel::clearClickedTale,
+            onPositive = viewModel::updateTale,
+            defaultInputText = StringResource(taleTitle)
+        ).show(parentFragmentManager, FT_UPDATE)
 
     /**
      * Show dialog for deleting the tale with title [taleTitle].
      */
     private fun showDeleteTaleDialog(taleTitle: String) =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.tales_delete_dialog_title)
-            .setMessage(getString(R.string.tales_delete_dialog_message, taleTitle))
-            .setPositiveButton(getText(R.string.tales_delete_dialog_positive_button_text))
-            { dialog, _ ->
-                viewModel.deleteTale()
-                dialog.cancel()
-            }
-            .setCancelButton(viewModel::clearClickedTale)
-            .create()
-            .show()
+        NoticeDialogFragment(
+            title = StringResource(R.string.tales_delete_dialog_title),
+            message = StringResource(getString(R.string.tales_delete_dialog_message, taleTitle)),
+            onNegative = viewModel::clearClickedTale,
+            onPositive = viewModel::deleteTale,
+            okButtonText = StringResource(R.string.tales_delete_dialog_positive_button_text)
+        ).show(parentFragmentManager, FT_DELETE)
 
     /**********************/
     /** Companion object **/
@@ -159,6 +157,8 @@ class TalesFragment : BaseFragment() {
 
         // Fragment tags
         const val FT_ADD = "add"
+        const val FT_UPDATE = "update"
+        const val FT_DELETE = "delete"
 
         // Column count
         const val ARG_COLUMN_COUNT = "column-count"

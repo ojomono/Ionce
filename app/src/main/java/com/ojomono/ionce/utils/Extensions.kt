@@ -29,12 +29,3 @@ fun <T> Task<T>.withProgressBar(progressBar: ProgressBar): Task<T> {
     addOnCompleteListener { progressBar.visibility = View.GONE }
     return this
 }
-
-/**
- * This extension allows us to add a cancel button with optional functionality [onCancel].
- */
-fun AlertDialog.Builder.setCancelButton(onCancel: (() -> Unit)? = null): AlertDialog.Builder =
-    setNegativeButton(context.getText(R.string.dialog_cancel)) { dialog, _ ->
-        if (onCancel != null) onCancel()
-        dialog.cancel()
-    }
