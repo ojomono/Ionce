@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -32,23 +33,32 @@ class EditTextDialogFragment<T>(
 
         return context?.let { context ->
 
-            // Init the input field and it's default value
-            val input = EditText(context)
-            if (defaultInputText != StringResource.EMPTY)
-                input.setText(defaultInputText.inContext(context))
-
-            // Create the input field (with wanted margins)
+            // Set the layout params for the input field
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
             ).apply {
+                // Add horizontal margins
                 marginEnd = resources.getDimensionPixelSize(R.dimen.dialog_margin)
                 marginStart = resources.getDimensionPixelSize(R.dimen.dialog_margin)
             }
-            input.layoutParams = lp
 
-            // Activate automatic first letter capitalization
-            input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+            // Init the input field
+            val input = EditText(context).apply {
+
+                // Set the layout params
+                layoutParams = lp
+
+                // Set the text to the given default value
+                if (defaultInputText != StringResource.EMPTY)
+                    setText(defaultInputText.inContext(context))
+
+                // Activate automatic first letter capitalization
+                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+
+                // Set focus on the input field
+                requestFocus()
+            }
 
             // Add input inside container (in order for the margins to show)
             val container = FrameLayout(context)
@@ -62,7 +72,14 @@ class EditTextDialogFragment<T>(
             }
 
             // Create the AlertDialog object and return it
-            builder.create().apply { disablePositiveButtonWhileInputIsEmpty(input) }
+            builder.create().apply {
+
+                // Disable positive button while input is empty.
+                disablePositiveButtonWhileInputIsEmpty(input)
+
+                // Show soft keyboard for dialog
+                window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+            }
         } ?: throw IllegalStateException("Context cannot be null")
     }
 
