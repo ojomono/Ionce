@@ -3,7 +3,7 @@
 
 <resources>
     <!-- Application -->
-    <string name="app_name">I once</string>
+    <string name="app_name">I Once</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">301355424319660</string>
@@ -31,12 +31,16 @@
     <string name="profile_facebook_login_button_text">Link Facebook Account</string>
     <string name="profile_name_edit_dialog_title">Update user name</string>
     <string name="profile_phone_verify_dialog_title">Verify phone number</string>
-    <string name="profile_phone_verify_dialog_message">By tapping "Verify", an SMS may be sent. Message &amp; data rates may apply.</string>
+    <string name="profile_phone_verify_dialog_message">Enter your phone number in the format:\n[+][country code][area code][phone number]\n\nBy tapping "Verify", an SMS may be sent. Message &amp; data rates may apply.</string>
     <string name="profile_phone_verify_dialog_button">Verify</string>
-    <string name="profile_phone_verify_failed_message">Phone number verification has failed.</string>
+    <string name="profile_phone_verify_invalid_credential_message">The format of the phone number provided is incorrect.</string>
+    <string name="profile_phone_verify_too_many_requests_message">All requests from this device are temporarily blocked due to unusual activity (too many requests). Please try again later.</string>
+    <string name="profile_phone_verify_default_error_message">Phone number verification has failed.</string>
     <string name="profile_verification_code_dialog_message">Enter the 6-digit code we sent to %1$s</string>
-    <string name="profile_email_link_dialog_title">Link email address</string>
+    <string name="profile_email_link_dialog_message">Link email address</string>
     <string name="profile_email_link_dialog_button">Next</string>
+    <string name="profile_email_link_sent">A sign-in email with additional instructions was sent to \'%1$s\'. Check your email to complete account linking.</string>
+    <string name="profile_email_link_invalid_address">The email address is badly formatted.</string>
     <string name="profile_unlink_provider_dialog_title">Unlink Provider</string>
     <string name="profile_unlink_provider_dialog_message">Are you sure you want to unlink your %1$s account?</string>
     <string name="profile_unlink_provider_positive_button_text">unlink</string>
@@ -63,7 +67,7 @@
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
 
     <!-- Dialogs -->
-    <string name="dialogs_positive_button_text_default">Save</string>
-    <string name="dialogs_negative_button_text">Cancel</string>
+    <string name="dialog_save">Save</string>
+    <string name="dialog_cancel">Cancel</string>
 
 </resources>

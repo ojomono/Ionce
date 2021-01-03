@@ -69,12 +69,14 @@ class TalesAdapter(private val listener: TalesListener) :
         }
     }
 
-    /**
-     * Modify the tales list that an item is moved from [fromPosition] to [toPosition].
-     */
-    fun onRowMoved(fromPosition: Int, toPosition: Int) =
-        // Only the adapter knows about the header - so the positions in the actual list are -1
-        if (toPosition > 0) listener.onMoved(fromPosition - 1, toPosition - 1) else null
+    // For drag n' drop feature
+//    /**
+//     * Modify the tales list that an item is moved from [fromPosition] to [toPosition].
+//     */
+//    fun onRowMoved(fromPosition: Int, toPosition: Int) {
+//        // Only the adapter knows about the header - so the positions in the actual list are -1
+//        if (toPosition > 0) listener.onMoved(fromPosition - 1, toPosition - 1) else null
+//    }
 
     /**
      * Provide a reference to the views for each header item.
@@ -135,7 +137,8 @@ class TalesAdapter(private val listener: TalesListener) :
     interface TalesListener {
         fun onEdit(taleItem: TaleItemModel)     // Edit icon clicked
         fun onDelete(taleItem: TaleItemModel)   // Delete icon clicked
-        fun onMoved(fromPosition: Int, toPosition: Int)  // Row dragged and dropped
+        // For drag n' drop feature
+//        fun onMoved(fromPosition: Int, toPosition: Int)  // Row dragged and dropped
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.ojomono.ionce
+package com.ojomono.ionce.ui.main
 
 import android.app.Activity
 import android.content.Intent
@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
+import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.utils.TAG

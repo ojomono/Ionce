@@ -5,6 +5,8 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.telephony.PhoneNumberUtils
+import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import android.widget.ProgressBar
@@ -12,9 +14,12 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.FirebaseException    // TODO avoid importing firebase packages here
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
+import com.ojomono.ionce.ui.dialogs.EditTextDialogFragment
+import com.ojomono.ionce.ui.dialogs.NoticeDialogFragment
 import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.util.concurrent.TimeUnit
@@ -30,9 +35,6 @@ class ProfileFragment : BaseFragment() {
     override lateinit var binding: FragmentProfileBinding
     override lateinit var viewModel: ProfileViewModel
     override lateinit var progressBar: ProgressBar
-
-    // Current displayed dialog
-    private var currentDialog: AlertDialog? = null
 
     /***********************/
     /** Lifecycle methods **/
@@ -83,8 +85,6 @@ class ProfileFragment : BaseFragment() {
             is ProfileViewModel.EventType.ShowNameEditDialog -> showNameEditDialog()
             is ProfileViewModel.EventType.ShowEmailAddressDialog -> showEmailAddressDialog()
             is ProfileViewModel.EventType.ShowPhoneNumberDialog -> showPhoneVerifyDialog()
-            is ProfileViewModel.EventType.ShowVerificationCodeDialog -> showVerificationCodeDialog()
-            is ProfileViewModel.EventType.DismissCurrentDialog -> dismissCurrentDialog()
             is ProfileViewModel.EventType.ShowLinkWithTwitter -> showLinkWithTwitter()
             is ProfileViewModel.EventType.ShowLinkWithFacebook -> showLinkWithFacebook()
             is ProfileViewModel.EventType.ShowLinkWithGoogle -> showLinkWithGoogle()
@@ -150,96 +150,132 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for updating the current user's name.
      */
     private fun showNameEditDialog() =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.profile_name_edit_dialog_title)
-            .setInputAndPositiveButton(
-                viewModel::updateUserName,
-                viewModel.user.value?.displayName ?: ""
-            ).setCancelButton()
-            .create()
-            .show()
+        EditTextDialogFragment(
+            title = StringResource(R.string.profile_name_edit_dialog_title),
+            onPositive = viewModel::updateUserName,
+            defaultInputText = StringResource(viewModel.user.value?.displayName ?: "")
+        ).show(parentFragmentManager, FT_NAME)
 
     /**
      * Present the user an interface that prompts them to type their email address.
      */
     private fun showEmailAddressDialog() =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.profile_email_link_dialog_title)
-            .setInputAndPositiveButton(
-                viewModel::sendSignInLinkToEmail,
-                buttonTextResId = R.string.profile_email_link_dialog_button
-            )
-            .setCancelButton()
-            .create()
-            .show()
+        EditTextDialogFragment(
+            message = StringResource(R.string.profile_email_link_dialog_message),
+            onPositive = viewModel::sendSignInLinkToEmail,
+            okButtonText = StringResource(R.string.profile_email_link_dialog_button),
+            defaultInputText = StringResource(viewModel.user.value?.email ?: "")
+        ).show(parentFragmentManager, FT_EMAIL)
 
     /**
      * Present the user an interface that prompts them to type their phone number.
      */
     private fun showPhoneVerifyDialog() =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.profile_phone_verify_dialog_title)
-            .setMessage(R.string.profile_phone_verify_dialog_message)
-            .setInputAndPositiveButton(
-                ::verifyPhoneNumber,
-                buttonTextResId = R.string.profile_phone_verify_dialog_button
-            )
-            .setCancelButton()
-            .create()
-            .show()
+        EditTextDialogFragment(
+            title = StringResource(R.string.profile_phone_verify_dialog_title),
+            message = StringResource(R.string.profile_phone_verify_dialog_message),
+            onPositive = ::verifyPhoneNumber,
+            okButtonText = StringResource(R.string.profile_phone_verify_dialog_button),
+            defaultInputText = StringResource(viewModel.user.value?.phoneNumber ?: "")
+        ).show(parentFragmentManager, FT_PHONE_NUMBER)
 
     /**
      * Verify the given [phoneNumber].
      */
     private fun verifyPhoneNumber(phoneNumber: String) =
-        activity?.let {
-            val options = PhoneAuthOptions.newBuilder()
-                .setPhoneNumber(phoneNumber)       // Phone number to verify
-                .setTimeout(PHONE_VERIFICATION_TIMEOUT, TimeUnit.SECONDS) // Timeout and unit
-                .setActivity(it)                 // Activity (for callback binding)
-                .setCallbacks(viewModel.getPhoneVerificationCallbacks())    // OnVerificationStateChangedCallbacks
-                .build()
-            PhoneAuthProvider.verifyPhoneNumber(options)
+        // The phone number should be in a format that can be parsed into E.164 format
+        if (PhoneNumberUtils.isWellFormedSmsAddress(phoneNumber))
+            activity?.let {
+                val options = PhoneAuthOptions.newBuilder()
+                    .setPhoneNumber(phoneNumber)       // Phone number to verify
+                    .setTimeout(PHONE_VERIFICATION_TIMEOUT, TimeUnit.SECONDS) // Timeout and unit
+                    .setActivity(it)                 // Activity (for callback binding)
+                    .setCallbacks(getPhoneVerificationCallbacks())    // OnVerificationStateChangedCallbacks
+                    .build()
+                PhoneAuthProvider.verifyPhoneNumber(options)
 
-            // Show progress bar until verification complete
-            progressBar.visibility = View.VISIBLE
+                // Show progress bar until verification complete (manually as we don't have a task)
+                // This is hidden in each callback option from: getPhoneVerificationCallbacks()
+                progressBar.visibility = View.VISIBLE
 
-            // Save phone number for instance state changes
-            viewModel.phoneNumberToVerify = phoneNumber
+                // Save phone number for instance state changes
+                viewModel.phoneNumberToVerify = phoneNumber
+            }
+        else Toast.makeText(
+            context,
+            R.string.profile_phone_verify_invalid_credential_message,
+            Toast.LENGTH_SHORT
+        ).show()
+
+    // TODO Move getPhoneVerificationCallbacks to ProfileViewModel. in onVerificationCompleted,
+    //  there is a need to raise two different events in the same function (withProgressBar &
+    //  dismissCurrentDialog) which can result in overriding. In order to move it, a separate
+    //  event-holder-LiveData should be set in BaseViewModel: Separating the progress bar events
+    //  from the rest. Also notice the manual hiding of the progress bar in all callbacks.
+
+    /**
+     * Get the callback object for the phone verification process.
+     */
+    private fun getPhoneVerificationCallbacks() =
+
+        object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                // Hide progress bar showed in: verifyPhoneNumber fun
+                progressBar.visibility = View.GONE
+
+                Log.d(TAG, "onVerificationCompleted:$credential")
+                viewModel.handlePhoneVerificationComplete(credential)?.withProgressBar(progressBar)
+                viewModel.phoneNumberToVerify = ""    // Clear flag
+
+                // If verified automatically, no need for the manual dialog
+                (parentFragmentManager.findFragmentByTag(FT_PHONE_CODE) as
+                        EditTextDialogFragment<*>).dismiss()
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                // Hide progress bar showed in: verifyPhoneNumber fun
+                progressBar.visibility = View.GONE
+
+                Log.w(TAG, "onVerificationFailed", e)
+                Toast.makeText(
+                    context,
+                    viewModel.getPhoneVerificationFailedMessage(e),
+                    Toast.LENGTH_SHORT
+                ).show()
+                viewModel.phoneNumberToVerify = ""    // Clear flag
+            }
+
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken
+            ) {
+                // Hide progress bar showed in: verifyPhoneNumber fun
+                progressBar.visibility = View.GONE
+
+                Log.d(TAG, "onCodeSent:$verificationId")
+                viewModel.storedVerificationId = verificationId
+                // If phone number is EMPTY maybe the automatic verification already completed
+                // and anyway there is nothing to compare to...
+                if (viewModel.phoneNumberToVerify.isNotEmpty()) showVerificationCodeDialog()
+            }
         }
 
     /**
      * Present the user an interface that prompts them to type the verification code from the SMS
      * message.
      */
-    private fun showVerificationCodeDialog() {
-        // Hide progress bar showed in: verifyPhoneNumber fun
-        progressBar.visibility = View.GONE
-
-        currentDialog =
-            AlertDialog.Builder(context)
-                .setMessage(
-                    getString(
-                        R.string.profile_verification_code_dialog_message,
-                        viewModel.phoneNumberToVerify
-                    )
+    private fun showVerificationCodeDialog() =
+        EditTextDialogFragment(
+            message = StringResource(
+                getString(
+                    R.string.profile_verification_code_dialog_message,
+                    viewModel.phoneNumberToVerify
                 )
-                .setInputAndPositiveButton(
-                    viewModel::handlePhoneVerificationCode,
-                    buttonTextResId = R.string.profile_phone_verify_dialog_button
-                )
-                .setCancelButton()
-                .create()
-        currentDialog?.show()
-    }
-
-    /**
-     * Dismiss the current displayed dialog.
-     */
-    private fun dismissCurrentDialog() {
-        currentDialog?.dismiss()
-        currentDialog = null
-    }
+            ),
+            onPositive = viewModel::handlePhoneVerificationCode,
+            okButtonText = StringResource(getString(R.string.profile_phone_verify_dialog_button))
+        ).show(parentFragmentManager, FT_PHONE_CODE)
 
     /**
      * Show activity for linking with Twitter.
@@ -276,22 +312,17 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for verifying decision to unlink given [providerNameResId].
      */
     private fun showUnlinkProviderDialog(providerNameResId: Int) =
-        AlertDialog.Builder(context)
-            .setTitle(R.string.profile_unlink_provider_dialog_title)
-            .setMessage(
+        NoticeDialogFragment(
+            title = StringResource(R.string.profile_unlink_provider_dialog_title),
+            message = StringResource(
                 getString(
                     R.string.profile_unlink_provider_dialog_message,
                     getString(providerNameResId)
                 )
-            )
-            .setPositiveButton(getText(R.string.profile_unlink_provider_positive_button_text))
-            { dialog, _ ->
-                viewModel.unlinkProvider(providerNameResId)
-                dialog.cancel()
-            }
-            .setCancelButton()
-            .create()
-            .show()
+            ),
+            onPositive = { viewModel.unlinkProvider(providerNameResId) },
+            okButtonText = StringResource(getString(R.string.profile_unlink_provider_positive_button_text))
+        ).show(parentFragmentManager, FT_UNLINK)
 
     /***************/
     /** Constants **/
@@ -305,6 +336,13 @@ class ProfileFragment : BaseFragment() {
         // Facebook login button permissions
         const val FP_EMAIL = "email"
         const val FP_PUBLIC_PROFILE = "public_profile"
+
+        // Fragment tags
+        const val FT_NAME = "name"
+        const val FT_EMAIL = "email"
+        const val FT_PHONE_NUMBER = "phone_number"
+        const val FT_PHONE_CODE = "phone_code"
+        const val FT_UNLINK = "unlink"
 
         // others
         const val PHONE_VERIFICATION_TIMEOUT = 60L
