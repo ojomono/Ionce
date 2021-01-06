@@ -11,6 +11,7 @@ import com.google.firebase.ktx.Firebase
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
+import com.ojomono.ionce.firebase.Conversions
 import com.ojomono.ionce.utils.TAG
 import com.ojomono.ionce.utils.withProgressBar
 import kotlinx.android.synthetic.main.activity_splash.*
@@ -76,6 +77,12 @@ class SplashActivity : AppCompatActivity() {
             .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }
 
     private fun startMainActivity() {
+
+        // TODO remove call to fixUserPhotoUriPathIfNeeded when all user photos has converted ==
+        //  When 'images/' folder in Firestore Storage will get empty.
+        // In v1.0.1, user photos were saved in the path: 'imaged/<UID>'. Fix that.
+        Authentication.currentUser.value?.let { Conversions.fixUserPhotoPathInStorageIfNeeded(it) }
+
         startActivity(Intent(this, MainActivity::class.java))
         finish()    // Avoid coming back here if user presses 'back'
     }

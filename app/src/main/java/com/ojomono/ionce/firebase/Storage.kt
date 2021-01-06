@@ -13,7 +13,8 @@ object Storage {
     /***************/
 
     // Path Strings
-    private const val PS_IMAGES = "images"
+    private const val PS_USERS = "users"
+    private const val PS_USER_PHOTO = "userPhoto.jpg"
 
     /************/
     /** Fields **/
@@ -33,7 +34,7 @@ object Storage {
      * Upload the given [file] to Storage, with name=[uid], and return the download Url [Task].
      */
     fun uploadUserPhoto(uid: String, file: Uri): Task<Uri> {
-        val imageRef = storageRef.child("$PS_IMAGES/$uid")
+        val imageRef = storageRef.child("$PS_USERS/$uid/$PS_USER_PHOTO")
         val uploadTask = imageRef.putFile(file)
 
         // Return the task getting the download URL
