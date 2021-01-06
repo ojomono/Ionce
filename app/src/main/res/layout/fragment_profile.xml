@@ -14,7 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.ojomono.ionce.ui.main.MainActivity">
+        tools:context="com.ojomono.ionce.ui.MainActivity">
 
         <RelativeLayout
             android:id="@+id/relative_header"
@@ -116,7 +116,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:background="@color/colorSurface">
 
                 <!-- TODO change to list holding 5 identical "provider item" layouts.
                         Providers differ in: tile-text, field-text, icon-providerNameResId,

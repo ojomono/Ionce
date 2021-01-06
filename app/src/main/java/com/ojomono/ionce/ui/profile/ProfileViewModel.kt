@@ -250,7 +250,6 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     fun unlinkProvider(providerNameResId: Int) =
         Authentication.unlinkProvider(providerNameResId)?.withProgressBar()
 
-
     /*********************/
     /** private methods **/
     /*********************/
