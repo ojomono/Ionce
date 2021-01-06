@@ -1,4 +1,4 @@
-package com.ojomono.ionce.ui.tales
+package com.ojomono.ionce.ui.talesList
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView

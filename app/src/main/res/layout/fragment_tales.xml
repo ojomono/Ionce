@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.ojomono.ionce.ui.tales.TalesViewModel" />
+            type="com.ojomono.ionce.ui.talesList.TalesViewModel" />
     </data>
 
     <RelativeLayout
@@ -36,7 +36,7 @@
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             app:layoutManager="LinearLayoutManager"
             app:talesListVisibility="@{viewModel.tales}"
-            tools:context=".ui.tales.TalesFragment"
+            tools:context=".ui.talesList.TalesFragment"
             tools:listitem="@layout/item_tale"
             tools:visibility="gone" />
 

@@ -1,10 +1,9 @@
-package com.ojomono.ionce.ui.tales
+package com.ojomono.ionce.ui.talesList
 
 import androidx.lifecycle.LiveData
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.BaseViewModel
-import java.util.*
 
 class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
     // The user's tales list    // TODO: Use a Repository class

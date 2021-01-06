@@ -1,4 +1,4 @@
-package com.ojomono.ionce.ui.tales
+package com.ojomono.ionce.ui.talesList
 
 import android.view.View
 import android.widget.TextView

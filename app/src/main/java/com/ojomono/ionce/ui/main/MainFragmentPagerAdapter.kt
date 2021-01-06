@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.ojomono.ionce.ui.profile.ProfileFragment
 import com.ojomono.ionce.ui.roll.RollFragment
-import com.ojomono.ionce.ui.tales.TalesFragment
+import com.ojomono.ionce.ui.talesList.TalesFragment
 
 class MainFragmentPagerAdapter(fragmentManager: FragmentManager) :
     FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

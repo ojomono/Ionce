@@ -10,7 +10,7 @@
             type="com.ojomono.ionce.models.TaleItemModel" />
         <variable
             name="clickListener"
-            type="com.ojomono.ionce.ui.tales.TalesAdapter.TalesListener" />
+            type="com.ojomono.ionce.ui.talesList.TalesAdapter.TalesListener" />
     </data>
 
     <androidx.cardview.widget.CardView

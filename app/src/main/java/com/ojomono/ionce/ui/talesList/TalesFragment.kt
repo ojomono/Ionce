@@ -1,6 +1,5 @@
-package com.ojomono.ionce.ui.tales
+package com.ojomono.ionce.ui.talesList
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
