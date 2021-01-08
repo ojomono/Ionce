@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
-import com.ojomono.ionce.ui.dialogs.EditTextDialogFragment
-import com.ojomono.ionce.ui.dialogs.NoticeDialogFragment
+import com.ojomono.ionce.ui.dialogs.InputDialogFragment
+import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
@@ -119,9 +119,9 @@ class TalesFragment : BaseFragment() {
      * Show dialog for adding a new tale.
      */
     private fun showAddTaleDialog() =
-        EditTextDialogFragment(
+        InputDialogFragment(
             title = StringResource(R.string.tales_add_dialog_title),
-            message = StringResource(R.string.tales_add_dialog_message),
+            message = StringResource(R.string.tales_header_text),
             onPositive = viewModel::addTale
         ).show(parentFragmentManager, FT_ADD)
 
@@ -129,8 +129,9 @@ class TalesFragment : BaseFragment() {
      * Show dialog for updating the tale with title [taleTitle].
      */
     private fun showUpdateTaleDialog(taleTitle: String) =
-        EditTextDialogFragment(
+        InputDialogFragment(
             title = StringResource(R.string.tales_update_dialog_title),
+            message = StringResource(R.string.tales_header_text),
             onNegative = viewModel::clearClickedTale,
             onPositive = viewModel::updateTale,
             defaultInputText = StringResource(taleTitle)
@@ -140,8 +141,7 @@ class TalesFragment : BaseFragment() {
      * Show dialog for deleting the tale with title [taleTitle].
      */
     private fun showDeleteTaleDialog(taleTitle: String) =
-        NoticeDialogFragment(
-            title = StringResource(R.string.tales_delete_dialog_title),
+        AlertDialogFragment(
             message = StringResource(getString(R.string.tales_delete_dialog_message, taleTitle)),
             onNegative = viewModel::clearClickedTale,
             onPositive = viewModel::deleteTale,

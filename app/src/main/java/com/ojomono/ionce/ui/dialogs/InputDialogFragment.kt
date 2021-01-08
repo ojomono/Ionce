@@ -15,11 +15,11 @@ import com.ojomono.ionce.R
 import com.ojomono.ionce.utils.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
 
-
+// TODO consider using 3rd party library instead: https://github.com/afollestad/material-dialogs
 /**
  * A simple dialog fragment used for getting a string input from the user.
  */
-class EditTextDialogFragment<T>(
+class InputDialogFragment<T>(
     title: StringResource = StringResource.EMPTY,
     message: StringResource = StringResource.EMPTY,
     onNegative: (() -> Unit)? = null,
