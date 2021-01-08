@@ -1,4 +1,4 @@
-package com.ojomono.ionce.ui.talesList
+package com.ojomono.ionce.ui.tales
 
 import android.os.Bundle
 import android.view.LayoutInflater

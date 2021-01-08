@@ -13,7 +13,7 @@ import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.ui.profile.ProfileFragment
 import com.ojomono.ionce.ui.roll.RollFragment
-import com.ojomono.ionce.ui.talesList.TalesFragment
+import com.ojomono.ionce.ui.tales.TalesFragment
 
 class MainActivity : AppCompatActivity() {
 

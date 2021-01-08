@@ -1,4 +1,4 @@
-package com.ojomono.ionce.ui.talesList
+package com.ojomono.ionce.ui.tales
 
 import androidx.lifecycle.LiveData
 import com.ojomono.ionce.firebase.Database

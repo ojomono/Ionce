@@ -1,4 +1,4 @@
-package com.ojomono.ionce.ui.talesList.dummy
+package com.ojomono.ionce.ui.tales.dummy
 
 import java.util.ArrayList
 import java.util.HashMap
