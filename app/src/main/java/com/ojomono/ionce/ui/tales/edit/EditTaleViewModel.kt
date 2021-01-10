@@ -12,18 +12,31 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
         MutableLiveData<TaleModel>().apply { initTale() }
     val tale: LiveData<TaleModel> = _tale
 
+    // A copy of the initial tale data to allow checking if any changes were made
+    private lateinit var taleCopy: TaleModel
+
     /**
      * Save the tale to the database.
      */
-    fun saveTale() = tale.value?.let { Database.setTale(it) }
+    fun saveTale() = if (taleChanged()) tale.value?.let { Database.setTale(it) } else null
 
     /**
-     * Init the tale model with the tale from the DB, or with a new empty tale.
+     * Check if any changes were made.
+     */
+    fun taleChanged() = run { tale.value != taleCopy }
+
+    /**
+     * Init the tale model with the tale from the database, or with a new empty tale. Anyway, save a
+     * copy to allow check if any changes were made.
      */
     private fun MutableLiveData<TaleModel>.initTale() {
-        if (taleId.isEmpty()) value = TaleModel()
+
+        // If id is empty - init empty tale (and save a copy to allow check if any changes were made)
+        if (taleId.isEmpty()) value = TaleModel().also { taleCopy = it.copy() }
+
+        // Else, get tale from database (and save a copy to allow check if any changes were made)
         else Database.getTale(taleId)?.addOnSuccessListener { documentSnapshot ->
-            value = documentSnapshot.toObject(TaleModel::class.java)
+            value = documentSnapshot.toObject(TaleModel::class.java)?.also { taleCopy = it.copy() }
         }
     }
 }

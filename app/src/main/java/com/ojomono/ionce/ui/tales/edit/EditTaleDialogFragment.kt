@@ -13,7 +13,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
-import kotlinx.android.synthetic.main.fragment_edit_tale_dialog.*
+import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
+import com.ojomono.ionce.utils.StringResource
 
 /**
  * A [DialogFragment] representing the edit screen for a tale.
@@ -81,7 +82,7 @@ class EditTaleDialogFragment : DialogFragment() {
             }
             android.R.id.home -> {
                 // handle close button click here
-                dismiss()
+                discardAndDismiss()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -108,8 +109,8 @@ class EditTaleDialogFragment : DialogFragment() {
         // Set different title for new or updated tale
         toolbar.title =
             getString(
-                if (taleId.isNullOrEmpty()) R.string.edit_tale_dialog_title_new
-                else R.string.edit_tale_dialog_title_update
+                if (taleId.isNullOrEmpty()) R.string.edit_tale_screen_title_new
+                else R.string.edit_tale_screen_title_update
             )
 
         (activity as AppCompatActivity?)?.setSupportActionBar(toolbar)
@@ -129,11 +130,35 @@ class EditTaleDialogFragment : DialogFragment() {
     private fun saveAndDismiss() {
 
         // Title is required, so if it's empty show error
-        if (et_title.text.isNullOrEmpty())
-            et_title.error = getString(R.string.edit_tale_title_error)
+        if (binding.etTitle.text.isNullOrEmpty())
+            binding.etTitle.error = getString(R.string.edit_tale_title_error)
 
         // Else, save tale and dismiss dialog
-        else viewModel.saveTale()?.addOnSuccessListener { dismiss() }
+        else {
+            viewModel.saveTale()
+            dismiss()
+        }
+    }
+
+    /**
+     * Confirm discard (if any changes were made) and dismiss the dialog.
+     */
+    private fun discardAndDismiss() {
+
+        // If no change was made, dismiss dialog
+        if (!viewModel.taleChanged()) dismiss()
+
+        // Else, ask user to confirm changes discard
+        else {
+            AlertDialogFragment(
+                message = StringResource(
+                    if (taleId.isNullOrEmpty()) R.string.edit_tale_discard_dialog_message_new
+                    else R.string.edit_tale_discard_dialog_message_update
+                ),
+                onPositive = ::dismiss,
+                okButtonText = StringResource(R.string.edit_tale_discard_dialog_positive_button_text)
+            ).show(parentFragmentManager, FT_DISCARD)
+        }
     }
 
     /**********************/
@@ -141,6 +166,9 @@ class EditTaleDialogFragment : DialogFragment() {
     /**********************/
 
     companion object {
+
+        // Fragment tags
+        const val FT_DISCARD = "discard"
 
         // the fragment initialization parameters
         private const val ARG_TALE_ID = "tale-id"
