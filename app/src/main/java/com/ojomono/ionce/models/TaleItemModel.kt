@@ -6,7 +6,8 @@ package com.ojomono.ionce.models
  */
 data class TaleItemModel(val id: String = "", var title: String = "") {
     /**
-     * Create a [TaleItemModel] from a given full [tale].
+     * Create a [TaleItemModel] from a given full [tale]. Use separate [id] param when it's a new
+     * tale and the new generated id is not part of the full [tale].
      */
-    constructor(tale: TaleModel) : this(tale.id, tale.title)
+    constructor(tale: TaleModel, id: String? = null) : this(id ?: tale.id, tale.title)
 }

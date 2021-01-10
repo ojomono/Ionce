@@ -13,7 +13,8 @@ import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.ui.profile.ProfileFragment
 import com.ojomono.ionce.ui.roll.RollFragment
-import com.ojomono.ionce.ui.tales.TalesFragment
+import com.ojomono.ionce.ui.tales.list.TalesFragment
+import com.ojomono.ionce.ui.tales.list.TalesFragment.Companion.DEFAULT_COLUMN_COUNT
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     // Create the pager adapter
     private val rollFragment by lazy { RollFragment() }
-    private val talesFragment by lazy { TalesFragment() }
+    private val talesFragment by lazy { TalesFragment.newInstance(DEFAULT_COLUMN_COUNT) }
     private val profileFragment by lazy { ProfileFragment() }
     private val fragments: List<Fragment> = listOf(rollFragment, talesFragment, profileFragment)
     private val pagerAdapter: MainViewPagerAdapter by lazy {

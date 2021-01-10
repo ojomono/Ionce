@@ -107,14 +107,63 @@ object Database {
     }
 
     /**
-     * Create a new document with a generated id and title=[title].title.
+     * Get the tale document with id=[id].
      */
-    fun createTale(title: String) = setTale("", title)
+    fun getTale(id: String): Task<DocumentSnapshot>? {
+        val docRef = userDocRef?.collection(CP_TALES)?.document(id)
+        return docRef?.get()
+            ?.addOnSuccessListener { document ->
+                if (document != null) {
+                    Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                } else {
+                    Log.d(TAG, "No such document")
+                }
+            }
+            ?.addOnFailureListener { exception ->
+                Log.d(TAG, "get failed with ", exception)
+            }
+    }
 
     /**
-     * Overwrite the tale document with id=[taleItem].id to have the given [taleItem]'s title.
+     * Overwrite the matching tale document with the given [tale]. If [tale].id is EMPTY, create
+     * a new document with a generated id. Return the set [Task].
      */
-    fun updateTale(taleItem: TaleItemModel) = setTale(taleItem.id, taleItem.title)
+    fun setTale(tale: TaleModel): Task<Void>? {
+        var task: Task<Void>? = null
+
+        // Setting a tale is possible only if a user is logged in
+        // (== his document reference is not null)
+        userDocRef?.let { userRef ->
+            // Create reference for wanted tale, for use inside the batch - if an id was given
+            // get the existing document, else reference a new one.
+            val talesCol = userRef.collection(CP_TALES)
+            val taleRef = if (tale.id.isEmpty()) talesCol.document() else talesCol.document(tale.id)
+
+            // Create a taleItem based on the given tale, to update the user's tales list
+            val taleItem = TaleItemModel(tale, taleRef.id)
+
+            // Create an updated user's tales list
+            userTales.value?.let {
+                val tales = it.toMutableList().apply {
+                    // If given taleItem is in the list (searched by id) - overwrite it with new
+                    // model, else add it
+                    val index = indexOfFirst { item -> item.id == taleItem.id }
+                    if (index == -1) add(taleItem)
+                    else this[index] = taleItem
+                }
+
+                // In a batch write, set the tale's document and update the user's tale list
+                task = db.runBatch { batch ->
+                    batch.update(userRef, UserModel::tales.name, tales)
+                    batch.set(taleRef, tale)
+                }
+            }
+            task?.addOnSuccessListener { Log.d(TAG, "Batch write success!") }
+                ?.addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
+        }
+
+        return task
+    }
 
     /**
      * Delete the tale document with id=[id].
@@ -159,47 +208,4 @@ object Database {
 //            ?.addOnSuccessListener { Log.d(TAG, "userDocRef successfully updated!") }
 //            ?.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
 
-    /*********************/
-    /** private methods **/
-    /*********************/
-
-    /**
-     * Overwrite the tale document with id=[id] to have the given [title]. If [id] is EMPTY, create
-     * a new document with a generated id and title=[title]. Return the set [Task].
-     */
-    private fun setTale(id: String = "", title: String): Task<Void>? {
-        var task: Task<Void>? = null
-
-        // Setting a tale is possible only if a user is logged in
-        // (== his document reference is not null)
-        userDocRef?.let { userRef ->
-            // Create reference for wanted tale, for use inside the batch - if an id was given
-            // get the existing document, else reference a new one.
-            val talesCol = userRef.collection(CP_TALES)
-            val taleRef = if (id.isEmpty()) talesCol.document() else talesCol.document(id)
-            val taleModel = TaleModel(taleRef.id, title)
-            val taleItem = TaleItemModel(taleModel)
-
-            // Create an updated user's tales list
-            userTales.value?.let {
-                val tales = it.toMutableList().apply {
-                    // If given taleItem is in the list (searched by id) - overwrite it with new
-                    // model, else add it
-                    val index = indexOfFirst { item -> item.id == taleItem.id }
-                    if (index == -1) add(taleItem)
-                    else this[index] = taleItem
-                }
-
-                // In a batch write, set the tale's document and update the user's tale list
-                task = db.runBatch { batch ->
-                    batch.update(userRef, UserModel::tales.name, tales)
-                    batch.set(taleRef, taleModel)
-                }
-            }
-            task?.addOnSuccessListener { Log.d(TAG, "Batch write success!") }
-                ?.addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
-        }
-
-        return task
-    }
 }

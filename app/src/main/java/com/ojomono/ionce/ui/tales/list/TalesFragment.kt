@@ -1,23 +1,25 @@
-package com.ojomono.ionce.ui.tales
+package com.ojomono.ionce.ui.tales.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
-import com.ojomono.ionce.ui.dialogs.InputDialogFragment
 import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
+import com.ojomono.ionce.ui.tales.edit.EditTaleDialogFragment
 import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_tales.view.*
 
 
 /**
  * A fragment representing a list of Tales.
+ * Use the [TalesFragment.newInstance] factory method to create an instance of this fragment.
  */
 class TalesFragment : BaseFragment() {
 
@@ -25,7 +27,9 @@ class TalesFragment : BaseFragment() {
     override lateinit var binding: FragmentTalesBinding
     override lateinit var viewModel: TalesViewModel
     override lateinit var progressBar: ProgressBar
-    private var columnCount = 1
+
+    // Give default value for the column count
+    private var columnCount = DEFAULT_COLUMN_COUNT
 
     /***********************/
     /** Lifecycle methods **/
@@ -63,9 +67,9 @@ class TalesFragment : BaseFragment() {
     override fun handleEvent(event: BaseViewModel.Event) {
         super.handleEvent(event)
         when (event) {
-            is TalesViewModel.EventType.ShowAddTaleDialog -> showAddTaleDialog()
-            is TalesViewModel.EventType.ShowEditTaleDialog -> showUpdateTaleDialog(event.taleTitle)
-            is TalesViewModel.EventType.ShowDeleteTaleDialog -> showDeleteTaleDialog(event.taleTitle)
+            is TalesViewModel.EventType.ShowEditTaleDialog -> showEditTaleDialog(event.taleId)
+            is TalesViewModel.EventType.ShowDeleteTaleDialog ->
+                showDeleteTaleDialog(event.taleTitle)
         }
     }
 
@@ -116,26 +120,14 @@ class TalesFragment : BaseFragment() {
     }
 
     /**
-     * Show dialog for adding a new tale.
+     * Show dialog for editing the tale with id [taleId].
      */
-    private fun showAddTaleDialog() =
-        InputDialogFragment(
-            title = StringResource(R.string.tales_add_dialog_title),
-            message = StringResource(R.string.tales_header_text),
-            onPositive = viewModel::addTale
-        ).show(parentFragmentManager, FT_ADD)
-
-    /**
-     * Show dialog for updating the tale with title [taleTitle].
-     */
-    private fun showUpdateTaleDialog(taleTitle: String) =
-        InputDialogFragment(
-            title = StringResource(R.string.tales_update_dialog_title),
-            message = StringResource(R.string.tales_header_text),
-            onNegative = viewModel::clearClickedTale,
-            onPositive = viewModel::updateTale,
-            defaultInputText = StringResource(taleTitle)
-        ).show(parentFragmentManager, FT_UPDATE)
+    private fun showEditTaleDialog(taleId: String) {
+        val newFragment = EditTaleDialogFragment.newInstance(taleId)
+        val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+        transaction.add(android.R.id.content, newFragment).addToBackStack(null).commit()
+    }
 
     /**
      * Show dialog for deleting the tale with title [taleTitle].
@@ -155,13 +147,16 @@ class TalesFragment : BaseFragment() {
     companion object {
 
         // Fragment tags
-        const val FT_ADD = "add"
-        const val FT_UPDATE = "update"
         const val FT_DELETE = "delete"
 
         // Column count
         const val ARG_COLUMN_COUNT = "column-count"
+        const val DEFAULT_COLUMN_COUNT = 1
 
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment with [columnCount] columns.
+         */
         @JvmStatic
         fun newInstance(columnCount: Int) =
             TalesFragment().apply {

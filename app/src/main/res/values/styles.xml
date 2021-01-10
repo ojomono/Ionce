@@ -12,4 +12,11 @@
         <item name="android:windowBackground">@drawable/splash_drawable</item>
     </style>
 
-    </resources>
+    <!-- Theme for toolbars. -->
+    <style name="AppTheme.ToolbarOverlay" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+        <item name="titleTextColor">@color/colorOnPrimary</item>
+        <item name="actionMenuTextColor">@color/colorOnPrimary</item>
+        <item name="android:actionMenuTextColor">@color/colorOnPrimary</item>
+    </style>
+
+</resources>
