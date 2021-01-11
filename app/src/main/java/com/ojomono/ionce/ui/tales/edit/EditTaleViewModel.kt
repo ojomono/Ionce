@@ -18,12 +18,12 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     /**
      * Save the tale to the database.
      */
-    fun saveTale() = if (taleChanged()) tale.value?.let { Database.setTale(it) } else null
+    fun saveTale() = if (didTaleChange()) tale.value?.let { Database.setTale(it) } else null
 
     /**
      * Check if any changes were made.
      */
-    fun taleChanged() = run { tale.value != taleCopy }
+    fun didTaleChange() = run { tale.value != taleCopy }
 
     /**
      * Init the tale model with the tale from the database, or with a new empty tale. Anyway, save a

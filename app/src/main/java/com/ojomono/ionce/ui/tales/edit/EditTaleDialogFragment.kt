@@ -159,7 +159,7 @@ class EditTaleDialogFragment : DialogFragment() {
     private fun discardAndDismiss() {
 
         // If no change was made, dismiss dialog
-        if (!viewModel.taleChanged()) dismiss()
+        if (!viewModel.didTaleChange()) dismiss()
 
         // Else, ask user to confirm changes discard
         else {

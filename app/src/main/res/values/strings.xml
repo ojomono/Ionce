@@ -63,11 +63,15 @@
     <!-- Edit tale screen -->
     <string name="edit_tale_screen_title_new">New Tale</string>
     <string name="edit_tale_screen_title_update">Edit Tale</string>
-    <string name="edit_tale_title_hint">Title</string>
-    <string name="edit_tale_title_error">Title is required</string>
     <string name="edit_tale_discard_dialog_message_new">Discard tale?</string>
     <string name="edit_tale_discard_dialog_message_update">Discard changes?</string>
     <string name="edit_tale_discard_dialog_positive_button_text">Discard</string>
+    <string name="edit_tale_title_field_name">Title</string>
+    <string name="edit_tale_title_hint">&general_tale_preface;</string>
+    <string name="edit_tale_title_error">Title is required</string>
+    <string name="edit_tale_media_field_name">Cover</string>
+    <string name="edit_tale_media_image_content_description">Tale cover</string>
+    <string name="edit_tale_media_icon_content_description">Add image</string>
 
     <!-- Dialogs -->
     <string name="dialog_save">Save</string>

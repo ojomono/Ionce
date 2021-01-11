@@ -38,6 +38,13 @@
             android:paddingTop="@dimen/activity_vertical_margin"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_tale_title_field_name"
+                android:textColor="@color/colorOnSurface"
+                android:textStyle="bold" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -51,6 +58,47 @@
                     android:text="@={viewModel.tale.title}" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="@dimen/edit_tale_fields_padding_horizontal"
+                android:layout_marginVertical="@dimen/activity_vertical_margin"
+                android:background="@color/gray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_tale_media_field_name"
+                android:textColor="@color/colorOnSurface"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="@dimen/edit_tale_relative_image_size"
+                android:layout_height="@dimen/edit_tale_relative_image_size"
+                android:layout_marginVertical="@dimen/activity_vertical_margin"
+                android:background="@drawable/bg_rounded_square_solid_gray">
+
+                <ImageView
+                    android:layout_width="@dimen/edit_tale_icons_sizes"
+                    android:layout_height="@dimen/edit_tale_icons_sizes"
+                    android:layout_centerInParent="true"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_photo_library_black_24"
+                    android:contentDescription="@string/edit_tale_media_image_content_description" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/bg_ripple"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/edit_tale_media_image_content_description"
+                    app:taleCoverSrc="@{viewModel.tale}" />
+
+            </RelativeLayout>
 
         </LinearLayout>
 
