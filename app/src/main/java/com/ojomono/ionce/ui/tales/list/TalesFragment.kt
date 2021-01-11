@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -122,12 +122,8 @@ class TalesFragment : BaseFragment() {
     /**
      * Show dialog for editing the tale with id [taleId].
      */
-    private fun showEditTaleDialog(taleId: String) {
-        val newFragment = EditTaleDialogFragment.newInstance(taleId)
-        val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        transaction.add(android.R.id.content, newFragment).addToBackStack(null).commit()
-    }
+    private fun showEditTaleDialog(taleId: String) =
+        EditTaleDialogFragment.newInstance(taleId).let { it.show(parentFragmentManager, it.TAG) }
 
     /**
      * Show dialog for deleting the tale with title [taleTitle].

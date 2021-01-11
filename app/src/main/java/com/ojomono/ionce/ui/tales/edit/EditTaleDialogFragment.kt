@@ -16,6 +16,7 @@ import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.utils.StringResource
 
+
 /**
  * A [DialogFragment] representing the edit screen for a tale.
  * Use the [EditTaleDialogFragment.newInstance] factory method to
@@ -35,11 +36,23 @@ class EditTaleDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Get the arguments
         arguments?.let { taleId = it.getString(ARG_TALE_ID) }
+
+        // Set style to be app theme (instead of default dialog theme) to make full-screen dialog
+        // (actually the important thing is: <item name="android:windowIsFloating">false</item>)
+        setStyle(STYLE_NORMAL, R.style.AppTheme)
     }
 
-    /** The system calls this to get the DialogFragment's layout, regardless
-    of whether it's being displayed as a dialog or an embedded fragment. */
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // Override dialog's onBackPressed() to allow confirmation pop up before dismissing
+        return object : Dialog(requireContext(), theme) {
+            override fun onBackPressed() {
+                discardAndDismiss()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,11 +74,11 @@ class EditTaleDialogFragment : DialogFragment() {
         return binding.root
     }
 
-    /** The system calls this only when creating the layout in a dialog. */
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        return dialog
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        // Set the enter & exit sliding animations
+        dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialog)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -119,7 +132,7 @@ class EditTaleDialogFragment : DialogFragment() {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeButtonEnabled(true)
-            actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_black_24)
         }
         setHasOptionsMenu(true)
     }
