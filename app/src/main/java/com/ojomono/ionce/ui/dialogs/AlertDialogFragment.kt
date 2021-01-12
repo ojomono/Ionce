@@ -3,7 +3,6 @@ package com.ojomono.ionce.ui.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import com.ojomono.ionce.R
-import com.ojomono.ionce.utils.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
 
 // TODO consider using 3rd party library instead: https://github.com/afollestad/material-dialogs

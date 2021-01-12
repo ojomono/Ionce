@@ -25,6 +25,7 @@ import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.utils.BaseViewModel
+import com.ojomono.ionce.utils.EventListener
 import com.ojomono.ionce.utils.TAG
 
 
@@ -46,7 +47,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     lateinit var googleSignInClient: GoogleSignInClient
 
     // Types of supported events
-    sealed class EventType() : Event {
+    sealed class EventType : BaseEventType() {
         class ShowPopupMenu(val view: View) : EventType()
         object ShowImagePicker : EventType()
         object ShowNameEditDialog : EventType()
@@ -272,7 +273,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
                 // If it's linked but it's the only provider (aside from the default "firebase") -
                 // return an error event
                 it <= MIN_NUMBER_OF_PROVIDERS ->
-                    BaseViewModel.EventType.ShowMessageByResId(R.string.profile_error_last_provider)
+                    BaseEventType.ShowMessageByResId(R.string.profile_error_last_provider)
 
                 // If it's linked and is not the only provider - return the "unlink event"
                 else -> EventType.ShowUnlinkProviderDialog(nameResId)

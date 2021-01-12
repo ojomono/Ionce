@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -64,7 +63,7 @@ class TalesFragment : BaseFragment() {
     /** BaseFragment methods **/
     /**************************/
 
-    override fun handleEvent(event: BaseViewModel.Event) {
+    override fun handleEvent(event: BaseViewModel.BaseEventType) {
         super.handleEvent(event)
         when (event) {
             is TalesViewModel.EventType.ShowEditTaleDialog -> showEditTaleDialog(event.taleId)

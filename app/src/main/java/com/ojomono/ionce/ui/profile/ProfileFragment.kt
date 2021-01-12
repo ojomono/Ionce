@@ -76,7 +76,7 @@ class ProfileFragment : BaseFragment() {
     /** BaseFragment methods **/
     /**************************/
 
-    override fun handleEvent(event: BaseViewModel.Event) {
+    override fun handleEvent(event: BaseViewModel.BaseEventType) {
         super.handleEvent(event)
         when (event) {
             is ProfileViewModel.EventType.ShowPopupMenu -> showPopupMenu(event.view)

@@ -13,7 +13,7 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
     private var clickedTale: TaleItemModel? = null
 
     // Types of supported events
-    sealed class EventType() : Event {
+    sealed class EventType : BaseEventType() {
         class ShowEditTaleDialog(val taleId: String) : EventType()
         class ShowDeleteTaleDialog(val taleTitle: String) : EventType()
     }
@@ -45,10 +45,8 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
 
     fun onAdd() = postEvent(EventType.ShowEditTaleDialog(""))
 
-    override fun onEdit(taleItem: TaleItemModel) {
-        clickedTale = taleItem
+    override fun onEdit(taleItem: TaleItemModel) =
         postEvent(EventType.ShowEditTaleDialog(taleItem.id))
-    }
 
     override fun onDelete(taleItem: TaleItemModel) {
         clickedTale = taleItem

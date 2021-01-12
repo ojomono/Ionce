@@ -12,7 +12,6 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.ojomono.ionce.R
-import com.ojomono.ionce.utils.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
 
 // TODO consider using 3rd party library instead: https://github.com/afollestad/material-dialogs
