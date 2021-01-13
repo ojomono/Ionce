@@ -74,8 +74,8 @@
                 android:textStyle="bold" />
 
             <RelativeLayout
-                android:layout_width="@dimen/edit_tale_relative_image_size"
-                android:layout_height="@dimen/edit_tale_relative_image_size"
+                android:layout_width="@dimen/edit_tale_cover_image_size"
+                android:layout_height="@dimen/edit_tale_cover_image_size"
                 android:layout_marginVertical="@dimen/activity_vertical_margin"
                 android:background="@drawable/bg_rounded_square_solid_gray">
 
@@ -88,15 +88,20 @@
                     android:src="@drawable/ic_photo_library_black_24"
                     android:contentDescription="@string/edit_tale_media_image_content_description" />
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerInParent="true"
-                    android:background="@drawable/bg_ripple"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="@string/edit_tale_media_image_content_description"
-                    app:taleCoverSrc="@{viewModel.tale}" />
+                    android:foreground="@drawable/fg_rounded_square_ripple"
+                    android:onClick="@{() -> viewModel.onPictureClicked()}">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/edit_tale_media_image_content_description"
+                        app:taleCoverSrc="@{viewModel.cover}" />
+                </FrameLayout>
 
             </RelativeLayout>
 

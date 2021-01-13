@@ -11,7 +11,8 @@ import androidx.fragment.app.Fragment
 /**
  * A [Fragment] that can observe the [BaseViewModel] events.
  */
-abstract class BaseFragment : Fragment(), EventListener.EventObserver<BaseViewModel.BaseEventType> {
+abstract class BaseFragment : Fragment(),
+    EventStateHolder.EventObserver<BaseViewModel.BaseEventType> {
 
     /************/
     /** Fields **/
@@ -22,16 +23,9 @@ abstract class BaseFragment : Fragment(), EventListener.EventObserver<BaseViewMo
     abstract val viewModel: BaseViewModel
     abstract val progressBar: ProgressBar?
 
-    /***********************/
-    /** protected methods **/
-    /***********************/
-
-    /**
-     * Observe possible events of [viewModel]. Implement [handleEvent] in order to use. Handling
-     * only events that inherit from [BaseViewModel.BaseEventType].
-     */
-    protected fun observeEvents() =
-        viewModel.listener.observeEvents(viewLifecycleOwner, this)
+    /********************************************/
+    /** EventStateHolder.EventObserver methods **/
+    /********************************************/
 
     /**
      * Handle a "raised" event. Implement with: "when(event) { ... }" to handle all possible events.
@@ -50,6 +44,13 @@ abstract class BaseFragment : Fragment(), EventListener.EventObserver<BaseViewMo
     /***********************/
     /** protected methods **/
     /***********************/
+
+    /**
+     * Observe possible events of [viewModel]. Implement [handleEvent] in order to use. Handling
+     * only events that inherit from [BaseViewModel.BaseEventType].
+     */
+    protected fun observeEvents() =
+        viewModel.events.observeEvents(viewLifecycleOwner, this)
 
     /**
      * Init the [binding] field. Notice connecting to ViewModel still needed!

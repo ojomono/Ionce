@@ -11,15 +11,15 @@ import java.lang.Exception
 abstract class BaseViewModel : ViewModel() {
 
     // Wrap the event listener
-    val listener = EventListener()
-    protected fun postEvent(event: EventListener.Event) = listener.postEvent(event)
+    val events = EventStateHolder()
+    protected fun postEvent(event: EventStateHolder.Event) = events.postEvent(event)
 
     /**********************************/
     /** Common event posting aliases **/
     /**********************************/
 
     // Common event types
-    abstract class BaseEventType : EventListener.Event {
+    abstract class BaseEventType : EventStateHolder.Event {
         class ShowProgressBar(val task: Task<*>) : BaseEventType()
         class ShowErrorMessage(val e: Exception) : BaseEventType()
         class ShowMessageByResId(val messageResId: Int, vararg val args: String) : BaseEventType()

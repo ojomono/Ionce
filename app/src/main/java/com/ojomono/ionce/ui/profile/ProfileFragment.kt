@@ -2,8 +2,8 @@ package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.view.*
@@ -64,7 +64,9 @@ class ProfileFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
-            RC_PICK_IMAGE -> if (resultCode == Activity.RESULT_OK) onImagePicked(data?.data)
+            RC_PICK_IMAGE ->
+                if (resultCode == Activity.RESULT_OK)
+                    data?.data?.let { viewModel.updateUserPicture(it) }
             RC_LINK_GOOGLE -> viewModel.handleGoogleResult(data)
         }
 
@@ -138,12 +140,10 @@ class ProfileFragment : BaseFragment() {
      * Show the image picker.
      */
     private fun showImagePicker() =
-        startActivityForResult(viewModel.getImagePickerIntent(), RC_PICK_IMAGE)
-
-    /**
-     * Update user's picture to given [uri] image.
-     */
-    private fun onImagePicked(uri: Uri?) = uri?.let { viewModel.updateUserPicture(it) }
+        startActivityForResult(
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+            RC_PICK_IMAGE
+        )
 
     /**
      * Show dialog for updating the current user's name.

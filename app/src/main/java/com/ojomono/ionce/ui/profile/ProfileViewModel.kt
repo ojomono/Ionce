@@ -2,7 +2,6 @@ package com.ojomono.ionce.ui.profile
 
 import android.content.Intent
 import android.net.Uri
-import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
@@ -25,7 +24,6 @@ import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.utils.BaseViewModel
-import com.ojomono.ionce.utils.EventListener
 import com.ojomono.ionce.utils.TAG
 
 
@@ -156,12 +154,6 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
             Log.d(TAG, "facebook:onError", error)
         }
     }
-
-    /**
-     * Get the intent for the image picker dialog.
-     */
-    fun getImagePickerIntent() =
-        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
 
     /**
      * Update user photo to given [uri].

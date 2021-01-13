@@ -1,15 +1,13 @@
 package com.ojomono.ionce.utils
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Holds events as part of it's state and allows views to observe those events.
  */
-class EventListener {
+class EventStateHolder {
 
     /**
      * The observable event holder.
@@ -38,6 +36,9 @@ class EventListener {
      * Implement this to be able to observe the events.
      */
     interface EventObserver<T : Event> {
+        /**
+         * Implement with: "when(event) { ... }" to handle all possible events.
+         */
         fun handleEvent(event: T)
     }
 

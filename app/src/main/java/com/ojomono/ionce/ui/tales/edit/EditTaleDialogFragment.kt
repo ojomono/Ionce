@@ -2,7 +2,9 @@ package com.ojomono.ionce.ui.tales.edit
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBar
@@ -14,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
+import com.ojomono.ionce.utils.EventStateHolder
 import com.ojomono.ionce.utils.StringResource
 
 
@@ -22,7 +25,8 @@ import com.ojomono.ionce.utils.StringResource
  * Use the [EditTaleDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class EditTaleDialogFragment : DialogFragment() {
+class EditTaleDialogFragment : DialogFragment(),
+    EventStateHolder.EventObserver<EditTaleViewModel.EventType> {
 
     private val layoutId = R.layout.fragment_edit_tale_dialog
     lateinit var binding: FragmentEditTaleDialogBinding
@@ -68,6 +72,9 @@ class EditTaleDialogFragment : DialogFragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
+        // Observe screen events
+        viewModel.events.observeEvents(viewLifecycleOwner, this)
+
         // Set the action bar
         setActionBar(binding.toolbar)
 
@@ -79,6 +86,15 @@ class EditTaleDialogFragment : DialogFragment() {
 
         // Set the enter & exit sliding animations
         dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialog)
+    }
+
+    override fun dismiss() {
+        // Hide on-screen soft keyboard (if shown) before dismissing the dialog.
+        (context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(view?.windowToken, 0)
+
+        // Dismiss dialog
+        super.dismiss()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -102,13 +118,24 @@ class EditTaleDialogFragment : DialogFragment() {
         }
     }
 
-    override fun dismiss() {
-        // Hide on-screen soft keyboard (if shown) before dismissing the dialog.
-        (context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager)
-            .hideSoftInputFromWindow(view?.windowToken, 0)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        // Dismiss dialog
-        super.dismiss()
+        when (requestCode) {
+            RC_PICK_IMAGE ->
+                if (resultCode == Activity.RESULT_OK)
+                    data?.data?.let { viewModel.updateTaleCover(it) }
+        }
+    }
+
+    /********************************************/
+    /** EventStateHolder.EventObserver methods **/
+    /********************************************/
+
+    override fun handleEvent(event: EditTaleViewModel.EventType) {
+        when (event) {
+            is EditTaleViewModel.EventType.ShowImagePicker -> showImagePicker()
+        }
     }
 
     /*********************/
@@ -174,11 +201,23 @@ class EditTaleDialogFragment : DialogFragment() {
         }
     }
 
+    /**
+     * Show the image picker.
+     */
+    private fun showImagePicker() =
+        startActivityForResult(
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+            RC_PICK_IMAGE
+        )
+
     /**********************/
     /** Companion object **/
     /**********************/
 
     companion object {
+
+        // Request codes
+        const val RC_PICK_IMAGE = 1
 
         // Fragment tags
         const val FT_DISCARD = "discard"
