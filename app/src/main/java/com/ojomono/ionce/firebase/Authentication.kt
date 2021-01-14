@@ -60,9 +60,7 @@ object Authentication {
     //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
     // Current logged in user
     private val _currentUser: MutableLiveData<FirebaseUser?> =
-        MutableLiveData<FirebaseUser?>().apply {
-            value = auth.currentUser
-        }
+        MutableLiveData<FirebaseUser?>().apply { value = auth.currentUser }
     val currentUser: LiveData<FirebaseUser?> = _currentUser
 
     // Current user's providers data
@@ -141,9 +139,6 @@ object Authentication {
     fun handleSignInSucceeded(dataIntent: Intent?) {
         val response = IdpResponse.fromResultIntent(dataIntent)
 
-        // Get reference to current user's document from Firestore.
-        Database.switchUserDocument(currentUser.value?.uid)
-
         // For new created users, check if a photo is available from the auth provider
         if (response?.isNewUser == true) {
             // All users have a default FirebaseAuth provider data - we want to check which is the
@@ -212,8 +207,8 @@ object Authentication {
 
         return if (uploadToStorage)
             currentUser.value?.uid?.let {
-                Storage.uploadUserPhoto(it, photoUrl)
-                    .continueWithTask { downloadUrlTask ->
+                Storage.uploadUserPhoto(photoUrl)
+                    ?.continueWithTask { downloadUrlTask ->
                         if (downloadUrlTask.isSuccessful) {
                             updateProfile(
                                 profileUpdates.setPhotoUri(downloadUrlTask.result).build()

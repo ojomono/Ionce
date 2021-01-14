@@ -124,7 +124,7 @@ class EditTaleDialogFragment : DialogFragment(),
         when (requestCode) {
             RC_PICK_IMAGE ->
                 if (resultCode == Activity.RESULT_OK)
-                    data?.data?.let { viewModel.updateTaleCover(it) }
+                    data?.data?.let { viewModel.updateDisplayedCover(it) }
         }
     }
 

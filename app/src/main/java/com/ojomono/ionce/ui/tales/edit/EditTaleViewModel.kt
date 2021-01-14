@@ -4,7 +4,9 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
 import com.ojomono.ionce.firebase.Database
+import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.utils.EventStateHolder
 
@@ -16,7 +18,7 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     // A copy of the initial tale data to allow checking if any changes were made
     private lateinit var taleCopy: TaleModel
 
-    // The presented tale cover (separate LiveData to allow refresh without refreshing all)
+    // The displayed cover (separate LiveData to allow refresh without refreshing all)
     private val _cover: MutableLiveData<Uri> = MutableLiveData<Uri>()
     val cover: LiveData<Uri> = _cover
 
@@ -46,7 +48,14 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     /**
      * Save the tale to the database.
      */
-    fun saveTale() = if (didTaleChange()) tale.value?.let { Database.setTale(it) } else null
+    fun saveTale(): Task<Void>? {
+
+        // Update cover in tale model according to displayed cover
+        updateTaleCover()
+
+        // Save tale model to database
+        return if (didTaleChange()) tale.value?.let { Database.setTale(it) } else null
+    }
 
     /**
      * Check if any changes were made.
@@ -56,7 +65,7 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     /**
      * Update tale cover to given [uri].
      */
-    fun updateTaleCover(uri: Uri) = run { _cover.value = uri }
+    fun updateDisplayedCover(uri: Uri) = run { _cover.value = uri }
 
     /*********************/
     /** private methods **/
@@ -84,6 +93,17 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
         _tale.value = tale
         taleCopy = tale.copy()
         _cover.value = tale.media.firstOrNull()
+    }
+
+    /**
+     * Update tale cover in Storage if needed.
+     */
+    private fun updateTaleCover() {
+        val oldCover = tale.value?.media?.firstOrNull()
+        val newCover = cover.value
+
+        // If displayed cover differs from the one in the model, an upload and/or delete are needed
+        if (newCover != oldCover) Storage.uploadTaleCover(newCover, oldCover)
     }
 
 }

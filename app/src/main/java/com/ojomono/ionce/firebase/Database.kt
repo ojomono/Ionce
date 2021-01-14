@@ -4,7 +4,6 @@ package com.ojomono.ionce.firebase
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.facebook.internal.BoltsMeasurementEventListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
@@ -28,9 +27,6 @@ object Database {
     private const val CP_USERS = "users"
     private const val CP_TALES = "tales"
 
-    // Field Names
-    private const val FN_TALES = "tales"
-
     /************/
     /** Fields **/
     /************/
@@ -38,10 +34,14 @@ object Database {
     // The Cloud Firestore instance
     private val db = Firebase.firestore
 
-    // Current user's document
+    // Always keep current user's document loaded
     private var userDocRef: DocumentReference? = null
     private var userDocument: DocumentSnapshot? = null
     private var registration: ListenerRegistration? = null
+
+    init {
+        Authentication.currentUser.observeForever { switchUserDocument(it?.uid) }
+    }
 
     // TODO replace liveData with callbackFlow / StateFlow when they become non-experimental
     //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
@@ -49,11 +49,6 @@ object Database {
     // Current user's tales list
     private val _userTales = MutableLiveData<MutableList<TaleItemModel>>()
     val userTales: LiveData<MutableList<TaleItemModel>> = _userTales
-
-    // If a user is already logged-in - get it's document
-    init {
-        Authentication.currentUser.value?.uid?.let { switchUserDocument(it) }
-    }
 
     /********************/
     /** public methods **/
@@ -63,7 +58,7 @@ object Database {
      * Switch the current user document reference and snapshot to those of the user with the given
      * [id] - and listen to changes. Return the get [Task].
      */
-    fun switchUserDocument(id: String?): Task<DocumentSnapshot>? {
+    private fun switchUserDocument(id: String?): Task<DocumentSnapshot>? {
 
         var task: Task<DocumentSnapshot>? = null
 
