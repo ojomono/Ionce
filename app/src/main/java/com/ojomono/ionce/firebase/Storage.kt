@@ -5,6 +5,8 @@ import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.ojomono.ionce.utils.Utils
+import java.util.*
 
 object Storage {
 
@@ -15,6 +17,7 @@ object Storage {
     // Path Strings
     private const val PS_USERS = "users"
     private const val PS_USER_PHOTO = "userPhoto"
+    private const val PS_IMAGE = "image"
 
     /************/
     /** Fields **/
@@ -46,22 +49,29 @@ object Storage {
 
     /**
      * Delete [oldUri] from Storage (if not null), Upload new [newFile] to Storage (if not null),
-     * and return the download Url [Task].
+     * as media of the tale with given [taleId] and return the download Url [Task].
      */
-    fun uploadTaleCover(newFile: Uri? = null, oldUri: Uri? = null): Task<Uri>? {
-        TODO("implement")
-//        userPath?.let { userPath ->
-//            var task: Task<*>? = null
-//
-//            // If an old uri is given, delete it from Storage
-//            oldUri?.let { task = storage.getReferenceFromUrl(it.toString()).delete() }
-//
-//            // Continue with delete task if occurred, or upload in a new task
-//            return continueWithTaskOrInNew(task) {
-//                newFile?.let { uploadFile("$userPath/$taleId/$name", it) }
-//            }
-//        }
+    fun uploadTaleCover(taleId: String, newFile: Uri? = null, oldUri: Uri? = null)
+            : Task<Uri>? {
+        return userPath?.let { userPath ->
+            var task: Task<*>? = null
+
+            // If an old uri is given, delete it from Storage
+            oldUri?.let { task = storage.getReferenceFromUrl(it.toString()).delete() }
+
+            // Continue with delete task if occurred, or upload in a new task, and return the task
+            Utils.continueWithTaskOrInNew(task) {
+                newFile?.let {
+                    val name = generateUniqueName(it)
+                    uploadFile("$userPath/$taleId/$name", it)
+                }
+            }
+        }
     }
+
+    /********************/
+    /** Private methods **/
+    /********************/
 
     /**
      * Upload the given [file] to the given [path] in Storage, and return the download Url [Task].
@@ -82,13 +92,16 @@ object Storage {
     }
 
     /**
-     * If [task] is not null, run [continuation] as continuation to [task], else run it in new task.
+     * Generate a unique name like so: "<uuid>/image.<ext>" where uuid is a random UUID and ext is
+     * the extension of [file] (if has one).
      */
-    private fun <T> continueWithTaskOrInNew(
-        task: Task<*>?,
-        continuation: () -> Task<T>?
-    ): Task<T>? {
-        return task?.continueWithTask { continuation.invoke() } ?: continuation.invoke()
+    private fun generateUniqueName(file: Uri): String {
+        val str = file.lastPathSegment ?: ""
+        val extension =
+            if (str.contains(".")) str.substring(str.lastIndexOf(".")) else ""
+        val uuid = UUID.randomUUID().toString()
+
+        return "$uuid/$PS_IMAGE$extension"
     }
 
 }

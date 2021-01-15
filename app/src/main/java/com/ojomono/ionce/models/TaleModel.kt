@@ -10,5 +10,5 @@ import com.google.firebase.firestore.DocumentId
 data class TaleModel(
     @DocumentId val id: String = "",
     var title: String = "",
-    val media: MutableList<Uri> = mutableListOf()
+    var media: List<String> = listOf()
 )

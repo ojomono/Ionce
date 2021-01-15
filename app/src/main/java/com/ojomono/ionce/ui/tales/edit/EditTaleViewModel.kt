@@ -1,14 +1,18 @@
 package com.ojomono.ionce.ui.tales.edit
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
+import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.utils.EventStateHolder
+import com.ojomono.ionce.utils.TAG
+import com.ojomono.ionce.utils.Utils
 
 class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     // The tale currently being edited
@@ -51,10 +55,12 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     fun saveTale(): Task<Void>? {
 
         // Update cover in tale model according to displayed cover
-        updateTaleCover()
+        val task = updateTaleCover()
 
         // Save tale model to database
-        return if (didTaleChange()) tale.value?.let { Database.setTale(it) } else null
+        return Utils.continueWithTaskOrInNew(task) {
+            if (didTaleChange()) tale.value?.let { Database.setTale(it) } else null
+        }
     }
 
     /**
@@ -92,18 +98,29 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     private fun fillFields(tale: TaleModel) {
         _tale.value = tale
         taleCopy = tale.copy()
-        _cover.value = tale.media.firstOrNull()
+        _cover.value = tale.media.firstOrNull()?.let { Uri.parse(it) }
     }
 
     /**
      * Update tale cover in Storage if needed.
      */
-    private fun updateTaleCover() {
-        val oldCover = tale.value?.media?.firstOrNull()
+    private fun updateTaleCover(): Task<Void>? {
+        val oldCover = tale.value?.media?.firstOrNull()?.let { Uri.parse(it) }
         val newCover = cover.value
 
         // If displayed cover differs from the one in the model, an upload and/or delete are needed
-        if (newCover != oldCover) Storage.uploadTaleCover(newCover, oldCover)
+        return if (newCover != oldCover)
+            tale.value?.let {
+                Storage.uploadTaleCover(it.id, newCover, oldCover)
+                    ?.continueWith { task ->
+
+                        // Replace url in tale's list to the new url
+                        if (task.isSuccessful) task.result?.let { uri ->
+                            it.media = listOf(uri.toString())
+                        } else Log.e(TAG, task.exception.toString())
+                        null
+                    }
+            } else null
     }
 
 }
