@@ -52,16 +52,48 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     /**
      * Save the tale to the database.
      */
-    fun saveTale(): Task<Void>? {
+    fun saveTale(): Task<Void>? =
+        tale.value?.let { taleModel ->
 
-        // Update cover in tale model according to displayed cover
-        val task = updateTaleCover()
+            // If displayed cover differs then the one current in the model, the user changed cover:
+            // upload the new one to Storage
+            val oldCover = taleModel.media.firstOrNull()?.let { uri -> Uri.parse(uri) }
+            val uploadCoverTask = cover.value?.let { newCover ->
+                if (newCover != oldCover) Storage.uploadTaleCover(taleModel.id, newCover)
+                else null
+            }
 
-        // Save tale model to database
-        return Utils.continueWithTaskOrInNew(task) {
-            if (didTaleChange()) tale.value?.let { Database.setTale(it) } else null
+            // Define and return the saving task (on top of the cover upload task if happened)
+            Utils.continueWithTaskOrInNew(uploadCoverTask) { getCoverUrlTask ->
+
+                // If cover uploaded successfully, replace url in the tale model to the new url
+                var uploadedCover: Uri? = null
+                getCoverUrlTask?.let {
+                    if (getCoverUrlTask.isSuccessful) {
+                        uploadedCover = getCoverUrlTask.result
+                        taleModel.media = listOf(uploadedCover.toString())
+                    } else Log.e(TAG, getCoverUrlTask.exception.toString())
+                }
+
+                // Save tale model to database (if differs from old one)
+                if (didTaleChange())
+                    Database.setTale(taleModel)
+                        ?.continueWithTask { setTaleTask ->
+
+                            // If a new cover was uploaded, the "orphan" cover (the old or new one,
+                            // depending if the db save succeed) should be deleted from Storage
+                            uploadedCover?.let { newCover ->
+
+                                // If the db save was successful - delete old cover file
+                                if (setTaleTask.isSuccessful)
+                                    oldCover?.let { Storage.deleteFile(it) }
+
+                                // If the db save failed - delete new cover file
+                                else Storage.deleteFile(newCover)
+                            }
+                        } else null
+            }
         }
-    }
 
     /**
      * Check if any changes were made.
@@ -99,28 +131,6 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
         _tale.value = tale
         taleCopy = tale.copy()
         _cover.value = tale.media.firstOrNull()?.let { Uri.parse(it) }
-    }
-
-    /**
-     * Update tale cover in Storage if needed.
-     */
-    private fun updateTaleCover(): Task<Void>? {
-        val oldCover = tale.value?.media?.firstOrNull()?.let { Uri.parse(it) }
-        val newCover = cover.value
-
-        // If displayed cover differs from the one in the model, an upload and/or delete are needed
-        return if (newCover != oldCover)
-            tale.value?.let {
-                Storage.uploadTaleCover(it.id, newCover, oldCover)
-                    ?.continueWith { task ->
-
-                        // Replace url in tale's list to the new url
-                        if (task.isSuccessful) task.result?.let { uri ->
-                            it.media = listOf(uri.toString())
-                        } else Log.e(TAG, task.exception.toString())
-                        null
-                    }
-            } else null
     }
 
 }

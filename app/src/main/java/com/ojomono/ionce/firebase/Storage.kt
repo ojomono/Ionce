@@ -48,26 +48,16 @@ object Storage {
         userPath?.let { uploadFile("$it/$PS_USER_PHOTO", file) }
 
     /**
-     * Delete [oldUri] from Storage (if not null), Upload new [newFile] to Storage (if not null),
-     * as media of the tale with given [taleId] and return the download Url [Task].
+     * Upload [file] to Storage, as media of the tale with given [taleId] and return the download
+     * Url [Task].
      */
-    fun uploadTaleCover(taleId: String, newFile: Uri? = null, oldUri: Uri? = null)
-            : Task<Uri>? {
-        return userPath?.let { userPath ->
-            var task: Task<*>? = null
+    fun uploadTaleCover(taleId: String, file: Uri): Task<Uri>? =
+        userPath?.let { uploadFile("$it/$taleId/${generateUniqueName(file)}", file) }
 
-            // If an old uri is given, delete it from Storage
-            oldUri?.let { task = storage.getReferenceFromUrl(it.toString()).delete() }
-
-            // Continue with delete task if occurred, or upload in a new task, and return the task
-            Utils.continueWithTaskOrInNew(task) {
-                newFile?.let {
-                    val name = generateUniqueName(it)
-                    uploadFile("$userPath/$taleId/$name", it)
-                }
-            }
-        }
-    }
+    /**
+     * Delete the given [fileName] from Storage.
+     */
+    fun deleteFile(fileName: Uri) = storage.getReferenceFromUrl(fileName.toString()).delete()
 
     /********************/
     /** Private methods **/
