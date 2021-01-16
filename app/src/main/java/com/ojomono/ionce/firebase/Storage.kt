@@ -55,9 +55,21 @@ object Storage {
         userPath?.let { uploadFile("$it/$taleId/${generateUniqueName(file)}", file) }
 
     /**
-     * Delete the given [fileName] from Storage.
+     * Delete the given [fileName] from Storage, and return delete [Task].
      */
-    fun deleteFile(fileName: Uri) = storage.getReferenceFromUrl(fileName.toString()).delete()
+    fun deleteFile(fileName: String) = storage.getReferenceFromUrl(fileName).delete()
+
+    /**
+     * Delete all files in [filesList] from Storage in one continued [Task] and return it.
+     */
+    fun deleteFiles(filesList: List<String>): Task<Void>? {
+        var task: Task<Void>? = null
+        for (file in filesList) task = Utils.continueWithTaskOrInNew(task) {
+            if (it?.isSuccessful != false) deleteFile(file)
+            else it
+        }
+        return task
+    }
 
     /********************/
     /** Private methods **/

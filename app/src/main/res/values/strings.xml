@@ -72,6 +72,7 @@
     <string name="edit_tale_media_field_name">Cover</string>
     <string name="edit_tale_media_image_content_description">Tale cover</string>
     <string name="edit_tale_media_icon_content_description">Add image</string>
+    <string name="edit_tale_clear_button_text">Clear</string>
 
     <!-- Dialogs -->
     <string name="dialog_save">Save</string>

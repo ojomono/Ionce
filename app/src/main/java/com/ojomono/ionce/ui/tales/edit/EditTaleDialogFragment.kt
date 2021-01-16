@@ -88,6 +88,13 @@ class EditTaleDialogFragment : DialogFragment(),
         dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialog)
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        // Disable enter animation for this instance to avoid animation on back from image picker
+        dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialogExit)
+    }
+
     override fun dismiss() {
         // Hide on-screen soft keyboard (if shown) before dismissing the dialog.
         (context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager)

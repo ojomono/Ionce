@@ -45,6 +45,8 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
 
     fun onPictureClicked() = events.postEvent(EventType.ShowImagePicker)
 
+    fun onCoverClear() = run { _cover.value = null }
+
     /*******************/
     /** logic methods **/
     /*******************/
@@ -58,7 +60,8 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
             // If displayed cover differs then the one current in the model, the user changed cover:
             // upload the new one to Storage
             val oldCover = taleModel.media.firstOrNull()?.let { uri -> Uri.parse(uri) }
-            val uploadCoverTask = cover.value?.let { newCover ->
+            val newCover = cover.value
+            val uploadCoverTask = newCover?.let {
                 if (newCover != oldCover) Storage.uploadTaleCover(taleModel.id, newCover)
                 else null
             }
@@ -73,7 +76,9 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
                         uploadedCover = getCoverUrlTask.result
                         taleModel.media = listOf(uploadedCover.toString())
                     } else Log.e(TAG, getCoverUrlTask.exception.toString())
-                }
+
+                    // And if displayed cover is cleared, remove it from the tale model
+                } ?: if (cover.value == null) taleModel.media = listOf()
 
                 // Save tale model to database (if differs from old one)
                 if (didTaleChange())
@@ -81,16 +86,18 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
                         ?.continueWithTask { setTaleTask ->
 
                             // If a new cover was uploaded, the "orphan" cover (the old or new one,
-                            // depending if the db save succeed) should be deleted from Storage
-                            uploadedCover?.let { newCover ->
+                            // depending if the db save succeed) should be deleted from Storage.
+                            // Also, if displayed cover is cleared, the old cover should be deleted
+                            if ((uploadedCover != null) or (cover.value == null)) {
 
                                 // If the db save was successful - delete old cover file
                                 if (setTaleTask.isSuccessful)
-                                    oldCover?.let { Storage.deleteFile(it) }
+                                    oldCover?.let { Storage.deleteFile(it.toString()) }
 
                                 // If the db save failed - delete new cover file
-                                else Storage.deleteFile(newCover)
-                            }
+                                else Storage.deleteFile(uploadedCover.toString())
+
+                            } else null
                         } else null
             }
         }
@@ -98,7 +105,10 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     /**
      * Check if any changes were made.
      */
-    fun didTaleChange() = run { tale.value != taleCopy }
+    fun didTaleChange() =
+        run {
+            (tale.value != taleCopy) or (cover.value?.toString() != taleCopy.media.firstOrNull())
+        }
 
     /**
      * Update tale cover to given [uri].
