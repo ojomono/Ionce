@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -211,11 +212,18 @@ object Database {
     /**
      * Delete all media of the tale with [id] from Storage, and return delete [Task].
      */
-    private fun deleteTaleMedia(id: String): Task<*>? =
+    private fun deleteTaleMedia(id: String): Task<Void>? =
+
+        // Get tale
         getTale(id)?.continueWithTask { task ->
-//            if (task.isSuccessful)
-            task.result?.toObject(TaleModel::class.java)?.let { Storage.deleteFiles(it.media) }
-//            else ???
+            if (task.isSuccessful)
+                task.result?.toObject(TaleModel::class.java)?.let {
+
+                    // Delete tale media. If no delete is needed (deleteFiles returns null) that's
+                    // still a valid case - return successful task.
+                    Storage.deleteFiles(it.media) ?: Tasks.forResult(null)
+                }
+            else Tasks.forCanceled()
         }
 
 }

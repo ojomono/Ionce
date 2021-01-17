@@ -45,7 +45,7 @@ class EditTaleDialogFragment : DialogFragment(),
 
         // Set style to be app theme (instead of default dialog theme) to make full-screen dialog
         // (actually the important thing is: <item name="android:windowIsFloating">false</item>)
-        setStyle(STYLE_NORMAL, R.style.AppTheme)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_Material)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

@@ -60,11 +60,14 @@ object Storage {
     fun deleteFile(fileName: String) = storage.getReferenceFromUrl(fileName).delete()
 
     /**
-     * Delete all files in [filesList] from Storage in one continued [Task] and return it.
+     * Delete all files in [filesList] from Storage in one continued [Task] and return it. If no
+     * delete was needed ([filesList] is empty), return null.
      */
     fun deleteFiles(filesList: List<String>): Task<Void>? {
         var task: Task<Void>? = null
         for (file in filesList) task = Utils.continueWithTaskOrInNew(task) {
+
+            // If any delete fails, stop deleting and return the failed task
             if (it?.isSuccessful != false) deleteFile(file)
             else it
         }
