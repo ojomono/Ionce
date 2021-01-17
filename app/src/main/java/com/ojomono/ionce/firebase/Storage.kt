@@ -44,15 +44,17 @@ object Storage {
      * Upload the given [file] to Storage, as the photo of the current logged user, and return the
      * download Url [Task].
      */
-    fun uploadUserPhoto(file: Uri): Task<Uri>? =
+    fun uploadUserPhoto(file: Uri): Task<Uri> =
         userPath?.let { uploadFile("$it/$PS_USER_PHOTO", file) }
+            ?: throw NoSignedInUserException
 
     /**
      * Upload [file] to Storage, as media of the tale with given [taleId] and return the download
      * Url [Task].
      */
-    fun uploadTaleCover(taleId: String, file: Uri): Task<Uri>? =
+    fun uploadTaleCover(taleId: String, file: Uri): Task<Uri> =
         userPath?.let { uploadFile("$it/$taleId/${generateUniqueName(file)}", file) }
+            ?: throw NoSignedInUserException
 
     /**
      * Delete the given [fileName] from Storage, and return delete [Task].

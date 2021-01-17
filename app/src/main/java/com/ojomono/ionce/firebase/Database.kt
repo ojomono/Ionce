@@ -59,7 +59,7 @@ object Database {
     /**
      * Get the tale document with id=[id].
      */
-    fun getTale(id: String): Task<DocumentSnapshot>? {
+    fun getTale(id: String): Task<DocumentSnapshot> {
         val docRef = userDocRef?.collection(CP_TALES)?.document(id)
         return docRef?.get()
             ?.addOnSuccessListener { document ->
@@ -71,17 +71,20 @@ object Database {
             }
             ?.addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
-            }
+            } ?: throw NoSignedInUserException
     }
 
     /**
-     * Overwrite the matching tale document with the given [tale]. If [tale].id is EMPTY, create
-     * a new document with a generated id. Return the set [Task].
+     * Overwrite the given [tale] document with the given. If [tale].id is EMPTY, create a new
+     * document with a generated id. Return a [Task] holding the success state and the tale's
+     * document reference.
      */
-    fun setTale(tale: TaleModel): Task<Void>? =
+    fun setTale(tale: TaleModel): Task<DocumentReference> =
+
     // Setting a tale is possible only if a user is logged in
         // (== his document reference is not null)
         userDocRef?.let { userRef ->
+
             // Create reference for wanted tale, for use inside the batch - if an id was given
             // get the existing document, else reference a new one.
             val talesCol = userRef.collection(CP_TALES)
@@ -106,13 +109,18 @@ object Database {
                     batch.set(taleRef, tale)
                 }.addOnSuccessListener { Log.d(TAG, "Batch write success!") }
                     .addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
+
+                    // Return a task holding the success state and the tale's document reference
+                    .continueWithTask { task ->
+                        if (task.isSuccessful) Tasks.forResult(taleRef) else Tasks.forCanceled()
+                    }
             }
-        }
+        } ?: throw NoSignedInUserException
 
     /**
      * Delete the tale document with id=[id].
      */
-    fun deleteTale(id: String): Task<Void>? =
+    fun deleteTale(id: String): Task<Void> =
     // Deleting a tale is possible only if a user is logged in
         // (== his document reference is not null)
         userDocRef?.let { userRef ->
@@ -135,18 +143,19 @@ object Database {
                             if (index != -1) removeAt(index)
                         }
 
-                        // In a butch write, delete the tale document and remove it from user's tales list
+                        // In a batch write, delete the tale document and remove it from user's
+                        // tales list
                         db.runBatch { batch ->
                             batch.update(userRef, UserModel::tales.name, tales)
                             batch.delete(taleRef)
                         }.addOnSuccessListener { Log.d(TAG, "Batch write success!") }
-                            .addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
+                            .addOnFailureListener { e ->
+                                Log.w(TAG, "Batch write failure.", e)
+                            }
                     }
                 } else null
             }
-
-        }
-
+        } ?: throw NoSignedInUserException
 
     // For drag n' drop feature
 //    /**
@@ -156,7 +165,6 @@ object Database {
 //        userDocRef?.update(FN_TALES, userTales.value)
 //            ?.addOnSuccessListener { Log.d(TAG, "userDocRef successfully updated!") }
 //            ?.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-
 
     /*********************/
     /** private methods **/
@@ -197,7 +205,7 @@ object Database {
             }
 
             // Listen for changes in the document
-            registration = userDocRef?.addSnapshotListener() { snapshot, e ->
+            registration = userDocRef?.addSnapshotListener { snapshot, e ->
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else {
                     userDocument = snapshot
@@ -212,10 +220,10 @@ object Database {
     /**
      * Delete all media of the tale with [id] from Storage, and return delete [Task].
      */
-    private fun deleteTaleMedia(id: String): Task<Void>? =
+    private fun deleteTaleMedia(id: String): Task<Void> =
 
         // Get tale
-        getTale(id)?.continueWithTask { task ->
+        getTale(id).continueWithTask { task ->
             if (task.isSuccessful)
                 task.result?.toObject(TaleModel::class.java)?.let {
 
@@ -223,6 +231,8 @@ object Database {
                     // still a valid case - return successful task.
                     Storage.deleteFiles(it.media) ?: Tasks.forResult(null)
                 }
+
+            // If get task failed, return a failed task
             else Tasks.forCanceled()
         }
 

@@ -193,22 +193,23 @@ object Authentication {
     /**
      * Refresh the data of the current user, and return the refreshing [Task].
      */
-    fun reloadCurrentUser(): Task<Void>? {
+    fun reloadCurrentUser(): Task<Void> {
         return auth.currentUser?.reload()
             ?.addOnCompleteListener { _currentUser.value = auth.currentUser }
+            ?: throw NoSignedInUserException
     }
 
     /**
      * Update the current user's photo to [photoUrl], and return the updating [Task]. If needed,
      * ([uploadToStorage]) upload photo to [Storage].
      */
-    fun updatePhotoUrl(photoUrl: Uri, uploadToStorage: Boolean = true): Task<Void>? {
+    fun updatePhotoUrl(photoUrl: Uri, uploadToStorage: Boolean = true): Task<Void> {
         val profileUpdates = UserProfileChangeRequest.Builder()
 
         return if (uploadToStorage)
             currentUser.value?.uid?.let {
                 Storage.uploadUserPhoto(photoUrl)
-                    ?.continueWithTask { downloadUrlTask ->
+                    .continueWithTask { downloadUrlTask ->
                         if (downloadUrlTask.isSuccessful) {
                             updateProfile(
                                 profileUpdates.setPhotoUri(downloadUrlTask.result).build()
@@ -219,7 +220,7 @@ object Authentication {
                             null
                         }
                     }
-            }
+            } ?: throw NoSignedInUserException
         else updateProfile(profileUpdates.setPhotoUri(photoUrl).build())
     }
 
@@ -237,8 +238,7 @@ object Authentication {
     /**
      * Send a sign-in link to the given [email].
      */
-    fun sendSignInLinkToEmail(email: String): Task<Void>? {
-        var task: Task<Void>? = null
+    fun sendSignInLinkToEmail(email: String): Task<Void> =
         if (email.isNotEmpty()) {
             emailToVerify = email   // Store for use when actually linking the email
             val actionCodeSettings = actionCodeSettings {
@@ -246,11 +246,9 @@ object Authentication {
                 handleCodeInApp = true  // This must be true
                 setAndroidPackageName(BuildConfig.APPLICATION_ID, true, null)
             }
-            task = auth.sendSignInLinkToEmail(email, actionCodeSettings)
+            auth.sendSignInLinkToEmail(email, actionCodeSettings)
                 .addOnCompleteListener { if (it.isSuccessful) Log.d(TAG, "Email sent.") }
-        }
-        return task
-    }
+        } else throw IllegalStateException("Email cannot be null")
 
     /**
      * Link the current user to email address.
@@ -258,7 +256,7 @@ object Authentication {
     fun linkWithEmail(emailLink: String) =
         if (emailToVerify.isNotEmpty()) {
             linkWithCredential(EmailAuthProvider.getCredentialWithLink(emailToVerify, emailLink))
-                ?.addOnCompleteListener { emailToVerify = ""  /* Clear field */ }
+                .addOnCompleteListener { emailToVerify = ""  /* Clear field */ }
         } else null
 
     /**
@@ -287,7 +285,7 @@ object Authentication {
         auth.currentUser?.unlink(getProviderId(providerNameResId))
             ?.addOnCompleteListener { task ->
                 if (task.isSuccessful) _currentUser.value = task.result?.user
-            }
+            } ?: throw NoSignedInUserException
 
     /**
      * sign out of Firebase Authentication as well as all social identity providers.
@@ -301,14 +299,14 @@ object Authentication {
     /**
      * Send the given [profileUpdates] change request to Firebase, and return the updating [Task].
      */
-    private fun updateProfile(profileUpdates: UserProfileChangeRequest): Task<Void>? {
+    private fun updateProfile(profileUpdates: UserProfileChangeRequest): Task<Void> {
         return currentUser.value?.updateProfile(profileUpdates)
             ?.addOnCompleteListener {
                 if (it.isSuccessful) {
                     Log.d(TAG, "User profile updated.")
                     _currentUser.value = auth.currentUser
                 }
-            }
+            } ?: throw NoSignedInUserException
     }
 
     /**
@@ -321,7 +319,7 @@ object Authentication {
                 _currentUser.value = task.result?.user
             } else Log.w(TAG, "linkWithCredential:failure", task.exception)
             // TODO merge accounts in case of collision.
-        }
+        } ?: throw NoSignedInUserException
 
     /**
      * Get the provider id matching the given [providerNameResId].
