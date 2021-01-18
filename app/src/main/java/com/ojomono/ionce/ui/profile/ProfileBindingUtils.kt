@@ -1,5 +1,6 @@
 package com.ojomono.ionce.ui.profile
 
+import android.net.Uri
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
@@ -8,9 +9,9 @@ import com.google.firebase.auth.UserInfo        // TODO avoid importing firebase
 import com.ojomono.ionce.R
 
 @BindingAdapter("userPhotoSrc")
-fun ImageView.setUserPhotoSrc(user: FirebaseUser?) {
+fun ImageView.setUserPhotoSrc(uri: Uri?) {
     Glide.with(context)
-        .load(user?.photoUrl)
+        .load(uri)
         .circleCrop()
         .fallback(R.drawable.ic_profile_black_24)
         .into(this)

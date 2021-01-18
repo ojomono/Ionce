@@ -59,6 +59,7 @@
     <string name="roll_hint_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
     <string name="roll_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab.</string>
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
+    <string name="roll_cover_image_content_description">Tale cover</string>
 
     <!-- Edit tale screen -->
     <string name="edit_tale_screen_title_new">New Tale</string>

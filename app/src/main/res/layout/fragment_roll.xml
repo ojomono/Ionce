@@ -26,7 +26,7 @@
             android:text="@string/roll_no_tales_text"
             android:gravity="center"
             app:noTalesTextVisibility="@{viewModel.tales}"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,7 +35,7 @@
             android:gravity="center_horizontal"
             app:rollScreenVisibility="@{viewModel.tales}"
             tools:context=".ui.roll.RollFragment"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/text_preface"
@@ -57,28 +57,45 @@
                 android:textSize="@dimen/roll_hint_text_size"
                 android:gravity="center"
                 android:text="@string/roll_hint_text"
-                app:hintTextVisibility="@{viewModel.text}"
-                tools:visibility="visible" />
+                app:hintTextVisibility="@{viewModel.rolled}"
+                tools:visibility="gone" />
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_tale"
+                android:id="@+id/card_rolled"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_marginVertical="@dimen/activity_vertical_margin"
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-                app:taleCardVisibility="@{viewModel.text}"
-                tools:visibility="gone">
+                app:rolledCardVisibility="@{viewModel.rolled}"
+                tools:visibility="visible">
 
-                <TextView
-                    android:id="@+id/text_tale"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginVertical="@dimen/activity_vertical_margin"
-                    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-                    android:textSize="@dimen/roll_tale_text_size"
-                    android:text="@{viewModel.text}"
-                    tools:text="I went there!" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text_tale"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="@dimen/activity_vertical_margin"
+                        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                        android:textSize="@dimen/roll_tale_text_size"
+                        android:text="@{viewModel.rolled.title}"
+                        app:titleTextLinesAndEllipsize="@{viewModel.rolled.cover}"
+                        tools:text="I went there!" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/roll_cover_image_content_description"
+                        app:coverSrcAndVisibility="@{viewModel.rolled.cover}" />
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 

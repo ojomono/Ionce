@@ -46,7 +46,7 @@
                         android:padding="3dp"
                         android:scaleType="centerCrop"
                         android:contentDescription="@string/profile_user_image_content_description"
-                        app:userPhotoSrc="@{viewModel.user}"
+                        app:userPhotoSrc="@{viewModel.user.photoUrl}"
                         tools:src="@drawable/ic_profile_black_24" />
                 </FrameLayout>
 
