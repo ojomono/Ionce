@@ -8,5 +8,5 @@ import com.google.firebase.firestore.DocumentId
  */
 data class UserModel(
     @DocumentId val id: String = "",
-    var tales: MutableList<TaleItemModel> = mutableListOf()
+    val tales: MutableList<TaleItemModel> = mutableListOf()
 )

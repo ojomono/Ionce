@@ -10,7 +10,7 @@
             type="com.ojomono.ionce.models.TaleItemModel" />
         <variable
             name="clickListener"
-            type="com.ojomono.ionce.ui.tales.TalesAdapter.TalesListener" />
+            type="com.ojomono.ionce.ui.tales.list.TalesAdapter.TalesListener" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -49,6 +49,7 @@
                 android:src="@drawable/ic_edit_black_24"
                 android:padding="5dp"
                 android:contentDescription="@string/tales_edit_icon_content_description"
+                android:background="@drawable/fg_circle_ripple"
                 android:onClick="@{() -> clickListener.onEdit(taleItem)}" />
 
             <ImageView
@@ -59,6 +60,7 @@
                 android:src="@drawable/ic_delete_black_24"
                 android:padding="5dp"
                 android:contentDescription="@string/tales_delete_icon_content_description"
+                android:background="@drawable/fg_circle_ripple"
                 android:onClick="@{() -> clickListener.onDelete(taleItem)}" />
         </RelativeLayout>
 

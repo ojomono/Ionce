@@ -11,7 +11,8 @@ import androidx.fragment.app.Fragment
 /**
  * A [Fragment] that can observe the [BaseViewModel] events.
  */
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment : Fragment(),
+    EventStateHolder.EventObserver<BaseViewModel.BaseEventType> {
 
     /************/
     /** Fields **/
@@ -22,27 +23,20 @@ abstract class BaseFragment : Fragment() {
     abstract val viewModel: BaseViewModel
     abstract val progressBar: ProgressBar?
 
-    /***********************/
-    /** protected methods **/
-    /***********************/
-
-    /**
-     * Observe possible events of [viewModel]. Implement [handleEvent] in order to use.
-     */
-    protected fun observeEvents() {
-        viewModel.events.observe(viewLifecycleOwner) { it.consume { event -> handleEvent(event) } }
-    }
+    /********************************************/
+    /** EventStateHolder.EventObserver methods **/
+    /********************************************/
 
     /**
      * Handle a "raised" event. Implement with: "when(event) { ... }" to handle all possible events.
      */
-    protected open fun handleEvent(event: BaseViewModel.Event) {
+    override fun handleEvent(event: BaseViewModel.BaseEventType) {
         when (event) {
-            is BaseViewModel.EventType.ShowProgressBar ->
+            is BaseViewModel.BaseEventType.ShowProgressBar ->
                 progressBar?.let { event.task.withProgressBar(it) }
-            is BaseViewModel.EventType.ShowErrorMessage ->
+            is BaseViewModel.BaseEventType.ShowErrorMessage ->
                 showMessage(event.e.message)
-            is BaseViewModel.EventType.ShowMessageByResId ->
+            is BaseViewModel.BaseEventType.ShowMessageByResId ->
                 showMessage(getString(event.messageResId, *event.args))
         }
     }
@@ -50,6 +44,13 @@ abstract class BaseFragment : Fragment() {
     /***********************/
     /** protected methods **/
     /***********************/
+
+    /**
+     * Observe possible events of [viewModel]. Implement [handleEvent] in order to use. Handling
+     * only events that inherit from [BaseViewModel.BaseEventType].
+     */
+    protected fun observeEvents() =
+        viewModel.events.observeEvents(viewLifecycleOwner, this)
 
     /**
      * Init the [binding] field. Notice connecting to ViewModel still needed!

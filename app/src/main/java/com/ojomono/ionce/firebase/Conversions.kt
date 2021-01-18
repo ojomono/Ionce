@@ -19,6 +19,8 @@ object Conversions {
      */
     fun fixUserPhotoPathInStorageIfNeeded(user: FirebaseUser) {
 
+        val storage = Firebase.storage
+
         //-------------------------
         // Version 1.0.1 constants:
         //-------------------------
@@ -26,41 +28,56 @@ object Conversions {
         // Path string used in Storage object to upload the file like so:
         // Firebase.storage.reference.child("$PS_IMAGES/${user.uid}").putFile(file)
         val PS_IMAGES = "images"
+        val V1_0_1_PATH = "/$PS_IMAGES/${user.uid}"
 
-        // Which leads to a download url that looked like so:
-        // https://firebasestorage.googleapis.com/v0/b/<bucket>/o/images%2F<UID>?alt=media&token=<token>
-        val storageRef = Firebase.storage.reference
-        val V1_0_1_DOWNLOAD_URL =
-            "https://firebasestorage.googleapis.com/v0/b/${storageRef.bucket}/o/$PS_IMAGES%2F${user.uid}"
+        //-------------------------
+        // Version 1.0.2 constants:
+        //-------------------------
 
-        //---------------------------------------
-        // If user photo url is in v1.0.1 format:
-        //---------------------------------------
-        if (user.photoUrl.toString().startsWith(V1_0_1_DOWNLOAD_URL)) {
+        // Path string used in Storage object to upload the file like so:
+        // Firebase.storage.reference.child("$PS_USERS/${user.uid}/$PS_USER_PHOTO").putFile(file)
+        val PS_USERS = "users"
+        val PS_USER_PHOTO = "userPhoto.jpg"
+        val V1_0_2_PATH = "/$PS_USERS/${user.uid}/$PS_USER_PHOTO"
 
-            // Download the given image from the storage
-            val oldRef = storageRef.child("$PS_IMAGES/${user.uid}")
-            val localFile = File.createTempFile("images", "jpg")
-            val localFileUri = localFile.toUri()
-            oldRef.getFile(localFileUri).addOnSuccessListener {
+        // Get the actual user photo url path
+        try {
+            val oldPath = storage.getReferenceFromUrl(user.photoUrl.toString()).path
+            // An IllegalArgumentException is thrown if the url is not from Firebase Storage.
 
-                // Update the photo url so it will be uploaded in the current used way
-                Authentication.updatePhotoUrl(localFileUri, true)
-                    ?.addOnCompleteListener {
+            //---------------------------------------
+            // If user photo url is in v1.0.1 format:
+            //---------------------------------------
+            if (oldPath in listOf(V1_0_1_PATH, V1_0_2_PATH)) {
 
-                        // Delete local temp file
-                        localFile.delete()
+                // Download the given image from the storage
+                val oldRef = storage.reference.child(oldPath)
+                val localFile = File.createTempFile("images", "jpg")
+                val localFileUri = localFile.toUri()
+                oldRef.getFile(localFileUri).addOnSuccessListener {
 
-                        // If update succeed, and the new url really is in different format
-                        // Delete the previously uploaded data from firebase. (v1.0.1 style)
-                        if (it.isSuccessful and
-                            (!FirebaseAuth.getInstance().currentUser?.photoUrl.toString()
-                                .startsWith(V1_0_1_DOWNLOAD_URL))
+                    // Update the photo url so it will be uploaded in the current used way
+                    Authentication.updatePhotoUrl(localFileUri, true)
+                        ?.addOnCompleteListener {
 
-                        // Delete the previously uploaded data from firebase. (v1.0.1 style)
-                        ) oldRef.delete()
-                    }
+                            // Delete local temp file
+                            localFile.delete()
+
+                            // If update succeed, and the new url really is in different format
+                            // Delete the previously uploaded data from firebase. (v1.0.1 style)
+                            if (it.isSuccessful and
+                                (storage.getReferenceFromUrl(
+                                    FirebaseAuth.getInstance().currentUser?.photoUrl.toString()
+                                ).path != oldPath)
+
+                            // Delete the previously uploaded data from firebase. (v1.0.1 style)
+                            ) oldRef.delete()
+                        }
+                }
             }
+
+        } catch (e: IllegalArgumentException) {
+            // user photo is not from storage - do nothing
         }
     }
 }

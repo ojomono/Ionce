@@ -3,13 +3,13 @@ package com.ojomono.ionce.ui.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import com.ojomono.ionce.R
-import com.ojomono.ionce.utils.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
 
+// TODO consider using 3rd party library instead: https://github.com/afollestad/material-dialogs
 /**
  * A simple dialog fragment used for noticing the user and let him approve or cancel an action.
  */
-class NoticeDialogFragment<T>(
+class AlertDialogFragment<T>(
     title: StringResource = StringResource.EMPTY,
     message: StringResource = StringResource.EMPTY,
     onNegative: (() -> Unit)? = null,

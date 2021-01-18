@@ -1,10 +1,9 @@
 package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.view.*
@@ -18,8 +17,8 @@ import com.google.firebase.FirebaseException    // TODO avoid importing firebase
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
-import com.ojomono.ionce.ui.dialogs.EditTextDialogFragment
-import com.ojomono.ionce.ui.dialogs.NoticeDialogFragment
+import com.ojomono.ionce.ui.dialogs.InputDialogFragment
+import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.util.concurrent.TimeUnit
@@ -65,7 +64,9 @@ class ProfileFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
-            RC_PICK_IMAGE -> if (resultCode == Activity.RESULT_OK) onImagePicked(data?.data)
+            RC_PICK_IMAGE ->
+                if (resultCode == Activity.RESULT_OK)
+                    data?.data?.let { viewModel.updateUserPicture(it) }
             RC_LINK_GOOGLE -> viewModel.handleGoogleResult(data)
         }
 
@@ -77,7 +78,7 @@ class ProfileFragment : BaseFragment() {
     /** BaseFragment methods **/
     /**************************/
 
-    override fun handleEvent(event: BaseViewModel.Event) {
+    override fun handleEvent(event: BaseViewModel.BaseEventType) {
         super.handleEvent(event)
         when (event) {
             is ProfileViewModel.EventType.ShowPopupMenu -> showPopupMenu(event.view)
@@ -139,18 +140,16 @@ class ProfileFragment : BaseFragment() {
      * Show the image picker.
      */
     private fun showImagePicker() =
-        startActivityForResult(viewModel.getImagePickerIntent(), RC_PICK_IMAGE)
-
-    /**
-     * Update user's picture to given [uri] image.
-     */
-    private fun onImagePicked(uri: Uri?) = uri?.let { viewModel.updateUserPicture(it) }
+        startActivityForResult(
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+            RC_PICK_IMAGE
+        )
 
     /**
      * Show dialog for updating the current user's name.
      */
     private fun showNameEditDialog() =
-        EditTextDialogFragment(
+        InputDialogFragment(
             title = StringResource(R.string.profile_name_edit_dialog_title),
             onPositive = viewModel::updateUserName,
             defaultInputText = StringResource(viewModel.user.value?.displayName ?: "")
@@ -160,8 +159,8 @@ class ProfileFragment : BaseFragment() {
      * Present the user an interface that prompts them to type their email address.
      */
     private fun showEmailAddressDialog() =
-        EditTextDialogFragment(
-            message = StringResource(R.string.profile_email_link_dialog_message),
+        InputDialogFragment(
+            title = StringResource(R.string.profile_email_link_dialog_title),
             onPositive = viewModel::sendSignInLinkToEmail,
             okButtonText = StringResource(R.string.profile_email_link_dialog_button),
             defaultInputText = StringResource(viewModel.user.value?.email ?: "")
@@ -171,7 +170,7 @@ class ProfileFragment : BaseFragment() {
      * Present the user an interface that prompts them to type their phone number.
      */
     private fun showPhoneVerifyDialog() =
-        EditTextDialogFragment(
+        InputDialogFragment(
             title = StringResource(R.string.profile_phone_verify_dialog_title),
             message = StringResource(R.string.profile_phone_verify_dialog_message),
             onPositive = ::verifyPhoneNumber,
@@ -230,7 +229,7 @@ class ProfileFragment : BaseFragment() {
 
                 // If verified automatically, no need for the manual dialog
                 (parentFragmentManager.findFragmentByTag(FT_PHONE_CODE) as
-                        EditTextDialogFragment<*>).dismiss()
+                        InputDialogFragment<*>).dismiss()
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -266,10 +265,11 @@ class ProfileFragment : BaseFragment() {
      * message.
      */
     private fun showVerificationCodeDialog() =
-        EditTextDialogFragment(
+        InputDialogFragment(
+            title = StringResource(R.string.profile_phone_verify_dialog_title),
             message = StringResource(
                 getString(
-                    R.string.profile_verification_code_dialog_message,
+                    R.string.profile_phone_verification_code_dialog_message,
                     viewModel.phoneNumberToVerify
                 )
             ),
@@ -312,8 +312,7 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for verifying decision to unlink given [providerNameResId].
      */
     private fun showUnlinkProviderDialog(providerNameResId: Int) =
-        NoticeDialogFragment(
-            title = StringResource(R.string.profile_unlink_provider_dialog_title),
+        AlertDialogFragment(
             message = StringResource(
                 getString(
                     R.string.profile_unlink_provider_dialog_message,

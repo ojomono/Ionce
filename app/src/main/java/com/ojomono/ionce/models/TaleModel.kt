@@ -1,8 +1,14 @@
 package com.ojomono.ionce.models
 
+import android.net.Uri
 import com.google.firebase.firestore.DocumentId
 
 /**
- * Data model to hold all the tale's model (saved in the 'tales' sub-collection with generated [id]).
+ * Data model to hold all the tale's model
+ * (saved in the 'tales' sub-collection with generated [id]).
  */
-data class TaleModel(@DocumentId val id: String = "", val title: String = "")
+data class TaleModel(
+    @DocumentId val id: String = "",
+    var title: String = "",
+    var media: List<String> = listOf()
+)

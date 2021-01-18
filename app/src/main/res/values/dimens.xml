@@ -27,6 +27,11 @@
     <dimen name="profile_providers_padding_horizontal">30dp</dimen>
     <dimen name="profile_providers_padding_top">20dp</dimen>
 
+    <!-- Edit tale screen dimens -->
+    <dimen name="edit_tale_icons_sizes">40dp</dimen>
+    <dimen name="edit_tale_cover_image_size">140dp</dimen>
+    <dimen name="edit_tale_cover_corners_radius">10dp</dimen>
+
     <!-- Dialogs dimens -->
     <dimen name="dialog_margin">20dp</dimen>
 </resources>

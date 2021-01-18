@@ -1,11 +1,13 @@
-package com.ojomono.ionce.utils
+package com.ojomono.ionce.ui.dialogs
 
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.ojomono.ionce.R
+import com.ojomono.ionce.utils.StringResource
 
+// TODO consider using 3rd party library instead: https://github.com/afollestad/material-dialogs
 /**
  * A [DialogFragment] that prepares an AlertDialog.Builder for building a basic dialog with optional
  * [title], [message] and [onNegative] button action.

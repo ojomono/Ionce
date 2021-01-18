@@ -2,7 +2,6 @@ package com.ojomono.ionce.ui.profile
 
 import android.content.Intent
 import android.net.Uri
-import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
@@ -46,7 +45,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     lateinit var googleSignInClient: GoogleSignInClient
 
     // Types of supported events
-    sealed class EventType() : Event {
+    sealed class EventType : BaseEventType() {
         class ShowPopupMenu(val view: View) : EventType()
         object ShowImagePicker : EventType()
         object ShowNameEditDialog : EventType()
@@ -157,32 +156,30 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     }
 
     /**
-     * Get the intent for the image picker dialog.
-     */
-    fun getImagePickerIntent() =
-        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-
-    /**
      * Update user photo to given [uri].
      */
     fun updateUserPicture(uri: Uri) =
-        Authentication.updatePhotoUrl(uri, true)?.withProgressBar()
+        Authentication.updatePhotoUrl(uri, true).withProgressBar()
 
     /**
      * Update user displayed name to given [name].
      */
     fun updateUserName(name: String) =
-        Authentication.updateDisplayName(name)?.withProgressBar()
+        Authentication.updateDisplayName(name).withProgressBar()
 
     /**
      * Send a sign-in link to the given [email].
      */
     fun sendSignInLinkToEmail(email: String) {
         if (email.isValidEmail())
-            Authentication.sendSignInLinkToEmail(email)?.withProgressBar()
-                ?.addOnCompleteListener {
-                    if (it.isSuccessful) showMessageByResId(R.string.profile_email_link_sent, email)
-                }
+            Authentication.sendSignInLinkToEmail(email)
+                .addOnCompleteListener {
+                    if (it.isSuccessful)
+                        showMessageByResId(
+                            R.string.profile_email_link_sent,
+                            email
+                        )
+                }.withProgressBar()
         else showMessageByResId(R.string.profile_email_link_invalid_address)
     }
 
@@ -213,15 +210,15 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
      */
     fun handlePhoneVerificationCode(code: String) =
         Authentication.linkWithPhone(storedVerificationId, code)
-            ?.handleCollision(::showErrorMessage)?.withProgressBar()
-            ?.addOnCompleteListener { phoneNumberToVerify = ""    /* Clear flag */ }
+            .handleCollision(::showErrorMessage)
+            .addOnCompleteListener { phoneNumberToVerify = ""    /* Clear flag */ }
+            .withProgressBar()
 
     /**
      * Link current user with Facebook account with given [token].
      */
     fun handleFacebookAccessToken(token: AccessToken) =
-        Authentication.linkWithFacebook(token)
-            ?.handleCollision(::showErrorMessage)?.withProgressBar()
+        Authentication.linkWithFacebook(token).handleCollision(::showErrorMessage).withProgressBar()
 
     /**
      * Link current user with Google account (token in [intent]).
@@ -235,7 +232,8 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
                 account.idToken?.let {
                     Authentication.linkWithGoogle(it)
-                        ?.handleCollision(::showErrorMessage)?.withProgressBar()
+                        .handleCollision(::showErrorMessage)
+                        .withProgressBar()
                 }
             }
         } catch (e: ApiException) {
@@ -248,8 +246,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
      * Unlink current user with the given [providerNameResId].
      */
     fun unlinkProvider(providerNameResId: Int) =
-        Authentication.unlinkProvider(providerNameResId)?.withProgressBar()
-
+        Authentication.unlinkProvider(providerNameResId).withProgressBar()
 
     /*********************/
     /** private methods **/
@@ -273,7 +270,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
                 // If it's linked but it's the only provider (aside from the default "firebase") -
                 // return an error event
                 it <= MIN_NUMBER_OF_PROVIDERS ->
-                    BaseViewModel.EventType.ShowMessageByResId(R.string.profile_error_last_provider)
+                    BaseEventType.ShowMessageByResId(R.string.profile_error_last_provider)
 
                 // If it's linked and is not the only provider - return the "unlink event"
                 else -> EventType.ShowUnlinkProviderDialog(nameResId)

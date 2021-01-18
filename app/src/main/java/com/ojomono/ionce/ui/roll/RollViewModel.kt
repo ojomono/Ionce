@@ -12,11 +12,8 @@ class RollViewModel : BaseViewModel() {
     val tales: LiveData<MutableList<TaleItemModel>> = Database.userTales
 
     // The rolled tale's title
-    private val _text = MutableLiveData<String>()
-    val text: LiveData<String> = _text
-
-    // The last rolled tale
-    private var lastRolled: TaleItemModel? = null
+    private val _rolled = MutableLiveData<TaleItemModel>()
+    val rolled: LiveData<TaleItemModel> = _rolled
 
     /**
      * Show a random tale title from the user's tales.
@@ -26,7 +23,7 @@ class RollViewModel : BaseViewModel() {
         if (tales.value.isNullOrEmpty())
             showMessageByResId(R.string.roll_error_no_tales)
         // If he has some - get a random one and show it's title
-        else _text.value = getRandomTale()?.title
+        else _rolled.value = getRandomTale()
     }
 
     /**
@@ -37,6 +34,6 @@ class RollViewModel : BaseViewModel() {
             // If the user has only one tale - get it
             if (size == 1) get(0)
             // If he has more, get a random one, excluding the last rolled tale
-            else filter { it.id != lastRolled?.id }.random().also { lastRolled = it }
+            else filter { it.id != rolled.value?.id }.random()
         }
 }

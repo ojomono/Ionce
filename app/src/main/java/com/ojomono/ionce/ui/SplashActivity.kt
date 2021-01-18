@@ -1,4 +1,4 @@
-package com.ojomono.ionce.ui.main
+package com.ojomono.ionce.ui
 
 import android.app.Activity
 import android.content.Intent
