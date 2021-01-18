@@ -4,9 +4,9 @@ import android.net.Uri
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseUser    // TODO avoid importing firebase packages here
 import com.google.firebase.auth.UserInfo        // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
+import com.ojomono.ionce.utils.Utils
 
 @BindingAdapter("userPhotoSrc")
 fun ImageView.setUserPhotoSrc(uri: Uri?) {
@@ -14,6 +14,7 @@ fun ImageView.setUserPhotoSrc(uri: Uri?) {
         .load(uri)
         .circleCrop()
         .fallback(R.drawable.ic_profile_black_24)
+        .placeholder(Utils.getCircularProgressDrawable(context))
         .into(this)
 }
 

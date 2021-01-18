@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.ojomono.ionce.models.TaleItemModel
+import com.ojomono.ionce.utils.Utils
 
 const val TITLE_LINES_FOR_TALE_WITH_COVER = 2
 
@@ -36,7 +37,7 @@ fun CardView.setRolledCardVisibility(rolledTale: TaleItemModel?) {
 @BindingAdapter("titleTextLinesAndEllipsize")
 fun TextView.setTitleTextLinesAndEllipsize(coverUri: String?) {
     ellipsize = if (coverUri.isNullOrEmpty()) {
-        setLines(Int.MAX_VALUE)
+        maxLines = Integer.MAX_VALUE
         null
     } else {
         setLines(TITLE_LINES_FOR_TALE_WITH_COVER)
@@ -46,12 +47,14 @@ fun TextView.setTitleTextLinesAndEllipsize(coverUri: String?) {
 
 @BindingAdapter("coverSrcAndVisibility")
 fun ImageView.setCoverSrcAndVisibility(coverUri: String?) {
-    val requestManager = Glide.with(context)
     visibility = if (coverUri.isNullOrEmpty()) {
-        requestManager.clear(this)
+        Glide.with(context).clear(this)
         View.GONE
     } else {
-        requestManager.load(Uri.parse(coverUri)).into(this)
+        Glide.with(context)
+            .load(Uri.parse(coverUri))
+            .placeholder(Utils.getCircularProgressDrawable(context))
+            .into(this)
         View.VISIBLE
     }
 }
