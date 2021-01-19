@@ -13,8 +13,8 @@ fun ImageView.setUserPhotoSrc(uri: Uri?) {
     Glide.with(context)
         .load(uri)
         .circleCrop()
-        .fallback(R.drawable.ic_profile_black_24)
-        .placeholder(Utils.getCircularProgressDrawable(context))
+        .fallback(R.drawable.ic_profile_photo_person)
+        .placeholder(Utils.getCircularProgressDrawable(this))
         .into(this)
 }
 
@@ -23,10 +23,10 @@ fun ImageView.setProviderIconSrcAndDescription(providerData: UserInfo?, provider
     val imageResource: Int
     val contentDescriptionResource: Int
     if (providerData == null) {
-        imageResource = R.drawable.ic_add_black_24
+        imageResource = R.drawable.ic_baseline_add_24
         contentDescriptionResource = R.string.profile_providers_add_content_description
     } else {
-        imageResource = R.drawable.ic_delete_black_24
+        imageResource = R.drawable.ic_baseline_delete_24
         contentDescriptionResource = R.string.profile_providers_delete_content_description
     }
     setImageResource(imageResource)

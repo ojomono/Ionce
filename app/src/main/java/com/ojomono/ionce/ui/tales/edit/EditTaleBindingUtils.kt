@@ -17,7 +17,7 @@ fun ImageView.setTaleCoverSrc(uri: Uri?) {
         val radius = context.resources.getDimensionPixelSize(R.dimen.edit_tale_cover_corners_radius)
         Glide.with(context).load(uri)
             .transform(CenterCrop(), RoundedCorners(radius))
-            .placeholder(Utils.getCircularProgressDrawable(context))
+            .placeholder(Utils.getCircularProgressDrawable(this))
             .into(this)
     }
 }

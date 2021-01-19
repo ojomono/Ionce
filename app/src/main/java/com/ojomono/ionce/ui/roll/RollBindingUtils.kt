@@ -53,7 +53,7 @@ fun ImageView.setCoverSrcAndVisibility(coverUri: String?) {
     } else {
         Glide.with(context)
             .load(Uri.parse(coverUri))
-            .placeholder(Utils.getCircularProgressDrawable(context))
+            .placeholder(Utils.getCircularProgressDrawable(this))
             .into(this)
         View.VISIBLE
     }

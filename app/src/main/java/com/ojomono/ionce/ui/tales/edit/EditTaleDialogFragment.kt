@@ -166,7 +166,7 @@ class EditTaleDialogFragment : DialogFragment(),
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeButtonEnabled(true)
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_black_24)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_close_24)
         }
         setHasOptionsMenu(true)
     }

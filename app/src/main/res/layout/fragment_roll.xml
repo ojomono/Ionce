@@ -101,7 +101,7 @@
                 android:layout_height="@dimen/roll_button_size"
                 android:layout_marginVertical="@dimen/activity_vertical_margin"
                 android:gravity="center"
-                android:background="@drawable/bg_circle_ripple"
+                android:background="@drawable/roll_button_bg"
                 android:onClick="@{() -> viewModel.onRoll()}"
                 android:textColor="?attr/colorSecondary"
                 android:textAppearance="?android:attr/textAppearanceLarge"

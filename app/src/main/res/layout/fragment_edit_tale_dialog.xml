@@ -72,7 +72,7 @@
                     android:layout_width="@dimen/edit_tale_cover_image_size"
                     android:layout_height="@dimen/edit_tale_cover_image_size"
                     android:layout_marginVertical="@dimen/activity_vertical_margin"
-                    android:background="@drawable/bg_rounded_square_solid">
+                    android:background="@drawable/edit_tale_cover_relative_bg">
 
                     <ImageView
                         android:layout_width="@dimen/edit_tale_icons_sizes"
@@ -80,14 +80,14 @@
                         android:layout_centerInParent="true"
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/ic_photo_library_black_24"
+                        android:src="@drawable/ic_baseline_photo_library_24"
                         android:contentDescription="@string/edit_tale_media_image_content_description" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_centerInParent="true"
-                        android:foreground="@drawable/fg_rounded_square_ripple"
+                        android:foreground="@drawable/edit_tale_cover_frame_ripple"
                         android:onClick="@{() -> viewModel.onPictureClicked()}">
 
                         <ImageView

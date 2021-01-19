@@ -4,7 +4,7 @@
     <item>
         <shape android:shape="oval">
             <stroke
-                android:width="5dp"
+                android:width="@dimen/roll_button_bg_stroke_width"
                 android:color="?attr/colorSecondary" />
             <solid android:color="?attr/colorButtonNormal" />
         </shape>

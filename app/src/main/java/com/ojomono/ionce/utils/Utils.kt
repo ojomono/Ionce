@@ -1,8 +1,8 @@
 package com.ojomono.ionce.utils
 
-import android.content.Context
-import androidx.core.content.ContextCompat
+import android.view.View
 import com.google.android.gms.tasks.Task
+import com.google.android.material.color.MaterialColors
 import com.ojomono.ionce.R
 
 object Utils {
@@ -16,12 +16,12 @@ object Utils {
     ) = task?.continueWithTask { continuation.invoke(task) } ?: continuation.invoke(null)
 
     /**
-     * Get a default CircularProgressDrawable for [context].
+     * Get a default CircularProgressDrawable for [view].
      */
-    fun getCircularProgressDrawable(context: Context) =
-        androidx.swiperefreshlayout.widget.CircularProgressDrawable(context).apply {
+    fun getCircularProgressDrawable(view: View) =
+        androidx.swiperefreshlayout.widget.CircularProgressDrawable(view.context).apply {
             setStyle(androidx.swiperefreshlayout.widget.CircularProgressDrawable.LARGE)
-            setColorSchemeColors(ContextCompat.getColor(context, R.color.colorAccent))
+            setColorSchemeColors(MaterialColors.getColor(view, R.attr.colorSecondary))
             start()
         }
 }

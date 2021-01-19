@@ -12,12 +12,14 @@
     <dimen name="tales_fab_layout_margin">20dp</dimen>
 
     <!-- Roll screen dimens -->
+    <dimen name="roll_button_bg_stroke_width">5dp</dimen>
     <dimen name="roll_button_size">150dp</dimen>
 
     <!-- Profile screen dimens -->
     <dimen name="profile_icons_sizes">40dp</dimen>
-    <dimen name="profile_image_size">120dp</dimen>
-    <dimen name="profile_relative_image_size">138dp</dimen>
+    <dimen name="profile_photo_relative_bg_stroke_width">2dp</dimen>
+    <dimen name="profile_photo_relative_size">138dp</dimen>
+    <dimen name="profile_photo_image_size">120dp</dimen>
     <dimen name="profile_name_text_size">32sp</dimen>
     <dimen name="profile_name_padding_bottom">20dp</dimen>
     <dimen name="profile_providers_padding_horizontal">30dp</dimen>
