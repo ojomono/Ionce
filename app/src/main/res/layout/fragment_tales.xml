@@ -11,8 +11,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_gradient">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/text_tales_hint"
@@ -20,8 +19,7 @@
             android:layout_height="match_parent"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:layout_marginVertical="@dimen/activity_vertical_margin"
-            android:textColor="@color/colorOnPrimary"
-            android:textSize="@dimen/tales_hint_text_size"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/tales_hint_text"
             android:gravity="center"
             app:hintTextVisibility="@{viewModel.tales}"

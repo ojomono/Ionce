@@ -4,6 +4,6 @@
 
     <stroke
         android:width="2dp"
-        android:color="?attr/colorBackgroundFloating" />
+        android:color="@color/background_floating_material_dark" />
 
 </shape>

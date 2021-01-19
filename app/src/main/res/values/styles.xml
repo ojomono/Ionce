@@ -1,28 +1,11 @@
 <resources>
-    <!-- Base application theme, but all activities should use "AppTheme.Material" instead.
-    if the application theme's parent is changed to "Theme.MaterialComponents.*" , the FirebaseUI
-    sign-in screen gets ruined (and calling setTheme(R.style.<some-other-theme>) on the
-    SignInIntentBuilder, does not fix that). So in order to enjoy the MaterialComponents's benefits,
-    activities should use the "AppTheme.Material" theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <!-- The "actual" base application theme == Used in all activities.
-    not set as application theme because FirebaseUI sign-in screen gets ruined if application
-    theme's parent is "Theme.MaterialComponents.*" -->
-    <style name="AppTheme.Material" parent="Theme.MaterialComponents.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <!-- Splash screen theme -->
-    <style name="AppTheme.Splash" parent="AppTheme.Material">
+    <style name="AppTheme.Splash" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash_drawable</item>
     </style>
 
@@ -32,7 +15,7 @@
     </style>
     <!-- Theme without the enter animation to allow changing to it after dialog is shown in order to
      avoid animation on every back press from inner dialogs -->
-    <style name="AppTheme.FullScreenDialogExit" parent="AppTheme.Material">
+    <style name="AppTheme.FullScreenDialogExit" parent="AppTheme">
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
 </resources>
