@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/image_edit"
                 android:padding="5dp"
-                android:textSize="16sp"
+                android:textAppearance="?android:attr/textAppearanceListItem"
                 android:text="@{taleItem.title}"
                 tools:text="title" />
 

@@ -92,7 +92,7 @@ class EditTaleDialogFragment : DialogFragment(),
         super.onPause()
 
         // Disable enter animation for this instance to avoid animation on back from image picker
-        dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialogExit)
+        dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialog_NoEnterAnim)
     }
 
     override fun dismiss() {

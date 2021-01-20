@@ -34,8 +34,8 @@ android {
         applicationId "com.ojomono.ionce"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 8
-        versionName "1.1.0"
+        versionCode 9
+        versionName "1.1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
