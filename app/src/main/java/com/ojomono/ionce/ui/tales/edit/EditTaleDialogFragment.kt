@@ -17,6 +17,7 @@ import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.utils.EventStateHolder
+import com.ojomono.ionce.utils.ImageUtils
 import com.ojomono.ionce.utils.StringResource
 
 
@@ -142,6 +143,7 @@ class EditTaleDialogFragment : DialogFragment(),
     override fun handleEvent(event: EditTaleViewModel.EventType) {
         when (event) {
             is EditTaleViewModel.EventType.ShowImagePicker -> showImagePicker()
+            is EditTaleViewModel.EventType.GetCompressedCover -> getCompressedCoverAndSaveIt()
         }
     }
 
@@ -216,6 +218,16 @@ class EditTaleDialogFragment : DialogFragment(),
             Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI),
             RC_PICK_IMAGE
         )
+
+    /**
+     * Get compressed cover bitmap and save it for the current tale.
+     */
+    private fun getCompressedCoverAndSaveIt() =
+        context?.let {
+            viewModel.saveCover(
+                viewModel.cover.value?.let { uri -> ImageUtils.uriToCompressedBitmap(it, uri) }
+            )
+        }
 
     /**********************/
     /** Companion object **/

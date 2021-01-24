@@ -8,6 +8,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.bumptech.glide.util.Util
 import com.facebook.AccessToken
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -169,7 +170,7 @@ object Authentication {
                             )
                         else -> null
                     }
-                    photoUrl?.let { updatePhotoUrl(it.toUri(), false) }
+                    photoUrl?.let { updatePhotoUrl(it.toUri()) }
                 }
         }
     }
@@ -196,33 +197,14 @@ object Authentication {
     fun reloadCurrentUser(): Task<Void> {
         return auth.currentUser?.reload()
             ?.addOnCompleteListener { _currentUser.value = auth.currentUser }
-            ?: throw NoSignedInUserException
+            ?: throw Utils.NoSignedInUserException
     }
 
     /**
-     * Update the current user's photo to [photoUrl], and return the updating [Task]. If needed,
-     * ([uploadToStorage]) upload photo to [Storage].
+     * Update the current user's photo to [photoUrl], and return the updating [Task].
      */
-    fun updatePhotoUrl(photoUrl: Uri, uploadToStorage: Boolean = true): Task<Void> {
-        val profileUpdates = UserProfileChangeRequest.Builder()
-
-        return if (uploadToStorage)
-            currentUser.value?.uid?.let {
-                Storage.uploadUserPhoto(photoUrl)
-                    .continueWithTask { downloadUrlTask ->
-                        if (downloadUrlTask.isSuccessful) {
-                            updateProfile(
-                                profileUpdates.setPhotoUri(downloadUrlTask.result).build()
-                            )
-                        } else {
-                            // Handle failures and return null task
-                            Log.e(TAG, downloadUrlTask.exception.toString())
-                            null
-                        }
-                    }
-            } ?: throw NoSignedInUserException
-        else updateProfile(profileUpdates.setPhotoUri(photoUrl).build())
-    }
+    fun updatePhotoUrl(photoUrl: Uri?): Task<Void> =
+        updateProfile(UserProfileChangeRequest.Builder().setPhotoUri(photoUrl).build())
 
     /**
      * Update the current user's displayed name to [displayName], and return the updating [Task].
@@ -285,7 +267,7 @@ object Authentication {
         auth.currentUser?.unlink(getProviderId(providerNameResId))
             ?.addOnCompleteListener { task ->
                 if (task.isSuccessful) _currentUser.value = task.result?.user
-            } ?: throw NoSignedInUserException
+            } ?: throw Utils.NoSignedInUserException
 
     /**
      * sign out of Firebase Authentication as well as all social identity providers.
@@ -306,7 +288,7 @@ object Authentication {
                     Log.d(TAG, "User profile updated.")
                     _currentUser.value = auth.currentUser
                 }
-            } ?: throw NoSignedInUserException
+            } ?: throw Utils.NoSignedInUserException
     }
 
     /**
@@ -319,7 +301,7 @@ object Authentication {
                 _currentUser.value = task.result?.user
             } else Log.w(TAG, "linkWithCredential:failure", task.exception)
             // TODO merge accounts in case of collision.
-        } ?: throw NoSignedInUserException
+        } ?: throw Utils.NoSignedInUserException
 
     /**
      * Get the provider id matching the given [providerNameResId].

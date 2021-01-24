@@ -5,8 +5,9 @@ import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.ojomono.ionce.utils.Utils
+import com.ojomono.ionce.utils.ImageUtils.COMPRESS_FORMAT
 import java.util.*
+
 
 object Storage {
 
@@ -27,7 +28,7 @@ object Storage {
     private val storage = Firebase.storage
 
     // Create a storage reference from our app
-    var storageRef = storage.reference
+    private var storageRef = storage.reference
 
     // Keep the current user's storage path updated based on the current user
     private var userPath: String? = null
@@ -41,20 +42,21 @@ object Storage {
     /********************/
 
     /**
-     * Upload the given [file] to Storage, as the photo of the current logged user, and return the
-     * download Url [Task].
+     * Upload the given [bitmap] to Storage, as the photo of the current logged user, and return
+     * the download Url [Task].
      */
-    fun uploadUserPhoto(file: Uri): Task<Uri> =
-        userPath?.let { uploadFile("$it/$PS_USER_PHOTO", file) }
-            ?: throw NoSignedInUserException
+    fun uploadUserPhoto(bitmap: ByteArray): Task<Uri> =
+        userPath?.let { uploadFile("$it/$PS_USER_PHOTO.${COMPRESS_FORMAT.name}", bitmap) }
+            ?: throw Utils.NoSignedInUserException
 
     /**
-     * Upload [file] to Storage, as media of the tale with given [taleId] and return the download
-     * Url [Task].
+     * Upload the given [bitmap] to Storage, as media of the tale with given [taleId] and return the
+     * download Url [Task].
      */
-    fun uploadTaleCover(taleId: String, file: Uri): Task<Uri> =
-        userPath?.let { uploadFile("$it/$taleId/${generateUniqueName(file)}", file) }
-            ?: throw NoSignedInUserException
+    fun uploadTaleCover(taleId: String, bitmap: ByteArray): Task<Uri> =
+        userPath?.let {
+            uploadFile("$it/$taleId/${generateUniqueName()}.${COMPRESS_FORMAT.name}", bitmap)
+        } ?: throw Utils.NoSignedInUserException
 
     /**
      * Delete the given [fileName] from Storage, and return delete [Task].
@@ -81,11 +83,11 @@ object Storage {
     /********************/
 
     /**
-     * Upload the given [file] to the given [path] in Storage, and return the download Url [Task].
+     * Upload the given [bitmap] to the given [path] in Storage, and return the download Url [Task].
      */
-    private fun uploadFile(path: String, file: Uri): Task<Uri> {
+    private fun uploadFile(path: String, bitmap: ByteArray): Task<Uri> {
         val imageRef = storageRef.child(path)
-        val uploadTask = imageRef.putFile(file)
+        val uploadTask = imageRef.putBytes(bitmap)
 
         // Return the task getting the download URL
         return uploadTask.continueWithTask { task ->
@@ -100,15 +102,9 @@ object Storage {
 
     /**
      * Generate a unique name like so: "<uuid>/image.<ext>" where uuid is a random UUID and ext is
-     * the extension of [file] (if has one).
+     * the [extension].
      */
-    private fun generateUniqueName(file: Uri): String {
-        val str = file.lastPathSegment ?: ""
-        val extension =
-            if (str.contains(".")) str.substring(str.lastIndexOf(".")) else ""
-        val uuid = UUID.randomUUID().toString()
-
-        return "$uuid/$PS_IMAGE$extension"
-    }
+    private fun generateUniqueName(extension: String = "") =
+        "${UUID.randomUUID()}/$PS_IMAGE$extension"
 
 }

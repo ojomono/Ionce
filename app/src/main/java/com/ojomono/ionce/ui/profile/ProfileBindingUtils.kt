@@ -3,19 +3,17 @@ package com.ojomono.ionce.ui.profile
 import android.net.Uri
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
-import com.bumptech.glide.Glide
 import com.google.firebase.auth.UserInfo        // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
-import com.ojomono.ionce.utils.Utils
+import com.ojomono.ionce.utils.ImageUtils.loadUriToImageView
 
 @BindingAdapter("userPhotoSrc")
 fun ImageView.setUserPhotoSrc(uri: Uri?) {
-    Glide.with(context)
-        .load(uri)
-        .circleCrop()
-        .fallback(R.drawable.ic_profile_photo_person)
-        .placeholder(Utils.getCircularProgressDrawable(this))
-        .into(this)
+    loadUriToImageView(context, uri, this) {
+        error(R.drawable.ic_profile_photo_broken_image)
+        fallback(R.drawable.ic_profile_photo_person)
+        circleCrop()
+    }
 }
 
 @BindingAdapter("providerData", "providerNameResId")

@@ -1,6 +1,7 @@
 package com.ojomono.ionce.firebase
 
 import androidx.core.net.toUri
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.ktx.Firebase
@@ -40,6 +41,15 @@ object Conversions {
         val PS_USER_PHOTO = "userPhoto.jpg"
         val V1_0_2_PATH = "/$PS_USERS/${user.uid}/$PS_USER_PHOTO"
 
+        //-------------------------
+        // Version 1.1.0 constants:
+        //-------------------------
+
+        // Path string used in Storage object to upload the file like so:
+        // Firebase.storage.reference.child("$PS_USERS/${user.uid}/PS_USER_PHOTO_1_1_0").putFile(file)
+        val PS_USER_PHOTO_1_1_0 = "userPhoto"
+        val V1_1_0_PATH = "/$PS_USERS/${user.uid}/$PS_USER_PHOTO_1_1_0"
+
         // Get the actual user photo url path
         try {
             val oldPath = storage.getReferenceFromUrl(user.photoUrl.toString()).path
@@ -48,31 +58,35 @@ object Conversions {
             //---------------------------------------
             // If user photo url is in v1.0.1 format:
             //---------------------------------------
-            if (oldPath in listOf(V1_0_1_PATH, V1_0_2_PATH)) {
+            if (oldPath in listOf(V1_0_1_PATH, V1_0_2_PATH, V1_1_0_PATH)) {
 
                 // Download the given image from the storage
                 val oldRef = storage.reference.child(oldPath)
                 val localFile = File.createTempFile("images", "jpg")
-                val localFileUri = localFile.toUri()
-                oldRef.getFile(localFileUri).addOnSuccessListener {
+                oldRef.getFile(localFile.toUri()).addOnSuccessListener {
 
                     // Update the photo url so it will be uploaded in the current used way
-                    Authentication.updatePhotoUrl(localFileUri, true)
-                        ?.addOnCompleteListener {
+                    Storage.uploadUserPhoto(localFile.readBytes()).continueWithTask {
 
-                            // Delete local temp file
-                            localFile.delete()
+                        // If upload succeed - update user auth. Else return failed task
+                        if (!it.isSuccessful) Tasks.forCanceled()
+                        else Authentication.updatePhotoUrl(it.result)
+                            .addOnCompleteListener {
 
-                            // If update succeed, and the new url really is in different format
-                            // Delete the previously uploaded data from firebase. (v1.0.1 style)
-                            if (it.isSuccessful and
-                                (storage.getReferenceFromUrl(
-                                    FirebaseAuth.getInstance().currentUser?.photoUrl.toString()
-                                ).path != oldPath)
+                                // Delete local temp file
+                                localFile.delete()
 
-                            // Delete the previously uploaded data from firebase. (v1.0.1 style)
-                            ) oldRef.delete()
-                        }
+                                // If update succeed, and the new url really is in different format
+                                // Delete the previously uploaded data from firebase. (v1.0.1 style)
+                                if (it.isSuccessful and
+                                    (storage.getReferenceFromUrl(
+                                        FirebaseAuth.getInstance().currentUser?.photoUrl.toString()
+                                    ).path != oldPath)
+
+                                // Delete the previously uploaded data from firebase. (v1.0.1 style)
+                                ) oldRef.delete()
+                            }
+                    }
                 }
             }
 

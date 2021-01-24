@@ -2,6 +2,7 @@ package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
@@ -21,6 +22,7 @@ import com.ojomono.ionce.ui.dialogs.InputDialogFragment
 import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.utils.*
 import kotlinx.android.synthetic.main.fragment_profile.*
+import java.io.*
 import java.util.concurrent.TimeUnit
 
 class ProfileFragment : BaseFragment() {
@@ -65,8 +67,7 @@ class ProfileFragment : BaseFragment() {
 
         when (requestCode) {
             RC_PICK_IMAGE ->
-                if (resultCode == Activity.RESULT_OK)
-                    data?.data?.let { viewModel.updateUserPicture(it) }
+                if (resultCode == Activity.RESULT_OK) data?.data?.let { onImagePicked(it) }
             RC_LINK_GOOGLE -> viewModel.handleGoogleResult(data)
         }
 
@@ -144,6 +145,12 @@ class ProfileFragment : BaseFragment() {
             Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI),
             RC_PICK_IMAGE
         )
+
+    /**
+     * Compress image from [uri] and set as user photo.
+     */
+    private fun onImagePicked(uri: Uri) =
+        context?.let { viewModel.updateUserPicture(ImageUtils.uriToCompressedBitmap(it, uri)) }
 
     /**
      * Show dialog for updating the current user's name.
@@ -224,7 +231,7 @@ class ProfileFragment : BaseFragment() {
                 progressBar.visibility = View.GONE
 
                 Log.d(TAG, "onVerificationCompleted:$credential")
-                viewModel.handlePhoneVerificationComplete(credential)?.withProgressBar(progressBar)
+                viewModel.handlePhoneVerificationComplete(credential).withProgressBar(progressBar)
                 viewModel.phoneNumberToVerify = ""    // Clear flag
 
                 // If verified automatically, no need for the manual dialog

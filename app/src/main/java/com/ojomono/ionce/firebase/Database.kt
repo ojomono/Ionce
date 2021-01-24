@@ -13,7 +13,7 @@ import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.models.UserModel
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.TAG
-import com.ojomono.ionce.utils.Utils.continueWithTaskOrInNew
+import com.ojomono.ionce.firebase.Utils.continueWithTaskOrInNew
 
 
 /**
@@ -71,7 +71,7 @@ object Database {
             }
             ?.addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
-            } ?: throw NoSignedInUserException
+            } ?: throw Utils.NoSignedInUserException
     }
 
     /**
@@ -115,7 +115,7 @@ object Database {
                         if (task.isSuccessful) Tasks.forResult(taleRef) else Tasks.forCanceled()
                     }
             }
-        } ?: throw NoSignedInUserException
+        } ?: throw Utils.NoSignedInUserException
 
     /**
      * Delete the tale document with id=[id].
@@ -155,7 +155,7 @@ object Database {
                     }
                 } else null
             }
-        } ?: throw NoSignedInUserException
+        } ?: throw Utils.NoSignedInUserException
 
     // For drag n' drop feature
 //    /**
