@@ -66,7 +66,7 @@ object Conversions {
                 oldRef.getFile(localFile.toUri()).addOnSuccessListener {
 
                     // Update the photo url so it will be uploaded in the current used way
-                    Storage.uploadUserPhoto(localFile.readBytes()).continueWithTask {
+                    Storage.uploadUserPhoto(localFile.toUri()).continueWithTask {
 
                         // If upload succeed - update user auth. Else return failed task
                         if (!it.isSuccessful) Tasks.forCanceled()

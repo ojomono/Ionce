@@ -48,7 +48,7 @@ fun TextView.setTitleTextLinesAndEllipsize(coverUri: String?) {
 fun ImageView.setCoverSrcAndVisibility(coverUri: String?) {
     visibility = if (coverUri.isNullOrEmpty()) View.GONE
     else {
-        ImageUtils.loadUriToImageView(context, Uri.parse(coverUri), this)
+        ImageUtils.load(context, Uri.parse(coverUri), this)
         View.VISIBLE
     }
 }

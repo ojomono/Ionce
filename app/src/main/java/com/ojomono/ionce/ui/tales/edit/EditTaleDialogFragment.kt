@@ -3,6 +3,7 @@ package com.ojomono.ionce.ui.tales.edit
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
@@ -19,7 +20,6 @@ import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.utils.EventStateHolder
 import com.ojomono.ionce.utils.ImageUtils
 import com.ojomono.ionce.utils.StringResource
-
 
 /**
  * A [DialogFragment] representing the edit screen for a tale.
@@ -131,8 +131,7 @@ class EditTaleDialogFragment : DialogFragment(),
 
         when (requestCode) {
             RC_PICK_IMAGE ->
-                if (resultCode == Activity.RESULT_OK)
-                    data?.data?.let { viewModel.updateDisplayedCover(it) }
+                if (resultCode == Activity.RESULT_OK) data?.data?.let { onImagePicked(it) }
         }
     }
 
@@ -143,7 +142,6 @@ class EditTaleDialogFragment : DialogFragment(),
     override fun handleEvent(event: EditTaleViewModel.EventType) {
         when (event) {
             is EditTaleViewModel.EventType.ShowImagePicker -> showImagePicker()
-            is EditTaleViewModel.EventType.GetCompressedCover -> getCompressedCoverAndSaveIt()
         }
     }
 
@@ -220,14 +218,20 @@ class EditTaleDialogFragment : DialogFragment(),
         )
 
     /**
-     * Get compressed cover bitmap and save it for the current tale.
+     * Compress image from [uri] and set as user photo.
      */
-    private fun getCompressedCoverAndSaveIt() =
-        context?.let {
-            viewModel.saveCover(
-                viewModel.cover.value?.let { uri -> ImageUtils.uriToCompressedBitmap(it, uri) }
-            )
+    private fun onImagePicked(uri: Uri) {
+
+        // Put a progress bar in the image view
+        binding.imageCover.setImageDrawable(
+            ImageUtils.getCircularProgressDrawable(binding.imageCover)
+        )
+
+        // Compress image and set it as user photo
+        ImageUtils.compress(context, uri) {
+            activity?.runOnUiThread { viewModel.updateDisplayedCover(it) }
         }
+    }
 
     /**********************/
     /** Companion object **/

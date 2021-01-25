@@ -5,11 +5,11 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.google.firebase.auth.UserInfo        // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
-import com.ojomono.ionce.utils.ImageUtils.loadUriToImageView
+import com.ojomono.ionce.utils.ImageUtils.load
 
 @BindingAdapter("userPhotoSrc")
 fun ImageView.setUserPhotoSrc(uri: Uri?) {
-    loadUriToImageView(context, uri, this) {
+    load(context, uri, this) {
         error(R.drawable.ic_profile_photo_broken_image)
         fallback(R.drawable.ic_profile_photo_person)
         circleCrop()

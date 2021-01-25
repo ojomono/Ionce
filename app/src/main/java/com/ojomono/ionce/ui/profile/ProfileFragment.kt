@@ -149,8 +149,19 @@ class ProfileFragment : BaseFragment() {
     /**
      * Compress image from [uri] and set as user photo.
      */
-    private fun onImagePicked(uri: Uri) =
-        context?.let { viewModel.updateUserPicture(ImageUtils.uriToCompressedBitmap(it, uri)) }
+    private fun onImagePicked(uri: Uri) {
+
+        // Put a progress bar in the image view
+        binding.imageProfilePicture.setImageDrawable(
+            ImageUtils.getCircularProgressDrawable(binding.imageProfilePicture)
+        )
+
+        // Compress image and set it as user photo
+        ImageUtils.compress(context, uri) {
+            // TODO run in background when refactoring to full use of coroutines
+            activity?.runOnUiThread { viewModel.updateUserPicture(it) }
+        }
+    }
 
     /**
      * Show dialog for updating the current user's name.

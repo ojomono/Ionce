@@ -8,7 +8,6 @@ import com.google.firebase.storage.ktx.storage
 import com.ojomono.ionce.utils.ImageUtils.COMPRESS_FORMAT
 import java.util.*
 
-
 object Storage {
 
     /***************/
@@ -42,20 +41,20 @@ object Storage {
     /********************/
 
     /**
-     * Upload the given [bitmap] to Storage, as the photo of the current logged user, and return
+     * Upload the given [uri] to Storage, as the photo of the current logged user, and return
      * the download Url [Task].
      */
-    fun uploadUserPhoto(bitmap: ByteArray): Task<Uri> =
-        userPath?.let { uploadFile("$it/$PS_USER_PHOTO.${COMPRESS_FORMAT.name}", bitmap) }
+    fun uploadUserPhoto(uri: Uri): Task<Uri> =
+        userPath?.let { uploadFile("$it/$PS_USER_PHOTO.${COMPRESS_FORMAT.name}", uri) }
             ?: throw Utils.NoSignedInUserException
 
     /**
-     * Upload the given [bitmap] to Storage, as media of the tale with given [taleId] and return the
+     * Upload the given [uri] to Storage, as media of the tale with given [taleId] and return the
      * download Url [Task].
      */
-    fun uploadTaleCover(taleId: String, bitmap: ByteArray): Task<Uri> =
+    fun uploadTaleCover(taleId: String, uri: Uri): Task<Uri> =
         userPath?.let {
-            uploadFile("$it/$taleId/${generateUniqueName()}.${COMPRESS_FORMAT.name}", bitmap)
+            uploadFile("$it/$taleId/${generateUniqueName()}.${COMPRESS_FORMAT.name}", uri)
         } ?: throw Utils.NoSignedInUserException
 
     /**
@@ -83,11 +82,11 @@ object Storage {
     /********************/
 
     /**
-     * Upload the given [bitmap] to the given [path] in Storage, and return the download Url [Task].
+     * Upload the given [uri] to the given [path] in Storage, and return the download Url [Task].
      */
-    private fun uploadFile(path: String, bitmap: ByteArray): Task<Uri> {
+    private fun uploadFile(path: String, uri: Uri): Task<Uri> {
         val imageRef = storageRef.child(path)
-        val uploadTask = imageRef.putBytes(bitmap)
+        val uploadTask = imageRef.putFile(uri)
 
         // Return the task getting the download URL
         return uploadTask.continueWithTask { task ->

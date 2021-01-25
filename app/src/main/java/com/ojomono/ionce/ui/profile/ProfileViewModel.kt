@@ -28,7 +28,6 @@ import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.utils.BaseViewModel
 import com.ojomono.ionce.utils.TAG
 
-
 class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     // Current logged in user
     val user: LiveData<FirebaseUser?> = Authentication.currentUser  // TODO: Use a Repository class
@@ -158,16 +157,16 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     }
 
     /**
-     * Update user photo to given [bitmap].
+     * Update user photo to given [uri].
      */
-    fun updateUserPicture(bitmap: ByteArray) =
+    fun updateUserPicture(uri: Uri) =
 
         // Upload picture to Storage
-        Storage.uploadUserPhoto(bitmap).continueWithTask {
+        Storage.uploadUserPhoto(uri).continueWithTask {
 
             // If upload succeed - update user auth. Else return failed task
             if (it.isSuccessful) Authentication.updatePhotoUrl(it.result) else Tasks.forCanceled()
-        }.withProgressBar()
+        }
 
     /**
      * Update user displayed name to given [name].

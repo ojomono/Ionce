@@ -10,7 +10,7 @@ import com.ojomono.ionce.utils.ImageUtils
 @BindingAdapter("taleCoverSrc")
 fun ImageView.setTaleCoverSrc(uri: Uri?) {
     val radius = context.resources.getDimensionPixelSize(R.dimen.edit_tale_cover_corners_radius)
-    ImageUtils.loadUriToImageView(context, uri, this) { roundedCorners(radius) }
+    ImageUtils.load(context, uri, this) { roundedCorners(radius) }
 }
 
 @BindingAdapter("clearButtonEnabled")
