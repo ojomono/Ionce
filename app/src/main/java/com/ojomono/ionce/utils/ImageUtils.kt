@@ -33,13 +33,16 @@ object ImageUtils {
     /** Glide wrapper **/
     /*******************/
 
+    // Value to flag that media is currently uploading to Storage
+    const val UPLOADING_IN_PROGRESS = "uploading"
+
     // Available loading customization fields
     private var errorResId: Int = R.drawable.ic_baseline_broken_image_24
     private var fallbackResId: Int = R.color.fui_transparent
     private var transformation: Transformation<Bitmap>? = null
 
     // Available loading customization
-    object Loading {
+    object Loader {
         fun default() {
             errorResId = R.drawable.ic_baseline_broken_image_24
             fallbackResId = R.color.fui_transparent
@@ -59,24 +62,34 @@ object ImageUtils {
         context: Context?,
         uri: Uri?,
         view: ImageView,
-        loadPatch: Loading.() -> Unit = { default() }
+        loadPatch: Loader.() -> Unit = { default() }
     ) {
-        Loading.apply(loadPatch)
-        val transformations: MutableList<Transformation<Bitmap>> = mutableListOf(CenterCrop())
-        transformation?.let { transformations.add(it) }
+        Loader.apply(loadPatch)
 
-        if (context != null) {
-            Glide.with(context)
-                .load(uri)
-                .transform(*transformations.toTypedArray())
-                .fallback(fallbackResId)
-                .error(errorResId)
-                .placeholder(getCircularProgressDrawable(view))
-                .into(view)
+        if (uri == Uri.parse(UPLOADING_IN_PROGRESS))
+            view.setImageDrawable(getCircularProgressDrawable(view))
+        else {
+            val transformations: MutableList<Transformation<Bitmap>> = mutableListOf(CenterCrop())
+            transformation?.let { transformations.add(it) }
+
+            if (context != null) {
+                Glide.with(context)
+                    .load(uri)
+                    .transform(*transformations.toTypedArray())
+                    .placeholder(getCircularProgressDrawable(view))
+                    .fallback(fallbackResId)
+                    .error(errorResId)
+                    .into(view)
+            }
         }
     }
 
-    fun getCircularProgressDrawable(view: ImageView) =
+    fun load(
+        context: Context?, uriString: String?, view: ImageView,
+        loadPatch: Loader.() -> Unit = { default() }
+    ) = load(context, Uri.parse(uriString), view, loadPatch)
+
+    private fun getCircularProgressDrawable(view: ImageView) =
         androidx.swiperefreshlayout.widget.CircularProgressDrawable(view.context).apply {
             setStyle(androidx.swiperefreshlayout.widget.CircularProgressDrawable.LARGE)
             setColorSchemeColors(MaterialColors.getColor(view, R.attr.colorSecondary))

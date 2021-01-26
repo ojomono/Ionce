@@ -223,9 +223,7 @@ class EditTaleDialogFragment : DialogFragment(),
     private fun onImagePicked(uri: Uri) {
 
         // Put a progress bar in the image view
-        binding.imageCover.setImageDrawable(
-            ImageUtils.getCircularProgressDrawable(binding.imageCover)
-        )
+        ImageUtils.load(context, ImageUtils.UPLOADING_IN_PROGRESS, binding.imageCover)
 
         // Compress image and set it as user photo
         ImageUtils.compress(context, uri) {

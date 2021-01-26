@@ -81,14 +81,16 @@
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_baseline_photo_library_24"
-                        android:contentDescription="@string/edit_tale_media_image_content_description" />
+                        android:contentDescription="@string/edit_tale_media_image_content_description"
+                        app:coverIconVisibility="@{viewModel.cover}" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_centerInParent="true"
                         android:foreground="@drawable/edit_tale_cover_frame_ripple"
-                        android:onClick="@{() -> viewModel.onPictureClicked()}">
+                        android:onClick="@{() -> viewModel.onPictureClicked()}"
+                        app:taleCoverClickable="@{viewModel.cover}">
 
                         <ImageView
                             android:id="@+id/image_cover"

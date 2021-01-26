@@ -10,6 +10,7 @@ import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.utils.EventStateHolder
+import com.ojomono.ionce.utils.ImageUtils.UPLOADING_IN_PROGRESS
 
 class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     // The tale currently being edited
@@ -56,7 +57,7 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
 
             // First, save tale model to database (if differs from old one)
             // Notice media is not yet saved - this initial save is to refresh the tales list fast
-            if (didModelChange()) Database.setTale(taleModel).continueWithTask { task ->
+            if (didTaleChange()) Database.setTale(taleModel).continueWithTask { task ->
 
                 // If initial save succeed - save cover, using id from result document (might be new
                 // generated id, in the case of a new tale). If no save needed for cover, return a
@@ -74,12 +75,15 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     /**
      * Check if any changes were made.
      */
-    fun didTaleChange() = run { didModelChange() or didCoverChange() }
+    fun didTaleChange() = run { (tale.value != taleCopy) or didCoverChange() }
 
     /**
      * Update tale cover to given [uri].
      */
-    fun updateDisplayedCover(uri: Uri) = run { _cover.value = uri }
+    fun updateDisplayedCover(uri: Uri) {
+        _cover.value = uri
+        _tale.value?.media = listOf(UPLOADING_IN_PROGRESS)
+    }
 
     /*********************/
     /** private methods **/
@@ -91,13 +95,29 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
      */
     private fun initTale() {
 
-        // If id is empty - init empty tale (and save a copy to allow check if any changes were made)
+        // If id is empty, init empty tale (and save a copy to allow check if any changes were made)
         if (taleId.isEmpty()) fillFields(TaleModel())
 
-        // Else, get tale from database (and save a copy to allow check if any changes were made)
+        // Else, get tale from database
         else Database.getTale(taleId)
             .addOnSuccessListener { documentSnapshot ->
-                documentSnapshot.toObject(TaleModel::class.java)?.let { fillFields(it) }
+                documentSnapshot.toObject(TaleModel::class.java)?.let {
+
+                    // Save a copy to allow check if any changes were made
+                    fillFields(it)
+
+                    // If the cover is currently uploading, listen for changes to refresh it
+                    if (it.media.firstOrNull() == UPLOADING_IN_PROGRESS)
+                        Database.registerToTale(taleId) { refreshedTale ->
+
+                            // If cover is not uploading anymore, refresh and remove registration
+                            if (refreshedTale.media.firstOrNull() == UPLOADING_IN_PROGRESS) false
+                            else {
+                                fillFields(refreshedTale)
+                                true
+                            }
+                        }
+                }
             }
     }
 
@@ -109,11 +129,6 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
         taleCopy = tale.copy()
         _cover.value = tale.media.firstOrNull()?.let { Uri.parse(it) }
     }
-
-    /**
-     * Check if the tale model has changed.
-     */
-    private fun didModelChange() = run { tale.value != taleCopy }
 
     /**
      * Check if the tale cover has changed.
@@ -129,7 +144,7 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
         // If cover didn't change - do nothing.
         if (!didCoverChange()) null
         else {
-            val oldCover = taleModel.media.firstOrNull()
+            val oldCover = taleCopy.media.firstOrNull()
 
             // id is used for the case of consecutive calls to setTale:
             // one before this function, for a fast db update, and one in here that updates media
@@ -199,4 +214,5 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
      */
     private fun deleteIfNotNull(file: String?): Task<Void> =
         file?.let { Storage.deleteFile(it) } ?: Tasks.forResult(null)
+
 }

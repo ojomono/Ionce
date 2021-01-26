@@ -39,7 +39,7 @@ object Database {
     // Always keep current user's document loaded
     private var userDocRef: DocumentReference? = null
     private var userDocument: DocumentSnapshot? = null
-    private var registration: ListenerRegistration? = null
+    private var userRegistration: ListenerRegistration? = null
 
     init {
         Authentication.currentUser.observeForever { switchUserDocument(it?.uid) }
@@ -52,9 +52,26 @@ object Database {
     private val _userTales = MutableLiveData<MutableList<TaleItemModel>>()
     val userTales: LiveData<MutableList<TaleItemModel>> = _userTales
 
+    // Registration to current tale update (used in case media is currently uploading)
+    private var taleRegistration: ListenerRegistration? = null
+
     /********************/
     /** public methods **/
     /********************/
+
+    /**
+     * Add a snapshot listener to the tale [id] document, and run [func] on change. The return value
+     * of [func] should indicate to remove the registration (when it's true).
+     */
+    fun registerToTale(id: String, func: (TaleModel) -> Boolean) {
+        taleRegistration =
+            userDocRef?.collection(CP_TALES)?.document(id)?.addSnapshotListener { value, error ->
+                if (error != null) Log.w(TAG, "Listen failed.", error)
+                else value?.toObject(TaleModel::class.java)?.let {
+                    if (func.invoke(it)) taleRegistration?.remove()
+                }
+            }
+    }
 
     /**
      * Get the tale document with id=[id].
@@ -180,7 +197,7 @@ object Database {
 
         // If no id was given - no user is logged-in
         if (id.isNullOrEmpty()) {
-            registration?.remove()
+            userRegistration?.remove()
             userDocRef = null
             userDocument = null
 
@@ -188,7 +205,7 @@ object Database {
         } else if (!userDocRef?.id.equals(id)) {
 
             // If a change listener is registered to the previous user's document - remove it
-            registration?.remove()
+            userRegistration?.remove()
 
             // Get the current user's document reference
             userDocRef = db.collection(CP_USERS).document(id)
@@ -205,7 +222,7 @@ object Database {
             }
 
             // Listen for changes in the document
-            registration = userDocRef?.addSnapshotListener { snapshot, e ->
+            userDocRef?.addSnapshotListener { snapshot, e ->
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else {
                     userDocument = snapshot

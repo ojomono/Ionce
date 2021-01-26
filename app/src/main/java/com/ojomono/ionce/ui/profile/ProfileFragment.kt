@@ -152,9 +152,7 @@ class ProfileFragment : BaseFragment() {
     private fun onImagePicked(uri: Uri) {
 
         // Put a progress bar in the image view
-        binding.imageProfilePicture.setImageDrawable(
-            ImageUtils.getCircularProgressDrawable(binding.imageProfilePicture)
-        )
+        ImageUtils.load(context, ImageUtils.UPLOADING_IN_PROGRESS, binding.imageProfilePicture)
 
         // Compress image and set it as user photo
         ImageUtils.compress(context, uri) {
