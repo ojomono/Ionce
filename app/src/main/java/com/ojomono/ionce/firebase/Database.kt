@@ -13,7 +13,6 @@ import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.models.UserModel
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.TAG
-import com.ojomono.ionce.firebase.Utils.continueWithTaskOrInNew
 
 
 /**
@@ -52,127 +51,88 @@ object Database {
     private val _userTales = MutableLiveData<MutableList<TaleItemModel>>()
     val userTales: LiveData<MutableList<TaleItemModel>> = _userTales
 
-    // Registration to current tale update (used in case media is currently uploading)
-    private var taleRegistration: ListenerRegistration? = null
-
     /********************/
     /** public methods **/
     /********************/
 
     /**
-     * Add a snapshot listener to the tale [id] document, and run [func] on change. The return value
-     * of [func] should indicate to remove the registration (when it's true).
-     */
-    fun registerToTale(id: String, func: (TaleModel) -> Boolean) {
-        taleRegistration =
-            userDocRef?.collection(CP_TALES)?.document(id)?.addSnapshotListener { value, error ->
-                if (error != null) Log.w(TAG, "Listen failed.", error)
-                else value?.toObject(TaleModel::class.java)?.let {
-                    if (func.invoke(it)) taleRegistration?.remove()
-                }
-            }
-    }
-
-    /**
      * Get the tale document with id=[id].
      */
-    fun getTale(id: String): Task<DocumentSnapshot> {
-        val docRef = userDocRef?.collection(CP_TALES)?.document(id)
-        return docRef?.get()
+    fun getTale(id: String): Task<DocumentSnapshot> =
+        userDocRef?.collection(CP_TALES)?.document(id)?.get()
             ?.addOnSuccessListener { document ->
-                if (document != null) {
-                    Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-                } else {
-                    Log.d(TAG, "No such document")
-                }
-            }
-            ?.addOnFailureListener { exception ->
-                Log.d(TAG, "get failed with ", exception)
-            } ?: throw Utils.NoSignedInUserException
-    }
+                if (document != null) Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                else Log.d(TAG, "No such document")
+            }?.addOnFailureListener { exception -> Log.d(TAG, "get failed with ", exception) }
+            ?: throw Utils.NoSignedInUserException
 
     /**
-     * Overwrite the given [tale] document with the given. If [tale].id is EMPTY, create a new
-     * document with a generated id. Return a [Task] holding the success state and the tale's
-     * document reference.
+     * Save [tale] to database, overwriting existing document of creating new. Return a [Task]
+     * holding the success state and the new tale's document reference.
      */
-    fun setTale(tale: TaleModel): Task<DocumentReference> =
+    fun setTale(tale: TaleModel) = userDocRef?.let { userRef ->
 
-    // Setting a tale is possible only if a user is logged in
-        // (== his document reference is not null)
-        userDocRef?.let { userRef ->
+        // Get reference for wanted tale - if does not exist create new reference
+        val talesCol = userRef.collection(CP_TALES)
+        val taleRef = if (tale.id.isEmpty()) talesCol.document() else talesCol.document(tale.id)
 
-            // Create reference for wanted tale, for use inside the batch - if an id was given
-            // get the existing document, else reference a new one.
-            val talesCol = userRef.collection(CP_TALES)
-            val taleRef = if (tale.id.isEmpty()) talesCol.document() else talesCol.document(tale.id)
-
-            // Create a taleItem based on the given tale, to update the user's tales list
+        // Set the tale item in the tales list (add or overwrite)
+        val tales = getUpdatedTalesList(taleRef.id) {
             val taleItem = TaleItemModel(tale, taleRef.id)
+            if (it == -1) add(taleItem) else this[it] = taleItem
+        }
 
-            // Create an updated user's tales list
-            userTales.value?.let {
-                val tales = it.toMutableList().apply {
-                    // If given taleItem is in the list (searched by id) - overwrite it with new
-                    // model, else add it
-                    val index = indexOfFirst { item -> item.id == taleItem.id }
-                    if (index == -1) add(taleItem)
-                    else this[index] = taleItem
-                }
+        // Set the tale's document and update the user's tale list
+        runTaleBatch(taleRef.id, tales) { set(taleRef, tale) }
 
-                // In a batch write, set the tale's document and update the user's tale list
-                db.runBatch { batch ->
-                    batch.update(userRef, UserModel::tales.name, tales)
-                    batch.set(taleRef, tale)
-                }.addOnSuccessListener { Log.d(TAG, "Batch write success!") }
-                    .addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
-
-                    // Return a task holding the success state and the tale's document reference
-                    .continueWithTask { task ->
-                        if (task.isSuccessful) Tasks.forResult(taleRef) else Tasks.forCanceled()
-                    }
-            }
-        } ?: throw Utils.NoSignedInUserException
+    } ?: throw Utils.NoSignedInUserException
 
     /**
      * Delete the tale document with id=[id].
      */
-    fun deleteTale(id: String): Task<Void> =
-    // Deleting a tale is possible only if a user is logged in
-        // (== his document reference is not null)
-        userDocRef?.let { userRef ->
+    fun deleteTale(id: String): Task<DocumentReference> {
 
-            // Delete all tale's media from Storage
-            val deleteTask = deleteTaleMedia(id)
-            continueWithTaskOrInNew(deleteTask) { task ->
+        // Remove the tale from the tales list
+        val tales = getUpdatedTalesList(id) { if (it != -1) removeAt(it) }
 
-                // If media delete succeeded, Delete document
-                if (task?.isSuccessful != false) {
+        // Delete the tale document and update the user's tale list
+        return runTaleBatch(id, tales) { delete(it) }
+    }
 
-                    // Create reference for wanted tale, for use inside the batch write
-                    val taleRef = userRef.collection(CP_TALES).document(id)
+    /**
+     * Add [mediaUri] to media list of tale [id], in given [index].
+     */
+    fun addMediaToTale(id: String, mediaUri: String, index: Int) =
 
-                    // Create an updated user's tales list
-                    userTales.value?.let {
-                        val tales = it.toMutableList().apply {
-                            // If given id is in the list - delete it
-                            val index = indexOfFirst { item -> item.id == id }
-                            if (index != -1) removeAt(index)
-                        }
+        // Get the tale document
+        getTale(id).continueWithTask { getTask ->
+            if (!getTask.isSuccessful) Tasks.forCanceled()
+            else getTask.result?.toObject(TaleModel::class.java)?.let { tale ->
 
-                        // In a batch write, delete the tale document and remove it from user's
-                        // tales list
-                        db.runBatch { batch ->
-                            batch.update(userRef, UserModel::tales.name, tales)
-                            batch.delete(taleRef)
-                        }.addOnSuccessListener { Log.d(TAG, "Batch write success!") }
-                            .addOnFailureListener { e ->
-                                Log.w(TAG, "Batch write failure.", e)
-                            }
-                    }
-                } else null
+                // Add media at given index
+                val updatedMedia = tale.media.apply { add(index, mediaUri) }
+
+                // Update cover for tale in the tales list (if needs update)
+                val tales =
+                    if (index != 0) null
+                    else getUpdatedTalesList(id) { set(it, get(it).copy(cover = tale.media[0])) }
+
+                // Update the tale's media list and the user's tale list
+                runTaleBatch(id, tales) { update(it, TaleModel::media.name, updatedMedia) }
             }
-        } ?: throw Utils.NoSignedInUserException
+        }
+
+    /**
+     * Remove all media of tale [id].
+     */
+    fun removeTaleMedia(id: String): Task<DocumentReference> {
+
+        // Remove cover for tale in the tales list
+        val tales = getUpdatedTalesList(id) { set(it, get(it).copy(cover = "")) }
+
+        // Update the tale's media list and the user's tale list
+        return runTaleBatch(id, tales) { update(it, TaleModel::media.name, emptyList<String>()) }
+    }
 
     // For drag n' drop feature
 //    /**
@@ -235,22 +195,36 @@ object Database {
     }
 
     /**
-     * Delete all media of the tale with [id] from Storage, and return delete [Task].
+     * Get the current user's tales list after the given [update] was made on the item with [id].
      */
-    private fun deleteTaleMedia(id: String): Task<Void> =
+    private fun getUpdatedTalesList(id: String, update: MutableList<TaleItemModel>.(Int) -> Unit) =
+        userTales.value?.apply { update(indexOfFirst { item -> item.id == id }) }
+            ?: throw Utils.NoSignedInUserException
 
-        // Get tale
-        getTale(id).continueWithTask { task ->
-            if (task.isSuccessful)
-                task.result?.toObject(TaleModel::class.java)?.let {
+    /**
+     * In a batch write, run the given [action] on the document with [id] and update the current
+     * user's tale list to [tales] if given.
+     */
+    private fun runTaleBatch(
+        id: String,
+        tales: List<TaleItemModel>?,
+        action: WriteBatch.(DocumentReference) -> WriteBatch
+    ) = userDocRef?.let { userRef ->
 
-                    // Delete tale media. If no delete is needed (deleteFiles returns null) that's
-                    // still a valid case - return successful task.
-                    Storage.deleteFiles(it.media) ?: Tasks.forResult(null)
-                }
+        // Create reference for wanted tale to use inside batch
+        val taleRef = userRef.collection(CP_TALES).document(id)
 
-            // If get task failed, return a failed task
-            else Tasks.forCanceled()
+        // In a batch write: update user's tale list, and run given action on the tale ref
+        db.runBatch {
+            if (tales != null) it.update(userRef, UserModel::tales.name, tales)
+            it.action(taleRef)
         }
+            .addOnSuccessListener { Log.d(TAG, "Batch write success!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
 
+            // Return a task holding the success state and the tale's document reference
+            .continueWithTask { task ->
+                if (task.isSuccessful) Tasks.forResult(taleRef) else Tasks.forCanceled()
+            }
+    } ?: throw Utils.NoSignedInUserException
 }

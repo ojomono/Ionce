@@ -1,8 +1,12 @@
 package com.ojomono.ionce.ui.tales.list
 
 import androidx.lifecycle.LiveData
+import com.google.android.gms.tasks.Tasks
 import com.ojomono.ionce.firebase.Database
+import com.ojomono.ionce.firebase.Storage
+import com.ojomono.ionce.firebase.Utils
 import com.ojomono.ionce.models.TaleItemModel
+import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.utils.BaseViewModel
 
 class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
@@ -57,14 +61,26 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
     /** logic methods **/
     /*******************/
 
-    fun clearClickedTale() {
-        clickedTale = null
-    }
+    fun clearClickedTale() = run { clickedTale = null }
 
-    fun deleteTale() =
-        clickedTale
-            ?.let {
-                Database.deleteTale(it.id)
-                clearClickedTale()  // Not waiting for callback to support offline mode
+    fun deleteTale() = clickedTale?.let { taleItem ->
+
+        // Get the tale model
+        Database.getTale(taleItem.id).continueWithTask { getTask ->
+            if (!getTask.isSuccessful) Tasks.forCanceled()
+            else getTask.result?.toObject(TaleModel::class.java)?.let { tale ->
+
+                // Delete the tale's media
+                val storageTask = Storage.deleteFiles(tale.media)
+
+                // Delete tale document
+                Utils.continueWithTaskOrInNew(storageTask) {
+                    if (it?.isSuccessful == false) Tasks.forCanceled()
+                    else Database.deleteTale(tale.id)
+                }
             }
+        }
+
+        clearClickedTale()  // Not waiting for callback to support offline mode
+    }
 }

@@ -4,6 +4,7 @@ package com.ojomono.ionce.firebase
 import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.ojomono.ionce.utils.ImageUtils.COMPRESS_FORMAT
 import java.util.*
@@ -30,10 +31,12 @@ object Storage {
     private var storageRef = storage.reference
 
     // Keep the current user's storage path updated based on the current user
-    private var userPath: String? = null
+    private var userRef: StorageReference? = null
 
     init {
-        Authentication.currentUser.observeForever { userPath = it?.let { "/$PS_USERS/${it.uid}" } }
+        Authentication.currentUser.observeForever {
+            userRef = it?.let { storageRef.child("/$PS_USERS/${it.uid}") }
+        }
     }
 
     /********************/
@@ -41,26 +44,34 @@ object Storage {
     /********************/
 
     /**
-     * Upload the given [uri] to Storage, as the photo of the current logged user, and return
-     * the download Url [Task].
+     * Upload the given [image] to Storage, as the photo of the current logged user, and return
+     * the downloadUrl [Task].
      */
-    fun uploadUserPhoto(uri: Uri): Task<Uri> =
-        userPath?.let { uploadFile("$it/$PS_USER_PHOTO.${COMPRESS_FORMAT.name}", uri) }
-            ?: throw Utils.NoSignedInUserException
+    fun uploadUserPhoto(image: Uri) = userRef?.let {
+        uploadFile(it.child("$PS_USER_PHOTO.${COMPRESS_FORMAT.name}"), image)
+    } ?: throw Utils.NoSignedInUserException
 
     /**
-     * Upload the given [uri] to Storage, as media of the tale with given [taleId] and return the
-     * download Url [Task].
+     * Upload the given [image] to Storage, as media of the given [taleId], and return the
+     * downloadUrl [Task].
      */
-    fun uploadTaleCover(taleId: String, uri: Uri): Task<Uri> =
-        userPath?.let {
-            uploadFile("$it/$taleId/${generateUniqueName()}.${COMPRESS_FORMAT.name}", uri)
-        } ?: throw Utils.NoSignedInUserException
+    fun uploadTaleMedia(taleId: String, image: Uri) = userRef?.let {
+        uploadFile(
+            it.child("$taleId/${generateUniqueName()}.${COMPRESS_FORMAT.name}"),
+            image
+        )
+    } ?: throw Utils.NoSignedInUserException
 
     /**
-     * Delete the given [fileName] from Storage, and return delete [Task].
+     * Upload the given [file] to the given [destUrl].
      */
-    fun deleteFile(fileName: String) = storage.getReferenceFromUrl(fileName).delete()
+    fun uploadFileToDest(destUrl: String, file: Uri) =
+        uploadFile(storage.getReferenceFromUrl(destUrl), file)
+
+    /**
+     * Delete the given [fileUrl] from Storage, and return delete [Task].
+     */
+    fun deleteFile(fileUrl: String) = storage.getReferenceFromUrl(fileUrl).delete()
 
     /**
      * Delete all files in [filesList] from Storage in one continued [Task] and return it. If no
@@ -82,28 +93,22 @@ object Storage {
     /********************/
 
     /**
-     * Upload the given [uri] to the given [path] in Storage, and return the download Url [Task].
+     * Upload the given [image] to the given [destRef] in Storage, and return the downloadUrl [Task]
      */
-    private fun uploadFile(path: String, uri: Uri): Task<Uri> {
-        val imageRef = storageRef.child(path)
-        val uploadTask = imageRef.putFile(uri)
+    private fun uploadFile(destRef: StorageReference, image: Uri): Task<Uri> {
+        val uploadTask = destRef.putFile(image)
 
         // Return the task getting the download URL
         return uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
-                task.exception?.let {
-                    throw it
-                }
+                task.exception?.let { e -> throw e }
             }
-            imageRef.downloadUrl
+            destRef.downloadUrl
         }
     }
 
     /**
-     * Generate a unique name like so: "<uuid>/image.<ext>" where uuid is a random UUID and ext is
-     * the [extension].
+     * Generate a unique name like so: "<uuid>/image"
      */
-    private fun generateUniqueName(extension: String = "") =
-        "${UUID.randomUUID()}/$PS_IMAGE$extension"
-
+    private fun generateUniqueName() = "${UUID.randomUUID()}/$PS_IMAGE"
 }

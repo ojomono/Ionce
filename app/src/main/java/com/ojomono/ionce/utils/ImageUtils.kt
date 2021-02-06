@@ -33,9 +33,6 @@ object ImageUtils {
     /** Glide wrapper **/
     /*******************/
 
-    // Value to flag that media is currently uploading to Storage
-    const val UPLOADING_IN_PROGRESS = "uploading"
-
     // Available loading customization fields
     private var errorResId: Int = R.drawable.ic_baseline_broken_image_24
     private var fallbackResId: Int = R.color.fui_transparent
@@ -66,21 +63,17 @@ object ImageUtils {
     ) {
         Loader.apply(loadPatch)
 
-        if (uri == Uri.parse(UPLOADING_IN_PROGRESS))
-            view.setImageDrawable(getCircularProgressDrawable(view))
-        else {
-            val transformations: MutableList<Transformation<Bitmap>> = mutableListOf(CenterCrop())
-            transformation?.let { transformations.add(it) }
+        val transformations: MutableList<Transformation<Bitmap>> = mutableListOf(CenterCrop())
+        transformation?.let { transformations.add(it) }
 
-            if (context != null) {
-                Glide.with(context)
-                    .load(uri)
-                    .transform(*transformations.toTypedArray())
-                    .placeholder(getCircularProgressDrawable(view))
-                    .fallback(fallbackResId)
-                    .error(errorResId)
-                    .into(view)
-            }
+        if (context != null) {
+            Glide.with(context)
+                .load(uri)
+                .transform(*transformations.toTypedArray())
+                .placeholder(getCircularProgressDrawable(view))
+                .fallback(fallbackResId)
+                .error(errorResId)
+                .into(view)
         }
     }
 
