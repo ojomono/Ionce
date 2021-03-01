@@ -4,13 +4,16 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.utils.EventStateHolder
+import com.ojomono.ionce.utils.addFallbackTask
+import com.ojomono.ionce.utils.continueIfSuccessful
 
-class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
+class EditTaleViewModel(private var taleId: String = "") : ViewModel() {
     // The tale currently being edited
     private val _tale: MutableLiveData<TaleModel> = MutableLiveData<TaleModel>()
     val tale: LiveData<TaleModel> = _tale
@@ -53,7 +56,7 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     fun saveTale() = tale.value?.let { taleModel ->
 
         // If no change was made to the tale model - just save the cover (if needed)
-        if (!didTaleChange()) saveCover(taleModel.id)
+        if (!didTaleChange()) saveCover()
 
         // If there were changes in the tale model, save it to database
         // Notice media is not yet saved - this initial save is to refresh the tales list fast
@@ -65,7 +68,8 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
             // If initial save succeed - save cover, using id from result document (might be new
             // generated id, in the case of a new tale).
             else modelTask.result?.id?.let {
-                saveCover(it)
+                taleId = it // Save document id in ViewModel member for use inside the class
+                saveCover()
 
                     // Convert result to Task<DocumentReference>
                     ?.continueWithTask { coverTask ->
@@ -101,11 +105,27 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
         // If id is empty, init empty tale
         if (taleId.isEmpty()) fillFields(TaleModel())
 
-        // Else, get tale from database
-        else Database.getTale(taleId)
-            .addOnSuccessListener { documentSnapshot ->
-                documentSnapshot.toObject(TaleModel::class.java)?.let { fillFields(it) }
+        // Els it is an existing tale
+        else {
+            // Get the tale from Database
+            Database.getTale(taleId)
+                .addOnSuccessListener { documentSnapshot ->
+                    documentSnapshot.toObject(TaleModel::class.java)?.let { fillFields(it) }
+                }
+
+            // Get the active Storage tasks for the tale
+            for (task in Storage.getActiveTaleTasks(taleId)) {
+                task.continueWithTask { task.result.storage.downloadUrl }
+                    .addOnSuccessListener {
+
+                        // If no new cover has been chosen, update the displayed cover
+                        if (!didCoverChange()) updateDisplayedCover(it)
+
+                        // Anyway, put the uploaded cover uri in the tale media for change check
+                        _tale.value?.media = listOf(it.toString())
+                    }
             }
+        }
     }
 
     /**
@@ -120,60 +140,91 @@ class EditTaleViewModel(private val taleId: String = "") : ViewModel() {
     /**
      * Check if the tale cover has changed.
      */
-    private fun didCoverChange() = run { cover.value?.toString() != taleCopy.media.firstOrNull() }
+    private fun didCoverChange() =
+        run { cover.value?.toString() != _tale.value?.media?.firstOrNull() }
 
     /**
      * Save displayed cover to current [taleId] document and Storage.
      */
-    private fun saveCover(taleId: String) =
-        if (!didCoverChange()) null // If cover didn't change do nothing
-        // TODO if both are not null, try to replace existing file in storage
-        else
-            deleteTaleMedia(taleId)
-                .continueWithTask { cover.value?.let { addTaleCover(taleId, it) } }
+    private fun saveCover() =
 
-    /**
-     * Add [image] as [taleId] cover.
-     */
-    private fun addTaleCover(taleId: String, image: Uri) =
+        // Cover didn't change (old = new) - do nothing
+        if (!didCoverChange()) null
+        else {
 
-        // Upload new image to Storage
-        Storage.uploadTaleMedia(taleId, image).continueWithTask { uploadTask ->
-            if (!uploadTask.isSuccessful) Tasks.forCanceled()
-            else {
+            // Cancel all active upload tasks for current tale
+            Storage.getActiveTaleTasks(taleId).forEach { it.cancel() }
 
-                // If upload succeed - add uploaded uri to tale media in db
-                val uploadedUri = uploadTask.result.toString()
-                Database.addMediaToTale(taleId, uploadedUri, 0).continueWithTask { addTask ->
+            // Get the up-to-date tale document before starting any changes
+            Database.getTale(taleId).continueIfSuccessful { getTask ->
 
-                    // If db update succeed return the task, else try to revert Storage upload
-                    if (addTask.isSuccessful) addTask
-                    else {
-                        // TODO if fails we have an "orphan" file in storage - remember uri
-                        Storage.deleteFile(uploadedUri)
-                        Tasks.forCanceled()
-                    }
-                }
+                var deleteTask: Task<Void>? = null
+                val taleMedia = getTask.result?.toObject(TaleModel::class.java)?.media
+
+//                // If tale has more than one media, that means a previous cover failed to delete:
+//                // Try to delete all irrelevant media
+//                taleMedia?.let {
+//                    if (it.size > 1) deleteTask = Storage.deleteFiles(it.subList(1, it.size))
+//                }
+
+                cover.value?.let { new ->
+
+                    // Case 1: Both old & new covers are not null - UPDATE cover
+                    taleMedia?.firstOrNull()?.let { old -> updateCover(old, new) }
+
+                    // Case 2: Old cover is null - ADD the new one
+                        ?: addCover(new)
+
+                    // Case 3: New cover is null - REMOVE the old one
+                } ?: taleMedia?.firstOrNull()?.let { old -> removeCover(old) }
             }
         }
 
-    /**
-     * Remove all [taleId]'s media.
-     */
-    private fun deleteTaleMedia(taleId: String) =
+    private fun addCover(cover: Uri) =
 
-        // Get the tale model
-        Database.getTale(taleId).continueWithTask { getTask ->
-            if (!getTask.isSuccessful) Tasks.forCanceled()
-            else getTask.result?.toObject(TaleModel::class.java)?.let { tale ->
+        // Upload new cover to Storage
+        Storage.uploadTaleMedia(taleId, cover).continueIfSuccessful { uploadTask ->
+            uploadTask.result?.let { uploadedUri ->
 
-                // Delete the tale's media
-                Storage.deleteFiles(tale.media)?.continueWithTask {
-                    if (!it.isSuccessful) Tasks.forCanceled()
+                // Update cover url in Database
+                Database.updateTaleCover(taleId, uploadedUri.toString())
 
-                    // Remove media from document
-                    else Database.removeTaleMedia(taleId)
-                }
+                    // If update fails - try to revert upload
+                    .addFallbackTask { Storage.deleteFile(uploadedUri.toString()) }
             }
+        }
+
+    private fun updateCover(old: String, new: Uri) =
+
+        // Upload new cover to Storage
+        Storage.uploadTaleMedia(taleId, new).continueIfSuccessful { uploadTask ->
+            uploadTask.result?.toString()?.let { uploadedUri ->
+
+                // Update cover url in Database
+                Database.updateTaleCover(taleId, uploadedUri)
+
+                    // If update fails - try to revert upload
+                    .addFallbackTask { Storage.deleteFile(uploadedUri) }
+
+                    // Delete old cover from storage
+                    .continueIfSuccessful {
+                        Storage.deleteFile(old)
+
+                            // If delete fails - try to put both in media list
+                            .addFallbackTask {
+                                Database.updateTaleMedia(taleId, listOf(uploadedUri, old))
+                            }
+                    }
+            }
+        }
+
+    private fun removeCover(cover: String) =
+
+        // Delete old cover from storage
+        Storage.deleteFile(cover).continueIfSuccessful {
+
+            // Update cover url in Database
+            Database.updateTaleCover(taleId, null)
+
         }
 }

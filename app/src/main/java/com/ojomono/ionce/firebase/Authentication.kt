@@ -8,7 +8,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.bumptech.glide.util.Util
 import com.facebook.AccessToken
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse

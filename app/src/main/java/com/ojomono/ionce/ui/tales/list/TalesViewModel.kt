@@ -8,6 +8,7 @@ import com.ojomono.ionce.firebase.Utils
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.utils.BaseViewModel
+import com.ojomono.ionce.utils.continueIfSuccessful
 
 class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
     // The user's tales list    // TODO: Use a Repository class
@@ -65,18 +66,19 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
 
     fun deleteTale() = clickedTale?.let { taleItem ->
 
+        // Cancel all active upload tasks for current tale
+        Storage.getActiveTaleTasks(taleItem.id).forEach { it.cancel() }
+
         // Get the tale model
-        Database.getTale(taleItem.id).continueWithTask { getTask ->
-            if (!getTask.isSuccessful) Tasks.forCanceled()
-            else getTask.result?.toObject(TaleModel::class.java)?.let { tale ->
+        Database.getTale(taleItem.id).continueIfSuccessful { getTask ->
+            getTask.result?.toObject(TaleModel::class.java)?.let { tale ->
 
                 // Delete the tale's media
                 val storageTask = Storage.deleteFiles(tale.media)
 
                 // Delete tale document
-                Utils.continueWithTaskOrInNew(storageTask) {
-                    if (it?.isSuccessful == false) Tasks.forCanceled()
-                    else Database.deleteTale(tale.id)
+                Utils.continueWithTaskOrInNew(storageTask, true) {
+                    Database.deleteTale(tale.id)
                 }
             }
         }

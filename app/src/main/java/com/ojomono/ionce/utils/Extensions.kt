@@ -1,12 +1,9 @@
 package com.ojomono.ionce.utils
 
-import android.app.AlertDialog
 import android.view.View
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import com.google.android.gms.tasks.Task
-import com.ojomono.ionce.R
+import com.google.android.gms.tasks.Tasks
 
 /**
  * This extension allows us to use the "TAG" constant in any class to get the class name (used for
@@ -29,3 +26,19 @@ fun <T> Task<T>.withProgressBar(progressBar: ProgressBar): Task<T> {
     addOnCompleteListener { progressBar.visibility = View.GONE }
     return this
 }
+
+/**
+ * Continue current [Task] with [continuation] only if current [Task] was successful.
+ */
+fun <TResult, TContinuationResult> Task<TResult>.continueIfSuccessful(
+    continuation: (Task<TResult>) -> Task<TContinuationResult>?
+) = continueWithTask { if (!it.isSuccessful) Tasks.forCanceled() else continuation.invoke(it) }
+
+/**
+ * Continue current [Task] with [continuation] only if current [Task] failed.
+ */
+fun <T> Task<T>.addFallbackTask(continuation: (Task<T>) -> Task<*>?) =
+    continueWithTask {
+        if (!it.isSuccessful) continuation.invoke(it)
+        it
+    }

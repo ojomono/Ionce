@@ -47,6 +47,7 @@ class RollViewModel : BaseViewModel() {
             // If the user has only one tale - get it
             if (size == 1) get(0)
             // If he has more, get a random one, excluding the last rolled tale
+            // TODO use "minusElement"
             else filter { it.id != rolled.value?.id }.random()
         }
 }

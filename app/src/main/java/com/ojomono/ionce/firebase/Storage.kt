@@ -2,11 +2,13 @@ package com.ojomono.ionce.firebase
 
 // TODO: Avoid Android imports and move to separated module when needed for more UI platforms
 import android.net.Uri
+import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.ojomono.ionce.utils.ImageUtils.COMPRESS_FORMAT
+import com.ojomono.ionce.utils.TAG
 import java.util.*
 
 object Storage {
@@ -28,7 +30,7 @@ object Storage {
     private val storage = Firebase.storage
 
     // Create a storage reference from our app
-    private var storageRef = storage.reference
+    private val storageRef = storage.reference
 
     // Keep the current user's storage path updated based on the current user
     private var userRef: StorageReference? = null
@@ -47,19 +49,27 @@ object Storage {
      * Upload the given [image] to Storage, as the photo of the current logged user, and return
      * the downloadUrl [Task].
      */
-    fun uploadUserPhoto(image: Uri) = userRef?.let {
-        uploadFile(it.child("$PS_USER_PHOTO.${COMPRESS_FORMAT.name}"), image)
+    fun uploadUserPhoto(image: Uri) = userRef?.let { userRef ->
+        uploadFile(userRef.child("$PS_USER_PHOTO.${COMPRESS_FORMAT.name}"), image)
     } ?: throw Utils.NoSignedInUserException
 
     /**
      * Upload the given [image] to Storage, as media of the given [taleId], and return the
      * downloadUrl [Task].
      */
-    fun uploadTaleMedia(taleId: String, image: Uri) = userRef?.let {
+    fun uploadTaleMedia(taleId: String, image: Uri) = userRef?.let { userRef ->
         uploadFile(
-            it.child("$taleId/${generateUniqueName()}.${COMPRESS_FORMAT.name}"),
+            userRef.child("$taleId/${generateUniqueName()}.${COMPRESS_FORMAT.name}"),
             image
         )
+    } ?: throw Utils.NoSignedInUserException
+
+    /**
+     * Get all active upload task for given [taleId].
+     */
+    fun getActiveTaleTasks(taleId: String) = userRef?.let { userRef ->
+        val pathPrefix = "${userRef.path}/$taleId"
+        storageRef.activeUploadTasks.filter { it.snapshot.storage.path.startsWith(pathPrefix) }
     } ?: throw Utils.NoSignedInUserException
 
     /**
@@ -79,12 +89,8 @@ object Storage {
      */
     fun deleteFiles(filesList: List<String>): Task<Void>? {
         var task: Task<Void>? = null
-        for (file in filesList) task = Utils.continueWithTaskOrInNew(task) {
-
-            // If any delete fails, stop deleting and return the failed task
-            if (it?.isSuccessful != false) deleteFile(file)
-            else it
-        }
+        for (file in filesList)
+            task = Utils.continueWithTaskOrInNew(task, true) { deleteFile(file) }
         return task
     }
 
@@ -100,9 +106,7 @@ object Storage {
 
         // Return the task getting the download URL
         return uploadTask.continueWithTask { task ->
-            if (!task.isSuccessful) {
-                task.exception?.let { e -> throw e }
-            }
+            if (!task.isSuccessful) task.exception?.let { e -> throw e }
             destRef.downloadUrl
         }
     }

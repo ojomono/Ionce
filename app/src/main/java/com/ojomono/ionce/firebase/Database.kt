@@ -32,9 +32,6 @@ object Database {
     /** Fields **/
     /************/
 
-    // The Cloud Firestore instance
-    private val db = Firebase.firestore
-
     // Always keep current user's document loaded
     private var userDocRef: DocumentReference? = null
     private var userDocument: DocumentSnapshot? = null
@@ -100,39 +97,23 @@ object Database {
     }
 
     /**
-     * Add [mediaUri] to media list of tale [id], in given [index].
+     * Update the tale document with id=[id] to have the given [media] list.
      */
-    fun addMediaToTale(id: String, mediaUri: String, index: Int) =
+    fun updateTaleMedia(id: String, media: List<String>): Task<DocumentReference> {
 
-        // Get the tale document
-        getTale(id).continueWithTask { getTask ->
-            if (!getTask.isSuccessful) Tasks.forCanceled()
-            else getTask.result?.toObject(TaleModel::class.java)?.let { tale ->
-
-                // Add media at given index
-                val updatedMedia = tale.media.apply { add(index, mediaUri) }
-
-                // Update cover for tale in the tales list (if needs update)
-                val tales =
-                    if (index != 0) null
-                    else getUpdatedTalesList(id) { set(it, get(it).copy(cover = tale.media[0])) }
-
-                // Update the tale's media list and the user's tale list
-                runTaleBatch(id, tales) { update(it, TaleModel::media.name, updatedMedia) }
-            }
-        }
-
-    /**
-     * Remove all media of tale [id].
-     */
-    fun removeTaleMedia(id: String): Task<DocumentReference> {
-
-        // Remove cover for tale in the tales list
-        val tales = getUpdatedTalesList(id) { set(it, get(it).copy(cover = "")) }
+        // Update media for tale in the tales list
+        val tales =
+            getUpdatedTalesList(id) { set(it, get(it).copy(cover = media.firstOrNull() ?: "")) }
 
         // Update the tale's media list and the user's tale list
-        return runTaleBatch(id, tales) { update(it, TaleModel::media.name, emptyList<String>()) }
+        return runTaleBatch(id, tales) { update(it, TaleModel::media.name, media) }
     }
+
+    /**
+     * Update the tale document with id=[id] to have the given [coverUri].
+     */
+    fun updateTaleCover(id: String, coverUri: String?) =
+        updateTaleMedia(id, coverUri?.let { listOf(it) } ?: emptyList())
 
     // For drag n' drop feature
 //    /**
@@ -168,7 +149,7 @@ object Database {
             userRegistration?.remove()
 
             // Get the current user's document reference
-            userDocRef = db.collection(CP_USERS).document(id)
+            userDocRef = Firebase.firestore.collection(CP_USERS).document(id)
 
             // Save the document locally
             task = userDocRef?.get()
@@ -215,7 +196,7 @@ object Database {
         val taleRef = userRef.collection(CP_TALES).document(id)
 
         // In a batch write: update user's tale list, and run given action on the tale ref
-        db.runBatch {
+        Firebase.firestore.runBatch {
             if (tales != null) it.update(userRef, UserModel::tales.name, tales)
             it.action(taleRef)
         }
