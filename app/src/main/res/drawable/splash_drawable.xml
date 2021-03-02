@@ -4,7 +4,7 @@
     android:opacity="opaque">
 
     <!-- Background color -->
-    <item android:drawable="@drawable/bg_gradient" />
+    <item android:drawable="@drawable/all_gradient_bg" />
 
     <!-- App logo -->
     <item android:bottom="@dimen/splash_logo_item_bottom_offset">

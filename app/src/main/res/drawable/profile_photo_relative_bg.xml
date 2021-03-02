@@ -3,7 +3,7 @@
     android:shape="oval">
 
     <stroke
-        android:width="2dp"
-        android:color="?attr/colorBackgroundFloating" />
+        android:width="@dimen/profile_photo_relative_bg_stroke_width"
+        android:color="@color/background_floating_material_dark" />
 
 </shape>

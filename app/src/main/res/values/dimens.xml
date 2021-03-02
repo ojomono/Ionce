@@ -8,21 +8,18 @@
     <dimen name="splash_logo_item_bottom_offset">240dp</dimen>
 
     <!-- Tales screen dimens -->
-    <dimen name="tales_hint_text_size">20sp</dimen>
     <dimen name="tales_fab_elevation">6dp</dimen>
     <dimen name="tales_fab_layout_margin">20dp</dimen>
 
     <!-- Roll screen dimens -->
+    <dimen name="roll_button_bg_stroke_width">5dp</dimen>
     <dimen name="roll_button_size">150dp</dimen>
-    <dimen name="roll_button_text_size">20sp</dimen>
-    <dimen name="roll_preface_text_size">20sp</dimen>
-    <dimen name="roll_hint_text_size">20sp</dimen>
-    <dimen name="roll_tale_text_size">24sp</dimen>
 
     <!-- Profile screen dimens -->
     <dimen name="profile_icons_sizes">40dp</dimen>
-    <dimen name="profile_image_size">120dp</dimen>
-    <dimen name="profile_relative_image_size">138dp</dimen>
+    <dimen name="profile_photo_relative_bg_stroke_width">2dp</dimen>
+    <dimen name="profile_photo_relative_size">138dp</dimen>
+    <dimen name="profile_photo_image_size">120dp</dimen>
     <dimen name="profile_name_padding_bottom">20dp</dimen>
     <dimen name="profile_providers_padding_horizontal">30dp</dimen>
     <dimen name="profile_providers_padding_top">20dp</dimen>

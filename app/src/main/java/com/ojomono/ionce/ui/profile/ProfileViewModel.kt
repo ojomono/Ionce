@@ -17,15 +17,16 @@ import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
+import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.utils.BaseViewModel
 import com.ojomono.ionce.utils.TAG
-
 
 class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     // Current logged in user
@@ -159,7 +160,13 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
      * Update user photo to given [uri].
      */
     fun updateUserPicture(uri: Uri) =
-        Authentication.updatePhotoUrl(uri, true).withProgressBar()
+
+        // Upload picture to Storage
+        Storage.uploadUserPhoto(uri).continueWithTask {
+
+            // If upload succeed - update user auth. Else return failed task
+            if (it.isSuccessful) Authentication.updatePhotoUrl(it.result) else Tasks.forCanceled()
+        }
 
     /**
      * Update user displayed name to given [name].

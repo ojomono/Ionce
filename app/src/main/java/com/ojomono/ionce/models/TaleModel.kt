@@ -1,6 +1,5 @@
 package com.ojomono.ionce.models
 
-import android.net.Uri
 import com.google.firebase.firestore.DocumentId
 
 /**

@@ -3,6 +3,7 @@ package com.ojomono.ionce.ui.tales.edit
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
@@ -17,8 +18,8 @@ import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.utils.EventStateHolder
+import com.ojomono.ionce.utils.ImageUtils
 import com.ojomono.ionce.utils.StringResource
-
 
 /**
  * A [DialogFragment] representing the edit screen for a tale.
@@ -45,7 +46,7 @@ class EditTaleDialogFragment : DialogFragment(),
 
         // Set style to be app theme (instead of default dialog theme) to make full-screen dialog
         // (actually the important thing is: <item name="android:windowIsFloating">false</item>)
-        setStyle(STYLE_NORMAL, R.style.AppTheme_Material)
+        setStyle(STYLE_NORMAL, R.style.AppTheme)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -92,7 +93,7 @@ class EditTaleDialogFragment : DialogFragment(),
         super.onPause()
 
         // Disable enter animation for this instance to avoid animation on back from image picker
-        dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialogExit)
+        dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialog_NoEnterAnim)
     }
 
     override fun dismiss() {
@@ -130,8 +131,7 @@ class EditTaleDialogFragment : DialogFragment(),
 
         when (requestCode) {
             RC_PICK_IMAGE ->
-                if (resultCode == Activity.RESULT_OK)
-                    data?.data?.let { viewModel.updateDisplayedCover(it) }
+                if (resultCode == Activity.RESULT_OK) data?.data?.let { onImagePicked(it) }
         }
     }
 
@@ -166,7 +166,7 @@ class EditTaleDialogFragment : DialogFragment(),
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeButtonEnabled(true)
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_black_24)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_close_24)
         }
         setHasOptionsMenu(true)
     }
@@ -216,6 +216,20 @@ class EditTaleDialogFragment : DialogFragment(),
             Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI),
             RC_PICK_IMAGE
         )
+
+    /**
+     * Compress image from [uri] and set as user photo.
+     */
+    private fun onImagePicked(uri: Uri) {
+
+        // Put a progress bar in the image view
+//        ImageUtils.load(context, ImageUtils.UPLOADING_IN_PROGRESS, binding.imageCover)
+
+        // Compress image and set it as user photo
+        ImageUtils.compress(context, uri) {
+            activity?.runOnUiThread { viewModel.updateDisplayedCover(it) }
+        }
+    }
 
     /**********************/
     /** Companion object **/

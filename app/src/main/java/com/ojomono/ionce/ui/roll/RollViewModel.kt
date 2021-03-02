@@ -2,6 +2,7 @@ package com.ojomono.ionce.ui.roll
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.models.TaleItemModel
@@ -14,6 +15,18 @@ class RollViewModel : BaseViewModel() {
     // The rolled tale's title
     private val _rolled = MutableLiveData<TaleItemModel>()
     val rolled: LiveData<TaleItemModel> = _rolled
+
+    // Observe tales list in case the rolled tale cover finished upload, and refresh screen
+    private val listObserver =
+        Observer<MutableList<TaleItemModel>> { list ->
+            val updated = list.find { it.id == rolled.value?.id }
+            if (rolled.value != updated) _rolled.value = updated
+        }.also { tales.observeForever(it) }
+
+    override fun onCleared() {
+        super.onCleared()
+        tales.removeObserver(listObserver)
+    }
 
     /**
      * Show a random tale title from the user's tales.
@@ -34,6 +47,7 @@ class RollViewModel : BaseViewModel() {
             // If the user has only one tale - get it
             if (size == 1) get(0)
             // If he has more, get a random one, excluding the last rolled tale
+            // TODO use "minusElement"
             else filter { it.id != rolled.value?.id }.random()
         }
 }

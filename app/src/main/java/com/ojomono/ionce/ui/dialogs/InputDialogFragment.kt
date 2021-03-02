@@ -1,6 +1,5 @@
 package com.ojomono.ionce.ui.dialogs
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
@@ -11,6 +10,7 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import com.ojomono.ionce.R
 import com.ojomono.ionce.utils.StringResource
 

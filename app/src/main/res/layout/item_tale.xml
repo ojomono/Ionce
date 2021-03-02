@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/image_edit"
                 android:padding="5dp"
-                android:textSize="16sp"
+                android:textAppearance="?android:attr/textAppearanceListItem"
                 android:text="@{taleItem.title}"
                 tools:text="title" />
 
@@ -46,10 +46,10 @@
                 android:layout_height="35dp"
                 android:layout_marginEnd="2dp"
                 android:layout_toStartOf="@+id/image_delete"
-                android:src="@drawable/ic_edit_black_24"
+                android:src="@drawable/ic_baseline_edit_24"
                 android:padding="5dp"
                 android:contentDescription="@string/tales_edit_icon_content_description"
-                android:background="@drawable/fg_circle_ripple"
+                android:background="@drawable/all_oval_ripple"
                 android:onClick="@{() -> clickListener.onEdit(taleItem)}" />
 
             <ImageView
@@ -57,10 +57,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_delete_black_24"
+                android:src="@drawable/ic_baseline_delete_24"
                 android:padding="5dp"
                 android:contentDescription="@string/tales_delete_icon_content_description"
-                android:background="@drawable/fg_circle_ripple"
+                android:background="@drawable/all_oval_ripple"
                 android:onClick="@{() -> clickListener.onDelete(taleItem)}" />
         </RelativeLayout>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Based on github project 'android-profile-ui' by 'karunstha': https://github.com/karunstha/android-profile-ui/blob/master/app/src/main/res/layout/activity_main.xml-->
+<!-- Based on github project 'android-profile-ui' by 'karunstha': https://github.com/karunstha/android-profile-ui/blob/master/app/src/main/res/layout/activity_main.xml -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -20,34 +20,34 @@
             android:id="@+id/relative_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_gradient">
+            android:background="@drawable/all_gradient_bg">
 
             <RelativeLayout
                 android:id="@+id/relative_image"
-                android:layout_width="@dimen/profile_relative_image_size"
-                android:layout_height="@dimen/profile_relative_image_size"
+                android:layout_width="@dimen/profile_photo_relative_size"
+                android:layout_height="@dimen/profile_photo_relative_size"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/bg_circle_border"
+                android:background="@drawable/profile_photo_relative_bg"
                 android:onClick="@{() -> viewModel.onPictureClicked()}">
 
                 <FrameLayout
-                    android:layout_width="@dimen/profile_image_size"
-                    android:layout_height="@dimen/profile_image_size"
+                    android:layout_width="@dimen/profile_photo_image_size"
+                    android:layout_height="@dimen/profile_photo_image_size"
                     android:layout_centerInParent="true"
-                    android:foreground="@drawable/fg_circle_ripple">
+                    android:foreground="@drawable/all_oval_ripple">
 
                     <ImageView
                         android:id="@+id/image_profile_picture"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:adjustViewBounds="true"
-                        android:background="@drawable/bg_circle_solid"
+                        android:background="@drawable/profile_photo_image_bg"
                         android:padding="3dp"
                         android:scaleType="centerCrop"
                         android:contentDescription="@string/profile_user_image_content_description"
                         app:userPhotoSrc="@{viewModel.user.photoUrl}"
-                        tools:src="@drawable/ic_profile_black_24" />
+                        tools:src="@drawable/ic_profile_photo_person" />
                 </FrameLayout>
 
                 <ImageView
@@ -57,8 +57,8 @@
                     android:scaleType="centerInside"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_edit_black_24"
-                    android:background="@drawable/bg_circle_solid_accent"
+                    android:src="@drawable/ic_baseline_edit_24"
+                    android:background="@drawable/profile_photo_edit_bg"
                     android:contentDescription="@string/profile_edit_photo_content_description" />
 
             </RelativeLayout>
@@ -83,8 +83,8 @@
                     android:gravity="center"
                     android:layout_marginStart="@dimen/profile_icons_sizes"
                     android:fontFamily="sans-serif-light"
-                    android:textColor="@color/colorOnPrimary"
-                    android:textSize="32sp"
+                    android:textAppearance="?attr/textAppearanceHeadline4"
+                    android:textColor="@color/design_default_color_on_primary"
                     android:text="@{viewModel.user.displayName}"
                     tools:text="Joey Tribbiani" />
 
@@ -93,7 +93,7 @@
                     android:layout_height="@dimen/profile_icons_sizes"
                     android:adjustViewBounds="true"
                     android:scaleType="centerInside"
-                    android:src="@drawable/ic_edit_accent_24"
+                    android:src="@drawable/ic_profile_name_edit"
                     android:contentDescription="@string/profile_edit_name_content_description" />
 
             </LinearLayout>
@@ -106,9 +106,9 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_settings_white_24"
+                android:src="@drawable/ic_profile_menu_settings"
                 android:contentDescription="@string/profile_settings_icon_content_description"
-                android:background="@drawable/fg_circle_ripple"
+                android:background="@drawable/all_oval_ripple"
                 android:onClick="@{(view) -> viewModel.onSettingsClicked(view)}" />
 
         </RelativeLayout>
@@ -150,16 +150,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/profile_email_provider_name"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="13sp" />
+                            android:textColor="?attr/colorPrimary"
+                            android:textAppearance="?android:attr/textAppearanceSmall" />
 
                         <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-light"
-                        android:textSize="18sp"
-                        android:text="@{viewModel.user.email}"
-                        tools:text="joey@sharenofood.com" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-light"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="@{viewModel.user.email}"
+                            tools:text="joey@sharenofood.com" />
 
                 </LinearLayout>
 
@@ -186,7 +186,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="@dimen/profile_providers_padding_horizontal"
-                    android:background="@color/separators" />
+                    android:background="?attr/colorBackgroundFloating" />
 
             <LinearLayout
                 android:id="@+id/linear_phone_provider"
@@ -209,14 +209,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_phone_provider_name"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="13sp" />
+                        android:textColor="?attr/colorPrimary"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
-                        android:textSize="18sp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="@{viewModel.user.phoneNumber}"
                         tools:text="+1-202-555-0157" />
 
@@ -245,7 +245,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="@dimen/profile_providers_padding_horizontal"
-                    android:background="@color/separators" />
+                    android:background="?attr/colorBackgroundFloating" />
 
             <LinearLayout
                 android:id="@+id/linear_twitter_provider"
@@ -268,15 +268,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_twitter_provider_name"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="13sp" />
+                        android:textColor="?attr/colorPrimary"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
                         android:text="@{viewModel.twitterUserInfo.displayName}"
-                        android:textSize="18sp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         tools:text="\@joeytribbiani" />
 
                 </LinearLayout>
@@ -296,7 +296,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="@dimen/profile_providers_padding_horizontal"
-                    android:background="@color/separators" />
+                    android:background="?attr/colorBackgroundFloating" />
 
             <LinearLayout
                 android:id="@+id/linear_facebook_provider"
@@ -319,14 +319,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_facebook_provider_name"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="13sp" />
+                        android:textColor="?attr/colorPrimary"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
-                        android:textSize="18sp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="@{viewModel.facebookUserInfo.displayName}"
                         tools:text="facebook.com/joeytrib" />
 
@@ -355,7 +355,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="@dimen/profile_providers_padding_horizontal"
-                    android:background="@color/separators" />
+                    android:background="?attr/colorBackgroundFloating" />
 
             <LinearLayout
                 android:id="@+id/linear_google_provider"
@@ -378,14 +378,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_google_provider_name"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="13sp" />
+                        android:textColor="?attr/colorPrimary"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
-                        android:textSize="18sp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="@{viewModel.googleUserInfo.displayName}"
                         tools:text="Joey Tribbiani" />
 
@@ -406,7 +406,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="@dimen/profile_providers_padding_horizontal"
-                    android:background="@color/separators" />
+                    android:background="?attr/colorBackgroundFloating" />
 
             </LinearLayout>
 

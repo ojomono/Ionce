@@ -11,8 +11,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_gradient">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/text_tales_hint"
@@ -20,8 +19,7 @@
             android:layout_height="match_parent"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:layout_marginVertical="@dimen/activity_vertical_margin"
-            android:textColor="@color/colorOnPrimary"
-            android:textSize="@dimen/tales_hint_text_size"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/tales_hint_text"
             android:gravity="center"
             app:hintTextVisibility="@{viewModel.tales}"
@@ -44,7 +42,7 @@
             android:id="@+id/fab_add_tale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_white_36"
+            android:src="@drawable/ic_baseline_add_24"
             android:layout_gravity="bottom|end"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
