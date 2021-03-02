@@ -94,9 +94,9 @@ object Storage {
         return task
     }
 
-    /********************/
+    /*********************/
     /** Private methods **/
-    /********************/
+    /*********************/
 
     /**
      * Upload the given [image] to the given [destRef] in Storage, and return the downloadUrl [Task]

@@ -25,6 +25,7 @@ abstract class BaseViewModel : ViewModel() {
         class ShowMessageByResId(val messageResId: Int, vararg val args: String) : BaseEventType()
     }
 
+    // TODO refactor to: https://developer.android.com/codelabs/kotlin-coroutines?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-coroutines%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fkotlin-coroutines#10
     protected fun Task<*>.withProgressBar() =
         apply { postEvent(BaseEventType.ShowProgressBar(this)) }
 
