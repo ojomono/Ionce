@@ -21,7 +21,6 @@ import com.ojomono.ionce.databinding.FragmentProfileBinding
 import com.ojomono.ionce.ui.dialogs.InputDialogFragment
 import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.utils.*
-import kotlinx.android.synthetic.main.fragment_profile.*
 import java.io.*
 import java.util.concurrent.TimeUnit
 
@@ -303,7 +302,7 @@ class ProfileFragment : BaseFragment() {
 
             viewModel.user.value
                 ?.startActivityForLinkWithProvider(it, provider.build())
-                ?.withProgressBar(progress_bar)
+                ?.withProgressBar(binding.progressBar)
                 ?.addOnSuccessListener { viewModel.refresh() }
                 ?.addOnFailureListener { e ->
                     // Handle failure.

@@ -14,14 +14,16 @@ import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 import com.ojomono.ionce.BuildConfig
 import com.ojomono.ionce.R
+import com.ojomono.ionce.databinding.ActivitySplashBinding
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.firebase.Conversions
 import com.ojomono.ionce.utils.TAG
 import com.ojomono.ionce.utils.withProgressBar
-import kotlinx.android.synthetic.main.activity_splash.*
 
 class SplashActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivitySplashBinding
 
     private val authUI = AuthUI.getInstance()
 
@@ -31,7 +33,11 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
+
+        // View binding
+        binding = ActivitySplashBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         // If no user is logged in, open sign-in screen
         if (Authentication.currentUser.value == null)
@@ -173,7 +179,7 @@ class SplashActivity : AppCompatActivity() {
                     // Right now, app supports only one kind of link - link user with email
                     val deepLink = pendingDynamicLinkData.link.toString()
                     if (deepLink.isNotEmpty())
-                        Authentication.linkWithEmail(deepLink)?.withProgressBar(progress_bar)
+                        Authentication.linkWithEmail(deepLink)?.withProgressBar(binding.progressBar)
                             ?.handleCollision {
                                 Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
                             }

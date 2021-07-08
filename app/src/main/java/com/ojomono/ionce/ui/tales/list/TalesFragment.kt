@@ -13,8 +13,6 @@ import com.ojomono.ionce.databinding.FragmentTalesBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
 import com.ojomono.ionce.ui.tales.edit.EditTaleDialogFragment
 import com.ojomono.ionce.utils.*
-import kotlinx.android.synthetic.main.fragment_tales.view.*
-
 
 /**
  * A fragment representing a list of Tales.
@@ -80,7 +78,7 @@ class TalesFragment : BaseFragment() {
      * Populate the recycler view.
      */
     private fun populateRecyclerView() {
-        with(binding.root.recycler_tales_list) {
+        with(binding.recyclerTalesList) {
             // Choose layout manager
             layoutManager = when {
                 columnCount <= 1 -> LinearLayoutManager(context)
