@@ -1,23 +1,20 @@
 package com.ojomono.ionce.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
-import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.*
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
-import com.ojomono.ionce.BuildConfig
-import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.ActivitySplashBinding
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.firebase.Conversions
+import com.ojomono.ionce.firebase.SignInUI
 import com.ojomono.ionce.utils.TAG
 import com.ojomono.ionce.utils.withProgressBar
 
@@ -25,7 +22,10 @@ class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
 
-    private val authUI = AuthUI.getInstance()
+    private val authResultLauncher =
+        registerForActivityResult(SignInUI.authResultContract) { idpResponse ->
+            handleAuthResponse(idpResponse)
+        }
 
     /***********************/
     /** Lifecycle methods **/
@@ -40,8 +40,9 @@ class SplashActivity : AppCompatActivity() {
         setContentView(view)
 
         // If no user is logged in, open sign-in screen
-        if (Authentication.currentUser.value == null)
-            startActivityForResult(buildSignInIntent(intent), RC_SIGN_IN)
+        if (Authentication.currentUser.value == null) authResultLauncher.launch(intent)
+
+        // If a user is already logged in, check dynamic links and open home screen
         else {
             // Check for any other dynamic link
             handleDynamicLinks()
@@ -51,83 +52,35 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == RC_SIGN_IN) {
-
-            if (resultCode == Activity.RESULT_OK) {
-
-                // Successfully signed in
-                handleSignInSucceeded(data)
-
-                // Open home screen
-                startMainActivity()
-
-            } else {
-
-                // Sign in failed.
-                handleSignInFailed(data)
-
-                // Close app
-                finish()
-
-            }
-        }
-    }
-
     /***********************/
     /** private methods **/
     /***********************/
 
-    /**
-     * Build an intent that will open the FirebaseUI sign-in screen. Enable email link directing to
-     * the APPLICATION_ID (main package). If the function is called after the email link
-     * was clicked, the link should be given as the [activityIntent] model.
-     */
-    private fun buildSignInIntent(activityIntent: Intent? = null): Intent {
+    private fun handleAuthResponse(idpResponse: IdpResponse?) =
+        when {
+            // If response is null the user canceled the sign-in flow using the back button.
+            (idpResponse == null) -> Unit   // Do nothing.
 
-        // Start building the sign-in Intent and email builders
-        val signInIntentBuilder = authUI.createSignInIntentBuilder()
-        val emailBuilder = AuthUI.IdpConfig.EmailBuilder()
+            // Handle error from returned data.
+            (idpResponse.error != null) -> idpResponse.error?.let { handleSignInFailed(it) }
 
-        // If the intent is given and AuthUI can handle it (email link clicked),
-        // state it in the sign-in Intent
-        if (activityIntent != null && AuthUI.canHandleIntent(activityIntent)) {
-            val link = activityIntent.data.toString()
-            signInIntentBuilder.setEmailLink(link)
+            // Handle sign-in success from returned data.
+            else -> handleSignInSucceeded(idpResponse)
         }
 
-        // Enable email link sign in
-        val actionCodeSettings: ActionCodeSettings =
-            ActionCodeSettings.newBuilder()
-                .setAndroidPackageName(BuildConfig.APPLICATION_ID, true, null)
-                .setHandleCodeInApp(true) // This must be set to true
-                .setUrl(Authentication.DL_URL_DOMAIN + Authentication.DL_FINISH_SIGN_UP) // This URL needs to be whitelisted
-                .build()
-        emailBuilder.enableEmailLinkSignIn().setActionCodeSettings(actionCodeSettings)
+    private fun handleSignInFailed(error: Exception) {
 
-        // Choose authentication providers
-        val providers = arrayListOf(
-            AuthUI.IdpConfig.GoogleBuilder().build(),
-            AuthUI.IdpConfig.FacebookBuilder().build(),
-            AuthUI.IdpConfig.TwitterBuilder().build(),
-            emailBuilder.build(),
-            AuthUI.IdpConfig.PhoneBuilder().build()
-        )
+        // Use error.errorCode if a specific error handling is needed.
+        Log.e(TAG, error.toString())
 
-        // Return the built intent
-        return signInIntentBuilder.setAvailableProviders(providers)
-            .setLogo(R.drawable.app_logo) // Set logo drawable
-            .setTheme(R.style.AppTheme_SignInScreen) // Set theme
-            .build()
+        // Close app
+        finish()
     }
 
-    private fun handleSignInSucceeded(dataIntent: Intent?) {
-        val response = IdpResponse.fromResultIntent(dataIntent)
+    private fun handleSignInSucceeded(idpResponse: IdpResponse?) {
 
         // For new created users, check if a photo is available from the auth provider
-        if (response?.isNewUser == true) {
+        if (idpResponse?.isNewUser == true) {
             // All users have a default FirebaseAuth provider data - we want to check which is the
             // other one
             Authentication.currentUser.value?.providerData
@@ -144,7 +97,10 @@ class SplashActivity : AppCompatActivity() {
                             // Add parameters: "?height=400&access_token=${response.idpToken}" to
                             // get 400x400 image
                             photoUrl.toString().plus(
-                                PU_FACEBOOK_SIZE_COMPONENT.format(PU_WANTED_SIZE, response.idpToken)
+                                PU_FACEBOOK_SIZE_COMPONENT.format(
+                                    PU_WANTED_SIZE,
+                                    idpResponse.idpToken
+                                )
                             )
                         TwitterAuthProvider.PROVIDER_ID ->
                             // TODO: Get Twitter screen_name (when getting Facebook link)
@@ -159,15 +115,9 @@ class SplashActivity : AppCompatActivity() {
                     photoUrl?.let { Authentication.updatePhotoUrl(it.toUri()) }
                 }
         }
-    }
 
-    private fun handleSignInFailed(dataIntent: Intent?) {
-        val response = IdpResponse.fromResultIntent(dataIntent)
-
-        // If response is null the user canceled the sign-in flow using the back button.
-        // Otherwise an error occurred:
-        // Use response.error.errorCode if a specific error handling is needed.
-        if (response != null) Log.e(TAG, response.error.toString())
+        // Open home screen
+        startMainActivity()
     }
 
     private fun handleDynamicLinks() =
@@ -203,9 +153,6 @@ class SplashActivity : AppCompatActivity() {
     /***************/
 
     companion object {
-        // Request codes
-        const val RC_SIGN_IN = 1
-
         // Photo Url Size
         private const val PU_WANTED_SIZE = 400  // Not all values are supported by Twitter API!
         private const val PU_GOOGLE_DEFAULT_SIZE = 96

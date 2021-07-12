@@ -1,16 +1,19 @@
 package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -35,6 +38,25 @@ class ProfileFragment : BaseFragment() {
     override lateinit var binding: FragmentProfileBinding
     override lateinit var viewModel: ProfileViewModel
     override lateinit var progressBar: ProgressBar
+
+    // Activity result launchers
+    private val getContent =
+        registerForActivityResult(ActivityResultContracts.GetContent()) {
+            onImagePicked(it)
+        }
+
+    // TODO use ActivityResultContracts.StartIntentSenderForResult() instead
+    private val linkWithGoogle =
+        registerForActivityResult(
+            object : ActivityResultContract<Void?, Intent>() {
+
+                override fun createIntent(context: Context, input: Void?) =
+                    viewModel.googleSignInClient.signInIntent
+
+                override fun parseResult(resultCode: Int, result: Intent?) =
+                    if (resultCode != Activity.RESULT_OK) null else result
+            }
+        ) { viewModel.handleGoogleResult(it) }
 
     /***********************/
     /** Lifecycle methods **/
@@ -61,15 +83,9 @@ class ProfileFragment : BaseFragment() {
         return binding.root
     }
 
+    // TODO use registerForActivityResult when Facebook API will update
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            RC_PICK_IMAGE ->
-                if (resultCode == Activity.RESULT_OK) data?.data?.let { onImagePicked(it) }
-            RC_LINK_GOOGLE -> viewModel.handleGoogleResult(data)
-        }
-
         // Pass the activity result back to the Facebook SDK
         viewModel.facebookCallbackManager.onActivityResult(requestCode, resultCode, data)
     }
@@ -139,11 +155,7 @@ class ProfileFragment : BaseFragment() {
     /**
      * Show the image picker.
      */
-    private fun showImagePicker() =
-        startActivityForResult(
-            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI),
-            RC_PICK_IMAGE
-        )
+    private fun showImagePicker() = getContent.launch("image/*")
 
     /**
      * Compress image from [uri] and set as user photo.
@@ -320,8 +332,7 @@ class ProfileFragment : BaseFragment() {
     /**
      * Show activity for linking with Google.
      */
-    private fun showLinkWithGoogle() =
-        startActivityForResult(viewModel.googleSignInClient.signInIntent, RC_LINK_GOOGLE)
+    private fun showLinkWithGoogle() = linkWithGoogle.launch()
 
     /**
      * Show dialog for verifying decision to unlink given [providerNameResId].
@@ -343,10 +354,6 @@ class ProfileFragment : BaseFragment() {
     /***************/
 
     companion object {
-        // Request codes
-        const val RC_PICK_IMAGE = 1
-        const val RC_LINK_GOOGLE = 2
-
         // Facebook login button permissions
         const val FP_EMAIL = "email"
         const val FP_PUBLIC_PROFILE = "public_profile"
