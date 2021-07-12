@@ -239,8 +239,10 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
                 account.idToken?.let {
                     Authentication.linkWithGoogle(it)
-                        .handleCollision(::showErrorMessage)
-                        .withProgressBar()
+                        .handleCollision { e ->
+                            googleSignInClient.signOut()
+                            showErrorMessage(e)
+                        }.withProgressBar()
                 }
             }
         } catch (e: ApiException) {
