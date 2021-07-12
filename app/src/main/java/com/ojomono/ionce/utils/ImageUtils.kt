@@ -9,7 +9,6 @@ import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.Transformation
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -78,10 +77,10 @@ object ImageUtils {
         }
     }
 
-    fun load(
-        context: Context?, uriString: String?, view: ImageView,
-        loadPatch: Loader.() -> Unit = { default() }
-    ) = load(context, Uri.parse(uriString), view, loadPatch)
+//    fun load(
+//        context: Context?, uriString: String?, view: ImageView,
+//        loadPatch: Loader.() -> Unit = { default() }
+//    ) = load(context, Uri.parse(uriString), view, loadPatch)
 
     private fun getCircularProgressDrawable(view: ImageView) =
         androidx.swiperefreshlayout.widget.CircularProgressDrawable(view.context).apply {
@@ -95,7 +94,7 @@ object ImageUtils {
     /************************/
 
     // Compression constants
-    private const val COMPRESS_QUALITY = 60
+    private const val COMPRESS_QUALITY = 80
 
     // Used compression format for images - Used also in Storage to determine file extension!
     // If changed, user photo will be uploaded with different name! May not override old one!
