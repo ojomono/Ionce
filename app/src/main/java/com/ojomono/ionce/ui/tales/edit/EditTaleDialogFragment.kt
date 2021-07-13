@@ -1,23 +1,21 @@
 package com.ojomono.ionce.ui.tales.edit
 
-import android.app.Activity
 import android.app.Dialog
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.*
-import android.view.inputmethod.InputMethodManager
+import android.widget.ProgressBar
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
-import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
-import com.ojomono.ionce.utils.EventStateHolder
+import com.ojomono.ionce.ui.dialogs.AlertDialog
+import com.ojomono.ionce.utils.BaseDialogFragment
+import com.ojomono.ionce.utils.BaseViewModel
 import com.ojomono.ionce.utils.ImageUtils
 import com.ojomono.ionce.utils.StringResource
 
@@ -26,14 +24,48 @@ import com.ojomono.ionce.utils.StringResource
  * Use the [EditTaleDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class EditTaleDialogFragment : DialogFragment(),
-    EventStateHolder.EventObserver<EditTaleViewModel.EventType> {
+class EditTaleDialogFragment : BaseDialogFragment() {
 
-    private val layoutId = R.layout.fragment_edit_tale_dialog
-    lateinit var binding: FragmentEditTaleDialogBinding
-    lateinit var viewModel: EditTaleViewModel
+    /**********************/
+    /** Companion object **/
+    /**********************/
+
+    companion object {
+
+        // Fragment tags
+        const val FT_DISCARD = "discard"
+
+        // the fragment initialization parameters
+        private const val ARG_TALE_ID = "tale-id"
+
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment for editing the tale with the given [taleId]. Empty means a new tale.
+         */
+        @JvmStatic
+        fun newInstance(taleId: String) =
+            EditTaleDialogFragment().apply {
+                arguments = Bundle().apply { putString(ARG_TALE_ID, taleId) }
+            }
+    }
+
+    /************/
+    /** Fields **/
+    /************/
+
+    // Base fields
+    override val layoutId = R.layout.fragment_edit_tale_dialog
+    override lateinit var binding: FragmentEditTaleDialogBinding
+    override lateinit var viewModel: EditTaleViewModel
+    override val progressBar: ProgressBar? = null
 
     private var taleId: String? = null
+
+    // Activity result launchers
+    private val pickImage =
+        registerForActivityResult(ActivityResultContracts.GetContent()) {
+            if (it != null) onImagePicked(it)
+        }
 
     /***********************/
     /** Lifecycle methods **/
@@ -43,10 +75,6 @@ class EditTaleDialogFragment : DialogFragment(),
         super.onCreate(savedInstanceState)
         // Get the arguments
         arguments?.let { taleId = it.getString(ARG_TALE_ID) }
-
-        // Set style to be app theme (instead of default dialog theme) to make full-screen dialog
-        // (actually the important thing is: <item name="android:windowIsFloating">false</item>)
-        setStyle(STYLE_NORMAL, R.style.AppTheme)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -67,42 +95,14 @@ class EditTaleDialogFragment : DialogFragment(),
         val viewModelFactory = EditTaleModelFactory(taleId ?: "")
         viewModel =
             ViewModelProvider(this, viewModelFactory).get(EditTaleViewModel::class.java)
-
-        // Inflate view and obtain an instance of the binding class (like in BaseFragment)
-        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel
-
-        // Observe screen events
-        viewModel.events.observeEvents(viewLifecycleOwner, this)
+        observeEvents()
 
         // Set the action bar
         setActionBar(binding.toolbar)
 
         return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        // Set the enter & exit sliding animations
-        dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialog)
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        // Disable enter animation for this instance to avoid animation on back from image picker
-        dialog?.window?.setWindowAnimations(R.style.AppTheme_FullScreenDialog_NoEnterAnim)
-    }
-
-    override fun dismiss() {
-        // Hide on-screen soft keyboard (if shown) before dismissing the dialog.
-        (context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager)
-            .hideSoftInputFromWindow(view?.windowToken, 0)
-
-        // Dismiss dialog
-        super.dismiss()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -126,20 +126,12 @@ class EditTaleDialogFragment : DialogFragment(),
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            RC_PICK_IMAGE ->
-                if (resultCode == Activity.RESULT_OK) data?.data?.let { onImagePicked(it) }
-        }
-    }
-
     /********************************************/
     /** EventStateHolder.EventObserver methods **/
     /********************************************/
 
-    override fun handleEvent(event: EditTaleViewModel.EventType) {
+    override fun handleEvent(event: BaseViewModel.BaseEventType) {
+        super.handleEvent(event)
         when (event) {
             is EditTaleViewModel.EventType.ShowImagePicker -> showImagePicker()
         }
@@ -197,7 +189,7 @@ class EditTaleDialogFragment : DialogFragment(),
 
         // Else, ask user to confirm changes discard
         else {
-            AlertDialogFragment(
+            AlertDialog(
                 message = StringResource(
                     if (taleId.isNullOrEmpty()) R.string.edit_tale_discard_dialog_message_new
                     else R.string.edit_tale_discard_dialog_message_update
@@ -211,11 +203,7 @@ class EditTaleDialogFragment : DialogFragment(),
     /**
      * Show the image picker.
      */
-    private fun showImagePicker() =
-        startActivityForResult(
-            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI),
-            RC_PICK_IMAGE
-        )
+    private fun showImagePicker() = pickImage.launch("image/*")
 
     /**
      * Compress image from [uri] and set as user photo.
@@ -231,29 +219,4 @@ class EditTaleDialogFragment : DialogFragment(),
         }
     }
 
-    /**********************/
-    /** Companion object **/
-    /**********************/
-
-    companion object {
-
-        // Request codes
-        const val RC_PICK_IMAGE = 1
-
-        // Fragment tags
-        const val FT_DISCARD = "discard"
-
-        // the fragment initialization parameters
-        private const val ARG_TALE_ID = "tale-id"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment for editing the tale with the given [taleId]. Empty means a new tale.
-         */
-        @JvmStatic
-        fun newInstance(taleId: String) =
-            EditTaleDialogFragment().apply {
-                arguments = Bundle().apply { putString(ARG_TALE_ID, taleId) }
-            }
-    }
 }

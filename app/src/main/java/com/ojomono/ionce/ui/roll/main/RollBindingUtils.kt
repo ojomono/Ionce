@@ -1,4 +1,4 @@
-package com.ojomono.ionce.ui.roll
+package com.ojomono.ionce.ui.roll.main
 
 import android.net.Uri
 import android.text.TextUtils

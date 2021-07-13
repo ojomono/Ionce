@@ -12,7 +12,7 @@ import com.ojomono.ionce.utils.StringResource
  * A [DialogFragment] that prepares an AlertDialog.Builder for building a basic dialog with optional
  * [title], [message] and [onNegative] button action.
  */
-abstract class BaseDialogFragment(
+abstract class BaseDialog(
     private val title: StringResource = StringResource.EMPTY,
     private val message: StringResource = StringResource.EMPTY,
     private val onNegative: (() -> Unit)? = null

@@ -1,4 +1,4 @@
-package com.ojomono.ionce.ui.roll
+package com.ojomono.ionce.ui.roll.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,14 +19,33 @@ class RollViewModel : BaseViewModel() {
     // Observe tales list in case the rolled tale cover finished upload, and refresh screen
     private val listObserver =
         Observer<MutableList<TaleItemModel>> { list ->
-            val updated = list.find { it.id == rolled.value?.id }
-            if (rolled.value != updated) _rolled.value = updated
+            list.find { it.id == rolled.value?.id }
+                ?.let { if (rolled.value != it) _rolled.value = it }
         }.also { tales.observeForever(it) }
+
+    // Types of supported events
+    sealed class EventType : BaseEventType() {
+        class ShowRollGroupDialog(val groupId: String) : EventType()
+    }
+
+    /***********************/
+    /** Lifecycle methods **/
+    /***********************/
 
     override fun onCleared() {
         super.onCleared()
         tales.removeObserver(listObserver)
     }
+
+    /************************/
+    /** post event methods **/
+    /************************/
+
+    fun onGroup() = postEvent(EventType.ShowRollGroupDialog(""))
+
+    /*******************/
+    /** logic methods **/
+    /*******************/
 
     /**
      * Show a random tale title from the user's tales.

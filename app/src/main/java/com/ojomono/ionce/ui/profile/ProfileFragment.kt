@@ -21,8 +21,8 @@ import com.google.firebase.FirebaseException    // TODO avoid importing firebase
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
-import com.ojomono.ionce.ui.dialogs.InputDialogFragment
-import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
+import com.ojomono.ionce.ui.dialogs.InputDialog
+import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.*
 import java.io.*
 import java.util.concurrent.TimeUnit
@@ -40,9 +40,9 @@ class ProfileFragment : BaseFragment() {
     override lateinit var progressBar: ProgressBar
 
     // Activity result launchers
-    private val getContent =
+    private val pickImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) {
-            onImagePicked(it)
+            if (it != null) onImagePicked(it)
         }
 
     // TODO use ActivityResultContracts.StartIntentSenderForResult() instead
@@ -155,7 +155,7 @@ class ProfileFragment : BaseFragment() {
     /**
      * Show the image picker.
      */
-    private fun showImagePicker() = getContent.launch("image/*")
+    private fun showImagePicker() = pickImage.launch("image/*")
 
     /**
      * Compress image from [uri] and set as user photo.
@@ -176,7 +176,7 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for updating the current user's name.
      */
     private fun showNameEditDialog() =
-        InputDialogFragment(
+        InputDialog(
             title = StringResource(R.string.profile_name_edit_dialog_title),
             onPositive = viewModel::updateUserName,
             defaultInputText = StringResource(viewModel.user.value?.displayName ?: "")
@@ -186,7 +186,7 @@ class ProfileFragment : BaseFragment() {
      * Present the user an interface that prompts them to type their email address.
      */
     private fun showEmailAddressDialog() =
-        InputDialogFragment(
+        InputDialog(
             title = StringResource(R.string.profile_email_link_dialog_title),
             onPositive = viewModel::sendSignInLinkToEmail,
             okButtonText = StringResource(R.string.profile_email_link_dialog_button),
@@ -197,7 +197,7 @@ class ProfileFragment : BaseFragment() {
      * Present the user an interface that prompts them to type their phone number.
      */
     private fun showPhoneVerifyDialog() =
-        InputDialogFragment(
+        InputDialog(
             title = StringResource(R.string.profile_phone_verify_dialog_title),
             message = StringResource(R.string.profile_phone_verify_dialog_message),
             onPositive = ::verifyPhoneNumber,
@@ -256,7 +256,7 @@ class ProfileFragment : BaseFragment() {
 
                 // If verified automatically, no need for the manual dialog
                 (parentFragmentManager.findFragmentByTag(FT_PHONE_CODE) as
-                        InputDialogFragment<*>).dismiss()
+                        InputDialog<*>).dismiss()
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -292,7 +292,7 @@ class ProfileFragment : BaseFragment() {
      * message.
      */
     private fun showVerificationCodeDialog() =
-        InputDialogFragment(
+        InputDialog(
             title = StringResource(R.string.profile_phone_verify_dialog_title),
             message = StringResource(
                 getString(
@@ -338,7 +338,7 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for verifying decision to unlink given [providerNameResId].
      */
     private fun showUnlinkProviderDialog(providerNameResId: Int) =
-        AlertDialogFragment(
+        AlertDialog(
             message = StringResource(
                 getString(
                     R.string.profile_unlink_provider_dialog_message,

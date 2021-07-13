@@ -46,10 +46,10 @@
             android:layout_gravity="bottom|end"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_margin="@dimen/tales_fab_layout_margin"
+            android:layout_margin="@dimen/fab_layout_margin"
             android:onClick="@{() -> viewModel.onAdd()}"
             android:contentDescription="@string/tales_add_fab_content_description"
-            app:elevation="@dimen/tales_fab_elevation" />
+            app:elevation="@dimen/fab_elevation" />
 
         <ProgressBar
             android:id="@+id/progress_bar"

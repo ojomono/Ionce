@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.ojomono.ionce.ui.roll.RollViewModel" />
+            type="com.ojomono.ionce.ui.roll.main.RollViewModel" />
     </data>
 
     <RelativeLayout
@@ -32,7 +32,7 @@
             android:orientation="vertical"
             android:gravity="center_horizontal"
             app:rollScreenVisibility="@{viewModel.tales}"
-            tools:context=".ui.roll.RollFragment"
+            tools:context=".ui.roll.main.RollFragment"
             tools:visibility="visible">
 
             <TextView
@@ -109,6 +109,19 @@
                 tools:text="ROLL!" />
 
         </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_roll_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_group_24"
+            android:layout_gravity="bottom|end"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/fab_layout_margin"
+            android:onClick="@{() -> viewModel.onGroup()}"
+            android:contentDescription="@string/roll_group_fab_content_description"
+            app:elevation="@dimen/fab_elevation" />
 
     </RelativeLayout>
 </layout>

@@ -6,13 +6,13 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 
-// TODO maybe find a way to combine with BaseDialogFragment class to an interface
+// TODO maybe find a way to combine with BaseFragment class to an interface
 /**
- * A [Fragment] that can observe the [BaseViewModel] events.
+ * A full-screen [DialogFragment] that can observe the [BaseViewModel] events.
  */
-abstract class BaseFragment : Fragment(),
+abstract class BaseDialogFragment : FullScreenDialogFragment(),
     EventStateHolder.EventObserver<BaseViewModel.BaseEventType> {
 
     /************/

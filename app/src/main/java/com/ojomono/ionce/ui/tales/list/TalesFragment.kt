@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
-import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
+import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.ui.tales.edit.EditTaleDialogFragment
 import com.ojomono.ionce.utils.*
 
@@ -126,7 +126,7 @@ class TalesFragment : BaseFragment() {
      * Show dialog for deleting the tale with title [taleTitle].
      */
     private fun showDeleteTaleDialog(taleTitle: String) =
-        AlertDialogFragment(
+        AlertDialog(
             message = StringResource(getString(R.string.tales_delete_dialog_message, taleTitle)),
             onNegative = viewModel::clearClickedTale,
             onPositive = viewModel::deleteTale,

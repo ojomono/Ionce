@@ -7,9 +7,9 @@
     <!-- Splash screen dimens -->
     <dimen name="splash_logo_item_bottom_offset">240dp</dimen>
 
-    <!-- Tales screen dimens -->
-    <dimen name="tales_fab_elevation">6dp</dimen>
-    <dimen name="tales_fab_layout_margin">20dp</dimen>
+    <!-- Floating action buttons dimens -->
+    <dimen name="fab_elevation">6dp</dimen>
+    <dimen name="fab_layout_margin">20dp</dimen>
 
     <!-- Roll screen dimens -->
     <dimen name="roll_button_bg_stroke_width">5dp</dimen>

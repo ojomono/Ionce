@@ -12,7 +12,7 @@ import com.google.android.gms.auth.api.credentials.Credentials
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.ui.profile.ProfileFragment
-import com.ojomono.ionce.ui.roll.RollFragment
+import com.ojomono.ionce.ui.roll.main.RollFragment
 import com.ojomono.ionce.ui.tales.list.TalesFragment
 import com.ojomono.ionce.ui.tales.list.TalesFragment.Companion.DEFAULT_COLUMN_COUNT
 
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
      * Update [viewPager] of any navigation via the bottom navigation view.
      */
     private fun BottomNavigationView.notifyViewPager(viewPager: ViewPager2) =
-        setOnNavigationItemSelectedListener {
+        setOnItemSelectedListener {
             val page = when (it.itemId) {
                 R.id.navigation_roll -> 0
                 R.id.navigation_tales -> 1
