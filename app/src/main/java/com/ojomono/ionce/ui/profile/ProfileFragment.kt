@@ -1,7 +1,6 @@
 package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,9 +10,7 @@ import android.view.*
 import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -44,19 +41,10 @@ class ProfileFragment : BaseFragment() {
         registerForActivityResult(ActivityResultContracts.GetContent()) {
             if (it != null) onImagePicked(it)
         }
-
-    // TODO use ActivityResultContracts.StartIntentSenderForResult() instead
     private val linkWithGoogle =
-        registerForActivityResult(
-            object : ActivityResultContract<Void?, Intent>() {
-
-                override fun createIntent(context: Context, input: Void?) =
-                    viewModel.googleSignInClient.signInIntent
-
-                override fun parseResult(resultCode: Int, result: Intent?) =
-                    if (resultCode != Activity.RESULT_OK) null else result
-            }
-        ) { viewModel.handleGoogleResult(it) }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) viewModel.handleGoogleResult(it.data)
+        }
 
     /***********************/
     /** Lifecycle methods **/
@@ -332,7 +320,8 @@ class ProfileFragment : BaseFragment() {
     /**
      * Show activity for linking with Google.
      */
-    private fun showLinkWithGoogle() = linkWithGoogle.launch()
+    private fun showLinkWithGoogle() =
+        linkWithGoogle.launch(viewModel.googleSignInClient.signInIntent)
 
     /**
      * Show dialog for verifying decision to unlink given [providerNameResId].
