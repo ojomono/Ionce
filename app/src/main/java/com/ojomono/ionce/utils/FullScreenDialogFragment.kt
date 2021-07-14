@@ -2,8 +2,12 @@ package com.ojomono.ionce.utils
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import com.ojomono.ionce.R
 
@@ -40,6 +44,38 @@ abstract class FullScreenDialogFragment : DialogFragment() {
 
         // Dismiss dialog
         super.dismiss()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                // handle close button click here
+                dismiss()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    /**
+     * Set the action bar with the given [toolbar].
+     */
+    protected open fun setActionBar(
+        toolbar: Toolbar,
+        title: StringResource = StringResource.EMPTY
+    ) {
+        // If a title was sent, set it as toolbar title
+        if (title != StringResource.EMPTY) toolbar.title = context?.let { title.inContext(it) }
+
+        (activity as AppCompatActivity?)?.setSupportActionBar(toolbar)
+
+        val actionBar: ActionBar? = (activity as AppCompatActivity?)?.supportActionBar
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar.setHomeButtonEnabled(true)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_close_24)
+        }
+        setHasOptionsMenu(true)
     }
 
 }

@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentRollGroupDialogBinding
 import com.ojomono.ionce.utils.BaseDialogFragment
+import com.ojomono.ionce.utils.StringResource
 
 /**
  * A [DialogFragment] representing the management screen for a roll group.
@@ -52,7 +54,18 @@ class RollGroupDialogFragment : BaseDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(layoutId, container, false)
+    ): View {
+        // Init the viewModel using it's factory. If no taleId is found, use empty.
+        val viewModelFactory = RollGroupModelFactory("")
+        viewModel =
+            ViewModelProvider(this, viewModelFactory).get(RollGroupViewModel::class.java)
+        binding = getDataBinding(inflater, container)
+        binding.viewModel = viewModel
+        observeEvents()
+
+        // Set the action bar
+        setActionBar(binding.toolbar, StringResource(R.string.group_roll_screen_title))
+
+        return binding.root
     }
 }

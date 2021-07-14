@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
@@ -146,21 +144,14 @@ class EditTaleDialogFragment : BaseDialogFragment() {
      */
     private fun setActionBar(toolbar: Toolbar) {
         // Set different title for new or updated tale
-        toolbar.title =
-            getString(
+        val title =
+            StringResource(
                 if (taleId.isNullOrEmpty()) R.string.edit_tale_screen_title_new
                 else R.string.edit_tale_screen_title_update
             )
 
-        (activity as AppCompatActivity?)?.setSupportActionBar(toolbar)
-
-        val actionBar: ActionBar? = (activity as AppCompatActivity?)?.supportActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setHomeButtonEnabled(true)
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_close_24)
-        }
-        setHasOptionsMenu(true)
+        // Call super method
+        super.setActionBar(toolbar, title)
     }
 
     /**

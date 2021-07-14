@@ -76,6 +76,12 @@
     <string name="edit_tale_media_icon_content_description">Add image</string>
     <string name="edit_tale_clear_button_text">Clear</string>
 
+    <!-- Group roll screen -->
+    <string name="group_roll_screen_title">Group Roll Management</string>
+    <string name="group_roll_no_group_text">You are not in a group currently.</string>
+    <string name="group_roll_join_button_text">Join a group</string>
+    <string name="group_roll_create_button_text">Create a new group</string>
+
     <!-- Dialogs -->
     <string name="dialog_save">Save</string>
     <string name="dialog_cancel">Cancel</string>
