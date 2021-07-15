@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Tasks
-import com.ojomono.ionce.firebase.Database
+import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.utils.BaseViewModel
@@ -55,7 +55,7 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
 
         // If there were changes in the tale model, save it to database
         // Notice media is not yet saved - this initial save is to refresh the tales list fast
-        else Database.setTale(taleModel).continueWithTask { modelTask ->
+        else TaleRepository.setTale(taleModel).continueWithTask { modelTask ->
 
             // If initial save failed - return an the failed task
             if (!modelTask.isSuccessful) modelTask
@@ -102,8 +102,8 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
 
         // Els it is an existing tale
         else {
-            // Get the tale from Database
-            Database.getTale(taleId)
+            // Get the tale from TaleRepository
+            TaleRepository.getTale(taleId)
                 .addOnSuccessListener { documentSnapshot ->
                     documentSnapshot.toObject(TaleModel::class.java)?.let { fillFields(it) }
                 }
@@ -151,7 +151,7 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
             Storage.getActiveTaleTasks(taleId).forEach { it.cancel() }
 
             // Get the up-to-date tale document before starting any changes
-            Database.getTale(taleId).continueIfSuccessful { getTask ->
+            TaleRepository.getTale(taleId).continueIfSuccessful { getTask ->
 
                 val taleMedia = getTask.result?.toObject(TaleModel::class.java)?.media
 
@@ -180,8 +180,8 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
         Storage.uploadTaleMedia(taleId, cover).continueIfSuccessful { uploadTask ->
             uploadTask.result?.let { uploadedUri ->
 
-                // Update cover url in Database
-                Database.updateTaleCover(taleId, uploadedUri.toString())
+                // Update cover url in TaleRepository
+                TaleRepository.updateTaleCover(taleId, uploadedUri.toString())
 
                     // If update fails - try to revert upload
                     .addFallbackTask { Storage.deleteFile(uploadedUri.toString()) }
@@ -194,8 +194,8 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
         Storage.uploadTaleMedia(taleId, new).continueIfSuccessful { uploadTask ->
             uploadTask.result?.toString()?.let { uploadedUri ->
 
-                // Update cover url in Database
-                Database.updateTaleCover(taleId, uploadedUri)
+                // Update cover url in TaleRepository
+                TaleRepository.updateTaleCover(taleId, uploadedUri)
 
                     // If update fails - try to revert upload
                     .addFallbackTask { Storage.deleteFile(uploadedUri) }
@@ -206,7 +206,7 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
 
                             // If delete fails - try to put both in media list
                             .addFallbackTask {
-                                Database.updateTaleMedia(taleId, listOf(uploadedUri, old))
+                                TaleRepository.updateTaleMedia(taleId, listOf(uploadedUri, old))
                             }
                     }
             }
@@ -217,8 +217,8 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
         // Delete old cover from storage
         Storage.deleteFile(cover).continueIfSuccessful {
 
-            // Update cover url in Database
-            Database.updateTaleCover(taleId, null)
+            // Update cover url in TaleRepository
+            TaleRepository.updateTaleCover(taleId, null)
 
         }
 }

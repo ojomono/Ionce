@@ -8,16 +8,16 @@ import android.widget.ProgressBar
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
-import com.ojomono.ionce.databinding.FragmentRollGroupDialogBinding
+import com.ojomono.ionce.databinding.FragmentGroupRollDialogBinding
 import com.ojomono.ionce.utils.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
 
 /**
  * A [DialogFragment] representing the management screen for a roll group.
- * Use the [RollGroupDialogFragment.newInstance] factory method to
+ * Use the [GroupRollDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class RollGroupDialogFragment : BaseDialogFragment() {
+class GroupRollDialogFragment : BaseDialogFragment() {
 
     /**********************/
     /** Companion object **/
@@ -33,7 +33,7 @@ class RollGroupDialogFragment : BaseDialogFragment() {
          * this fragment for managing the group with the given [groupId]. Empty means a no group.
          */
         fun newInstance(groupId: String) =
-            RollGroupDialogFragment().apply {
+            GroupRollDialogFragment().apply {
                 arguments = Bundle().apply { putString(ARG_GROUP_ID, groupId) }
             }
     }
@@ -42,9 +42,9 @@ class RollGroupDialogFragment : BaseDialogFragment() {
     /** Fields **/
     /************/
 
-    override val layoutId = R.layout.fragment_roll_group_dialog
-    override lateinit var binding: FragmentRollGroupDialogBinding
-    override lateinit var viewModel: RollGroupViewModel
+    override val layoutId = R.layout.fragment_group_roll_dialog
+    override lateinit var binding: FragmentGroupRollDialogBinding
+    override lateinit var viewModel: GroupRollViewModel
     override val progressBar: ProgressBar? = null
 
     /***********************/
@@ -56,9 +56,7 @@ class RollGroupDialogFragment : BaseDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         // Init the viewModel using it's factory. If no taleId is found, use empty.
-        val viewModelFactory = RollGroupModelFactory("")
-        viewModel =
-            ViewModelProvider(this, viewModelFactory).get(RollGroupViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(GroupRollViewModel::class.java)
         binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel
         observeEvents()

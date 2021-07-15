@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.ojomono.ionce.R
-import com.ojomono.ionce.firebase.Database
+import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.BaseViewModel
 
 class RollViewModel : BaseViewModel() {
     // The user's tales list    // TODO: Use a Repository class
-    val tales: LiveData<MutableList<TaleItemModel>> = Database.userTales
+    val tales: LiveData<MutableList<TaleItemModel>> = TaleRepository.userTales
 
     // The rolled tale's title
     private val _rolled = MutableLiveData<TaleItemModel>()

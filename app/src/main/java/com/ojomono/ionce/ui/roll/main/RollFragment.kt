@@ -8,7 +8,7 @@ import android.widget.ProgressBar
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentRollBinding
-import com.ojomono.ionce.ui.roll.group.RollGroupDialogFragment
+import com.ojomono.ionce.ui.roll.group.GroupRollDialogFragment
 import com.ojomono.ionce.utils.BaseFragment
 import com.ojomono.ionce.utils.BaseViewModel
 import com.ojomono.ionce.utils.TAG
@@ -60,6 +60,6 @@ class RollFragment : BaseFragment() {
      * Show dialog for managing the roll group with id [groupId].
      */
     private fun showRollGroupDialog(groupId: String) =
-        RollGroupDialogFragment.newInstance(groupId).let { it.show(parentFragmentManager, it.TAG) }
+        GroupRollDialogFragment.newInstance(groupId).let { it.show(parentFragmentManager, it.TAG) }
 
 }

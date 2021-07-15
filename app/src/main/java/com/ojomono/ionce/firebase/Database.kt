@@ -1,7 +1,7 @@
 package com.ojomono.ionce.firebase
 
-// TODO: Avoid Android imports and move to separated module when needed for more UI platforms
 import android.util.Log
+import androidx.annotation.NonNull
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
@@ -9,11 +9,8 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.models.UserModel
-import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.TAG
-
 
 /**
  * Handles all interactions with Firebase database.
@@ -26,103 +23,39 @@ object Database {
 
     // Collection Paths
     private const val CP_USERS = "users"
-    private const val CP_TALES = "tales"
 
     /************/
     /** Fields **/
     /************/
 
+    // The Firestore instance
+    private val firestore: FirebaseFirestore get() = Firebase.firestore
+
     // Always keep current user's document loaded
-    private var userDocRef: DocumentReference? = null
+    var userDocRef: DocumentReference? = null
     private var userDocument: DocumentSnapshot? = null
     private var userRegistration: ListenerRegistration? = null
+
+    // TODO replace liveData with callbackFlow / StateFlow when they become non-experimental
+    //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
+
+    // Current user data
+    private val _userData = MutableLiveData<UserModel>()
+    val userData: LiveData<UserModel> = _userData
 
     init {
         Authentication.currentUser.observeForever { switchUserDocument(it?.uid) }
     }
 
-    // TODO replace liveData with callbackFlow / StateFlow when they become non-experimental
-    //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
-
-    // Current user's tales list
-    private val _userTales = MutableLiveData<MutableList<TaleItemModel>>()
-    val userTales: LiveData<MutableList<TaleItemModel>> = _userTales
-
     /********************/
     /** public methods **/
     /********************/
 
-    /**
-     * Get the tale document with id=[id].
-     */
-    fun getTale(id: String): Task<DocumentSnapshot> =
-        userDocRef?.collection(CP_TALES)?.document(id)?.get()
-            ?.addOnSuccessListener { document ->
-                if (document != null) Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-                else Log.d(TAG, "No such document")
-            }?.addOnFailureListener { exception -> Log.d(TAG, "get failed with ", exception) }
-            ?: throw Utils.NoSignedInUserException
-
-    /**
-     * Save [tale] to database, overwriting existing document of creating new. Return a [Task]
-     * holding the success state and the new tale's document reference.
-     */
-    fun setTale(tale: TaleModel) = userDocRef?.let { userRef ->
-
-        // Get reference for wanted tale - if does not exist create new reference
-        val talesCol = userRef.collection(CP_TALES)
-        val taleRef = if (tale.id.isEmpty()) talesCol.document() else talesCol.document(tale.id)
-
-        // Set the tale item in the tales list (add or overwrite)
-        val tales = getUpdatedTalesList(taleRef.id) {
-            val taleItem = TaleItemModel(tale, taleRef.id)
-            if (it == -1) add(taleItem) else this[it] = taleItem
-        }
-
-        // Set the tale's document and update the user's tale list
-        runTaleBatch(taleRef.id, tales) { set(taleRef, tale) }
-
-    } ?: throw Utils.NoSignedInUserException
-
-    /**
-     * Delete the tale document with id=[id].
-     */
-    fun deleteTale(id: String): Task<DocumentReference> {
-
-        // Remove the tale from the tales list
-        val tales = getUpdatedTalesList(id) { if (it != -1) removeAt(it) }
-
-        // Delete the tale document and update the user's tale list
-        return runTaleBatch(id, tales) { delete(it) }
-    }
-
-    /**
-     * Update the tale document with id=[id] to have the given [media] list.
-     */
-    fun updateTaleMedia(id: String, media: List<String>): Task<DocumentReference> {
-
-        // Update media for tale in the tales list
-        val tales =
-            getUpdatedTalesList(id) { set(it, get(it).copy(cover = media.firstOrNull() ?: "")) }
-
-        // Update the tale's media list and the user's tale list
-        return runTaleBatch(id, tales) { update(it, TaleModel::media.name, media) }
-    }
-
-    /**
-     * Update the tale document with id=[id] to have the given [coverUri].
-     */
-    fun updateTaleCover(id: String, coverUri: String?) =
-        updateTaleMedia(id, coverUri?.let { listOf(it) } ?: emptyList())
-
-    // For drag n' drop feature
-//    /**
-//     * Update the current users tales list so it holds the current tales order.
-//     */
-//    fun saveTalesOrder() =
-//        userDocRef?.update(FN_TALES, userTales.value)
-//            ?.addOnSuccessListener { Log.d(TAG, "userDocRef successfully updated!") }
-//            ?.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+    fun collection(collectionPath: String) = firestore.collection(collectionPath)
+    fun runBatch(batchFunction: WriteBatch.Function) =
+        firestore.runBatch(batchFunction)
+            .addOnSuccessListener { Log.d(TAG, "Batch write success!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
 
     /*********************/
     /** private methods **/
@@ -149,7 +82,7 @@ object Database {
             userRegistration?.remove()
 
             // Get the current user's document reference
-            userDocRef = Firebase.firestore.collection(CP_USERS).document(id)
+            userDocRef = firestore.collection(CP_USERS).document(id)
 
             // Save the document locally
             task = userDocRef?.get()
@@ -167,45 +100,11 @@ object Database {
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else {
                     userDocument = snapshot
-                    _userTales.value = snapshot?.toObject(UserModel::class.java)?.tales
+                    _userData.value = snapshot?.toObject(UserModel::class.java)
                 }
             }
         }
 
         return task
     }
-
-    /**
-     * Get the current user's tales list after the given [update] was made on the item with [id].
-     */
-    private fun getUpdatedTalesList(id: String, update: MutableList<TaleItemModel>.(Int) -> Unit) =
-        userTales.value?.apply { update(indexOfFirst { item -> item.id == id }) }
-            ?: throw Utils.NoSignedInUserException
-
-    /**
-     * In a batch write, run the given [action] on the document with [id] and update the current
-     * user's tale list to [tales] if given.
-     */
-    private fun runTaleBatch(
-        id: String,
-        tales: List<TaleItemModel>?,
-        action: WriteBatch.(DocumentReference) -> WriteBatch
-    ) = userDocRef?.let { userRef ->
-
-        // Create reference for wanted tale to use inside batch
-        val taleRef = userRef.collection(CP_TALES).document(id)
-
-        // In a batch write: update user's tale list, and run given action on the tale ref
-        Firebase.firestore.runBatch {
-            if (tales != null) it.update(userRef, UserModel::tales.name, tales)
-            it.action(taleRef)
-        }
-            .addOnSuccessListener { Log.d(TAG, "Batch write success!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Batch write failure.", e) }
-
-            // Return a task holding the success state and the tale's document reference
-            .continueWithTask { task ->
-                if (task.isSuccessful) Tasks.forResult(taleRef) else Tasks.forCanceled()
-            }
-    } ?: throw Utils.NoSignedInUserException
 }
