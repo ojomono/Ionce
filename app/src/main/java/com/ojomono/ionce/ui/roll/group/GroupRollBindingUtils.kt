@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.models.GroupModel
-import com.ojomono.ionce.utils.ImageUtils
+import com.ojomono.ionce.utils.images.QRCodeGenerator
 
 
 @BindingAdapter("group", "forExisting")
@@ -18,10 +18,10 @@ fun LinearLayout.setGroupRollScreenVisibility(group: GroupModel?, forExisting: B
 @BindingAdapter("groupQRCodeBitmap")
 fun ImageView.setGroupQRCodeBitmap(group: GroupModel?) {
     val imageBitmap =
-        if (group != null) ImageUtils.generateQRCode(group.id)
+        if (group != null) QRCodeGenerator.generateQRCode(group.id)
         else Bitmap.createBitmap(
-            ImageUtils.QRCODE_SIZE,
-            ImageUtils.QRCODE_SIZE,
+            QRCodeGenerator.QRCODE_SIZE,
+            QRCodeGenerator.QRCODE_SIZE,
             Bitmap.Config.ARGB_8888
         )
 

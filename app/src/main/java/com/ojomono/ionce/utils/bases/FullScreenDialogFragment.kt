@@ -1,4 +1,4 @@
-package com.ojomono.ionce.utils
+package com.ojomono.ionce.utils.bases
 
 import android.app.Activity
 import android.os.Bundle
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import com.ojomono.ionce.R
+import com.ojomono.ionce.utils.StringResource
 
 /**
  * A full-screen [DialogFragment].

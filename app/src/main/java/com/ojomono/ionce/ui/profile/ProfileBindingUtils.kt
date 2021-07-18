@@ -5,7 +5,7 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.google.firebase.auth.UserInfo        // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
-import com.ojomono.ionce.utils.ImageUtils.load
+import com.ojomono.ionce.utils.images.ImageLoader.load
 
 @BindingAdapter("userPhotoSrc")
 fun ImageView.setUserPhotoSrc(uri: Uri?) {

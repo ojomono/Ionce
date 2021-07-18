@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentGroupRollDialogBinding
-import com.ojomono.ionce.utils.BaseDialogFragment
+import com.ojomono.ionce.utils.bases.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
 
 /**

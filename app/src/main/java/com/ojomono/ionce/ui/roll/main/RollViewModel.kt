@@ -6,7 +6,7 @@ import androidx.lifecycle.Observer
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.models.TaleItemModel
-import com.ojomono.ionce.utils.BaseViewModel
+import com.ojomono.ionce.utils.bases.BaseViewModel
 
 class RollViewModel : BaseViewModel() {
     // The user's tales list    // TODO: Use a Repository class

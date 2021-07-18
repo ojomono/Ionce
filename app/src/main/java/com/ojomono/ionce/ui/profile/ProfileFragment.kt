@@ -21,6 +21,10 @@ import com.ojomono.ionce.databinding.FragmentProfileBinding
 import com.ojomono.ionce.ui.dialogs.InputDialog
 import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.*
+import com.ojomono.ionce.utils.bases.BaseFragment
+import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.utils.images.ImageCompressor
+import com.ojomono.ionce.utils.images.ImageLoader
 import java.io.*
 import java.util.concurrent.TimeUnit
 
@@ -151,10 +155,10 @@ class ProfileFragment : BaseFragment() {
     private fun onImagePicked(uri: Uri) {
 
         // Put a progress bar in the image view
-//        ImageUtils.load(context, ImageUtils.UPLOADING_IN_PROGRESS, binding.imageProfilePicture)
+//        ImageLoader.load(context, ImageLoader.UPLOADING_IN_PROGRESS, binding.imageProfilePicture)
 
         // Compress image and set it as user photo
-        ImageUtils.compress(context, uri) {
+        ImageCompressor.compress(context, uri) {
             // TODO run in background when refactoring to full use of coroutines
             activity?.runOnUiThread { viewModel.updateUserPicture(it) }
         }

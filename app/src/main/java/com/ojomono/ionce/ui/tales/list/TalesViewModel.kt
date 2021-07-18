@@ -6,7 +6,7 @@ import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.firebase.Utils
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.models.TaleModel
-import com.ojomono.ionce.utils.BaseViewModel
+import com.ojomono.ionce.utils.bases.BaseViewModel
 import com.ojomono.ionce.utils.continueIfSuccessful
 
 class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {

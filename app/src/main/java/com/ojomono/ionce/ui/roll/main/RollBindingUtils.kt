@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.models.TaleItemModel
-import com.ojomono.ionce.utils.ImageUtils
+import com.ojomono.ionce.utils.images.ImageLoader
 
 const val TITLE_LINES_FOR_TALE_WITH_COVER = 2
 
@@ -48,7 +48,7 @@ fun TextView.setTitleTextLinesAndEllipsize(coverUri: String?) {
 fun ImageView.setCoverSrcAndVisibility(coverUri: String?) {
     visibility = if (coverUri.isNullOrEmpty()) View.GONE
     else {
-        ImageUtils.load(context, Uri.parse(coverUri), this)
+        ImageLoader.load(context, Uri.parse(coverUri), this)
         View.VISIBLE
     }
 }

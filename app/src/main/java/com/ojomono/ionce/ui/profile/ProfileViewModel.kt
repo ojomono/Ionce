@@ -25,7 +25,7 @@ import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
 import com.ojomono.ionce.firebase.Storage
-import com.ojomono.ionce.utils.BaseViewModel
+import com.ojomono.ionce.utils.bases.BaseViewModel
 import com.ojomono.ionce.utils.TAG
 
 class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {

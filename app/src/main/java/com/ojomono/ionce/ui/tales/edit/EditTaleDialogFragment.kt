@@ -12,10 +12,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialog
-import com.ojomono.ionce.utils.BaseDialogFragment
-import com.ojomono.ionce.utils.BaseViewModel
-import com.ojomono.ionce.utils.ImageUtils
+import com.ojomono.ionce.utils.bases.BaseDialogFragment
+import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.utils.images.ImageLoader
 import com.ojomono.ionce.utils.StringResource
+import com.ojomono.ionce.utils.images.ImageCompressor
 
 /**
  * A [DialogFragment] representing the edit screen for a tale.
@@ -202,10 +203,10 @@ class EditTaleDialogFragment : BaseDialogFragment() {
     private fun onImagePicked(uri: Uri) {
 
         // Put a progress bar in the image view
-//        ImageUtils.load(context, ImageUtils.UPLOADING_IN_PROGRESS, binding.imageCover)
+//        ImageLoader.load(context, ImageLoader.UPLOADING_IN_PROGRESS, binding.imageCover)
 
         // Compress image and set it as user photo
-        ImageUtils.compress(context, uri) {
+        ImageCompressor.compress(context, uri) {
             activity?.runOnUiThread { viewModel.updateDisplayedCover(it) }
         }
     }

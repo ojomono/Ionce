@@ -1,4 +1,4 @@
-package com.ojomono.ionce.utils
+package com.ojomono.ionce.utils.bases
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,13 +6,15 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import com.ojomono.ionce.utils.EventStateHolder
+import com.ojomono.ionce.utils.withProgressBar
 
-// TODO maybe find a way to combine with BaseFragment class to an interface
+// TODO maybe find a way to combine with BaseDialogFragment class to an interface
 /**
- * A full-screen [DialogFragment] that can observe the [BaseViewModel] events.
+ * A [Fragment] that can observe the [BaseViewModel] events.
  */
-abstract class BaseDialogFragment : FullScreenDialogFragment(),
+abstract class BaseFragment : Fragment(),
     EventStateHolder.EventObserver<BaseViewModel.BaseEventType> {
 
     /************/

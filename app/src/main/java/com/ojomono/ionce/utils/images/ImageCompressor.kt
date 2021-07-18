@@ -1,23 +1,11 @@
-package com.ojomono.ionce.utils
+package com.ojomono.ionce.utils.images
 
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
-import android.widget.ImageView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.Transformation
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.android.material.color.MaterialColors
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.EncodeHintType
-import com.google.zxing.qrcode.QRCodeWriter
-import com.ojomono.ionce.R
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
@@ -25,77 +13,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.io.*
-
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 /**
- * Handles all interactions with image-related extensions.
+ * Handles all image compressing - wrapping Compressor.
  */
-object ImageUtils {
-
-    /*******************/
-    /** Glide wrapper **/
-    /*******************/
-
-    // Available loading customization fields
-    private var errorResId: Int = R.drawable.ic_baseline_broken_image_24
-    private var fallbackResId: Int = R.color.fui_transparent
-    private var transformation: Transformation<Bitmap>? = null
-
-    // Available loading customization
-    object Loader {
-        fun default() {
-            errorResId = R.drawable.ic_baseline_broken_image_24
-            fallbackResId = R.color.fui_transparent
-            transformation = null
-        }
-
-        fun error(resourceId: Int) = run { errorResId = resourceId }
-        fun fallback(resourceId: Int) = run { fallbackResId = resourceId }
-        fun circleCrop() = run { transformation = CircleCrop() }
-        fun roundedCorners(radius: Int) = run { transformation = RoundedCorners(radius) }
-    }
-
-    /**
-     * Load the given [uri] to the given [view]. Custom loading can be achieved using [loadPatch].
-     */
-    fun load(
-        context: Context?,
-        uri: Uri?,
-        view: ImageView,
-        loadPatch: Loader.() -> Unit = { default() }
-    ) {
-        Loader.apply(loadPatch)
-
-        val transformations: MutableList<Transformation<Bitmap>> = mutableListOf(CenterCrop())
-        transformation?.let { transformations.add(it) }
-
-        if (context != null) {
-            Glide.with(context)
-                .load(uri)
-                .transform(*transformations.toTypedArray())
-                .placeholder(getCircularProgressDrawable(view))
-                .fallback(fallbackResId)
-                .error(errorResId)
-                .into(view)
-        }
-    }
-
-//    fun load(
-//        context: Context?, uriString: String?, view: ImageView,
-//        loadPatch: Loader.() -> Unit = { default() }
-//    ) = load(context, Uri.parse(uriString), view, loadPatch)
-
-    private fun getCircularProgressDrawable(view: ImageView) =
-        androidx.swiperefreshlayout.widget.CircularProgressDrawable(view.context).apply {
-            setStyle(androidx.swiperefreshlayout.widget.CircularProgressDrawable.LARGE)
-            setColorSchemeColors(MaterialColors.getColor(view, R.attr.colorSecondary))
-            start()
-        }
-
-    /************************/
-    /** Compressor wrapper **/
-    /************************/
+object ImageCompressor {
 
     // Compression constants
     private const val COMPRESS_QUALITY = 80
@@ -181,35 +107,6 @@ object ImageUtils {
         var read: Int?
         while (input?.read(buffer).also { read = it } != -1) {
             read?.let { output.write(buffer, 0, it) }
-        }
-    }
-
-    /*******************/
-    /** zxing wrapper **/
-    /*******************/
-
-    // QRCode constants
-    const val QRCODE_SIZE = 512
-
-    /**
-     * Encode the given [contents], and return as QR-code bitmap.
-     */
-    fun generateQRCode(contents: String): Bitmap {
-
-        // Make the QR code buffer border narrower
-        val hints = hashMapOf<EncodeHintType, Int>().also { it[EncodeHintType.MARGIN] = 1 }
-
-        // Generate the QR code
-        val bits =
-            QRCodeWriter().encode(contents, BarcodeFormat.QR_CODE, QRCODE_SIZE, QRCODE_SIZE, hints)
-
-        // Return QR code as bitmap
-        return Bitmap.createBitmap(QRCODE_SIZE, QRCODE_SIZE, Bitmap.Config.RGB_565).also {
-            for (x in 0 until QRCODE_SIZE) {
-                for (y in 0 until QRCODE_SIZE) {
-                    it.setPixel(x, y, if (bits[x, y]) Color.BLACK else Color.WHITE)
-                }
-            }
         }
     }
 

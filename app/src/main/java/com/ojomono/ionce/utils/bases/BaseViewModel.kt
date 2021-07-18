@@ -1,7 +1,8 @@
-package com.ojomono.ionce.utils
+package com.ojomono.ionce.utils.bases
 
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
+import com.ojomono.ionce.utils.EventStateHolder
 import java.lang.Exception
 
 /**

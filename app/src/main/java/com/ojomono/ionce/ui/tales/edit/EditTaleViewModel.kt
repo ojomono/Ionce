@@ -7,7 +7,7 @@ import com.google.android.gms.tasks.Tasks
 import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.models.TaleModel
-import com.ojomono.ionce.utils.BaseViewModel
+import com.ojomono.ionce.utils.bases.BaseViewModel
 import com.ojomono.ionce.utils.addFallbackTask
 import com.ojomono.ionce.utils.continueIfSuccessful
 
