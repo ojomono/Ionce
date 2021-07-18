@@ -81,6 +81,9 @@
     <string name="group_roll_no_group_text">You are not in a group currently.</string>
     <string name="group_roll_join_button_text">Join a group</string>
     <string name="group_roll_create_button_text">Create a new group</string>
+    <string name="group_roll_qrcode_content_description">Join group QR code</string>
+    <string name="group_roll_qrcode_hint_text">People can join your group by scanning this QR-code!</string>
+    <string name="group_roll_leave_button_text">Leave current group</string>
 
     <!-- Dialogs -->
     <string name="dialog_save">Save</string>

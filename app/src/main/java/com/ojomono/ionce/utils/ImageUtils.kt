@@ -3,6 +3,7 @@ package com.ojomono.ionce.utils
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
@@ -13,6 +14,9 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.color.MaterialColors
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.qrcode.QRCodeWriter
 import com.ojomono.ionce.R
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
@@ -179,4 +183,34 @@ object ImageUtils {
             read?.let { output.write(buffer, 0, it) }
         }
     }
+
+    /*******************/
+    /** zxing wrapper **/
+    /*******************/
+
+    // QRCode constants
+    const val QRCODE_SIZE = 512
+
+    /**
+     * Encode the given [contents], and return as QR-code bitmap.
+     */
+    fun generateQRCode(contents: String): Bitmap {
+
+        // Make the QR code buffer border narrower
+        val hints = hashMapOf<EncodeHintType, Int>().also { it[EncodeHintType.MARGIN] = 1 }
+
+        // Generate the QR code
+        val bits =
+            QRCodeWriter().encode(contents, BarcodeFormat.QR_CODE, QRCODE_SIZE, QRCODE_SIZE, hints)
+
+        // Return QR code as bitmap
+        return Bitmap.createBitmap(QRCODE_SIZE, QRCODE_SIZE, Bitmap.Config.RGB_565).also {
+            for (x in 0 until QRCODE_SIZE) {
+                for (y in 0 until QRCODE_SIZE) {
+                    it.setPixel(x, y, if (bits[x, y]) Color.BLACK else Color.WHITE)
+                }
+            }
+        }
+    }
+
 }
