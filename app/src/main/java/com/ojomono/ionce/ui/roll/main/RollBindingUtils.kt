@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.models.TaleItemModel
-import com.ojomono.ionce.utils.images.ImageLoader
+import com.ojomono.ionce.utils.proxies.ImageLoader
 
 const val TITLE_LINES_FOR_TALE_WITH_COVER = 2
 

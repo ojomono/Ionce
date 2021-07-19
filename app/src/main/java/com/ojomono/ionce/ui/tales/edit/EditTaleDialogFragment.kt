@@ -14,9 +14,8 @@ import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.bases.BaseDialogFragment
 import com.ojomono.ionce.utils.bases.BaseViewModel
-import com.ojomono.ionce.utils.images.ImageLoader
 import com.ojomono.ionce.utils.StringResource
-import com.ojomono.ionce.utils.images.ImageCompressor
+import com.ojomono.ionce.utils.proxies.ImageCompressor
 
 /**
  * A [DialogFragment] representing the edit screen for a tale.

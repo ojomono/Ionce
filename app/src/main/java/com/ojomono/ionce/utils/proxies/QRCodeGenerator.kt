@@ -1,4 +1,4 @@
-package com.ojomono.ionce.utils.images
+package com.ojomono.ionce.utils.proxies
 
 import android.graphics.Bitmap
 import android.graphics.Color

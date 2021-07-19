@@ -5,7 +5,7 @@ import android.widget.Button
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.R
-import com.ojomono.ionce.utils.images.ImageLoader
+import com.ojomono.ionce.utils.proxies.ImageLoader
 
 @BindingAdapter("taleCoverSrc")
 fun ImageView.setTaleCoverSrc(uri: Uri?) {

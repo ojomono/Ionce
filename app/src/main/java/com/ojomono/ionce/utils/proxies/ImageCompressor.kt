@@ -1,4 +1,4 @@
-package com.ojomono.ionce.utils.images
+package com.ojomono.ionce.utils.proxies
 
 import android.content.Context
 import android.database.Cursor

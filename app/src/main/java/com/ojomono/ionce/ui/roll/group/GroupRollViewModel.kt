@@ -9,12 +9,14 @@ class GroupRollViewModel() : BaseViewModel() {
 
     // Types of supported events
     sealed class EventType : BaseEventType() {
+        object OpenCameraScanner : EventType()
     }
 
     /**********************/
     /** on click methods **/
     /**********************/
 
+    fun onJoinGroup() = postEvent(EventType.OpenCameraScanner)
     fun onCreateGroup() = GroupRepository.createGroup()
 
 }

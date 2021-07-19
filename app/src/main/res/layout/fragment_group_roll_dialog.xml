@@ -11,6 +11,7 @@
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
@@ -39,7 +40,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:group="@{viewModel.group}"
             app:forExisting="@{false}"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <TextView
                 android:layout_width="match_parent"
@@ -56,6 +57,7 @@
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:text="@string/group_roll_join_button_text"
+                android:onClick="@{() -> viewModel.onJoinGroup()}"
                 style="?attr/materialButtonStyle" />
 
             <Button
@@ -80,7 +82,8 @@
             android:paddingTop="@dimen/activity_vertical_margin"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:group="@{viewModel.group}"
-            app:forExisting="@{true}">
+            app:forExisting="@{true}"
+            tools:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"

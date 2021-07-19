@@ -6,7 +6,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import com.ojomono.ionce.utils.images.ImageCompressor.COMPRESS_FORMAT
+import com.ojomono.ionce.utils.proxies.ImageCompressor.COMPRESS_FORMAT
 import java.util.*
 
 object Storage {

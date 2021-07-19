@@ -23,8 +23,7 @@ import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.*
 import com.ojomono.ionce.utils.bases.BaseFragment
 import com.ojomono.ionce.utils.bases.BaseViewModel
-import com.ojomono.ionce.utils.images.ImageCompressor
-import com.ojomono.ionce.utils.images.ImageLoader
+import com.ojomono.ionce.utils.proxies.ImageCompressor
 import java.io.*
 import java.util.concurrent.TimeUnit
 

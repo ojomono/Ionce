@@ -13,9 +13,10 @@ class AlertDialog<T>(
     title: StringResource = StringResource.EMPTY,
     message: StringResource = StringResource.EMPTY,
     onNegative: (() -> Unit)? = null,
+    withNegative: Boolean = true,
     private val onPositive: (() -> T)? = null,
     private val okButtonText: StringResource = StringResource(R.string.dialog_save),
-) : BaseDialog(title, message, onNegative) {
+) : BaseDialog(title, message, onNegative, withNegative) {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)

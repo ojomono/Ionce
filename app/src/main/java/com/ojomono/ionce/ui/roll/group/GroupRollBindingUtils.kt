@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.models.GroupModel
-import com.ojomono.ionce.utils.images.QRCodeGenerator
+import com.ojomono.ionce.utils.proxies.QRCodeGenerator
 
 
 @BindingAdapter("group", "forExisting")
