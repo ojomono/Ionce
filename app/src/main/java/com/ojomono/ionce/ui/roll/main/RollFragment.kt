@@ -48,7 +48,7 @@ class RollFragment : BaseFragment() {
     override fun handleEvent(event: BaseViewModel.BaseEventType) {
         super.handleEvent(event)
         when (event) {
-            is RollViewModel.EventType.ShowRollGroupDialog -> showRollGroupDialog(event.groupId)
+            is RollViewModel.EventType.ShowRollGroupDialog -> showRollGroupDialog()
         }
     }
 
@@ -57,9 +57,9 @@ class RollFragment : BaseFragment() {
     /*********************/
 
     /**
-     * Show dialog for managing the roll group with id [groupId].
+     * Show dialog for managing the roll group.
      */
-    private fun showRollGroupDialog(groupId: String) =
-        GroupRollDialogFragment.newInstance(groupId).let { it.show(parentFragmentManager, it.TAG) }
+    private fun showRollGroupDialog() =
+        GroupRollDialogFragment.newInstance().let { it.show(parentFragmentManager, it.TAG) }
 
 }

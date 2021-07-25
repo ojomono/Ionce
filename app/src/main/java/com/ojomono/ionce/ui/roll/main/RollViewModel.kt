@@ -25,7 +25,7 @@ class RollViewModel : BaseViewModel() {
 
     // Types of supported events
     sealed class EventType : BaseEventType() {
-        class ShowRollGroupDialog(val groupId: String) : EventType()
+        object ShowRollGroupDialog : EventType()
     }
 
     /***********************/
@@ -41,7 +41,7 @@ class RollViewModel : BaseViewModel() {
     /** post event methods **/
     /************************/
 
-    fun onGroup() = postEvent(EventType.ShowRollGroupDialog(""))
+    fun onGroup() = postEvent(EventType.ShowRollGroupDialog)
 
     /*******************/
     /** logic methods **/

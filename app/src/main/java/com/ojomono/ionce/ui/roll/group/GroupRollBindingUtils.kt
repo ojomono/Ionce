@@ -20,8 +20,8 @@ fun ImageView.setGroupQRCodeBitmap(group: GroupModel?) {
     val imageBitmap =
         if (group != null) QRCodeGenerator.generateQRCode(group.id)
         else Bitmap.createBitmap(
-            QRCodeGenerator.QRCODE_SIZE,
-            QRCodeGenerator.QRCODE_SIZE,
+            QRCodeGenerator.QR_CODE_SIZE,
+            QRCodeGenerator.QR_CODE_SIZE,
             Bitmap.Config.ARGB_8888
         )
 

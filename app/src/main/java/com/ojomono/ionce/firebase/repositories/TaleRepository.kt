@@ -7,8 +7,6 @@ import androidx.lifecycle.Transformations
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.firebase.Utils
 import com.ojomono.ionce.models.*
@@ -61,7 +59,7 @@ object TaleRepository {
             val taleRef = if (tale.id.isEmpty()) talesCol.document() else talesCol.document(tale.id)
 
             // Set the tale item in the tales list (add or overwrite)
-            val tales = getUpdatedTalesList(taleRef.id) {
+            val tales = buildUpdatedTalesList(taleRef.id) {
                 val taleItem = TaleItemModel(tale, taleRef.id)
                 if (it == -1) add(taleItem) else this[it] = taleItem
             }
@@ -77,7 +75,7 @@ object TaleRepository {
     fun deleteTale(id: String): Task<DocumentReference> {
 
         // Remove the tale from the tales list
-        val tales = getUpdatedTalesList(id) { if (it != -1) removeAt(it) }
+        val tales = buildUpdatedTalesList(id) { if (it != -1) removeAt(it) }
 
         // Delete the tale document and update the user's tale list
         return runTaleBatch(id, tales) { delete(it) }
@@ -90,7 +88,7 @@ object TaleRepository {
 
         // Update media for tale in the tales list
         val tales =
-            getUpdatedTalesList(id) { set(it, get(it).copy(cover = media.firstOrNull() ?: "")) }
+            buildUpdatedTalesList(id) { set(it, get(it).copy(cover = media.firstOrNull() ?: "")) }
 
         // Update the tale's media list and the user's tale list
         return runTaleBatch(id, tales) { update(it, TaleModel::media.name, media) }
@@ -115,11 +113,13 @@ object TaleRepository {
     /** private methods **/
     /*********************/
 
-
     /**
      * Get the current user's tales list after the given [update] was made on the item with [id].
      */
-    private fun getUpdatedTalesList(id: String, update: MutableList<TaleItemModel>.(Int) -> Unit) =
+    private fun buildUpdatedTalesList(
+        id: String,
+        update: MutableList<TaleItemModel>.(Int) -> Unit
+    ) =
         userTales.value?.apply { update(indexOfFirst { item -> item.id == id }) }
             ?: throw Utils.NoSignedInUserException
 

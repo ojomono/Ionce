@@ -45,6 +45,7 @@ object Database {
 
     init {
         Authentication.currentUser.observeForever { switchUserDocument(it?.uid) }
+        userData.observeForever { Log.d(TAG, "userData changed") }
     }
 
     /********************/
