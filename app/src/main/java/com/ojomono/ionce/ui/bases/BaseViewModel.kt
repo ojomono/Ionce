@@ -1,4 +1,4 @@
-package com.ojomono.ionce.utils.bases
+package com.ojomono.ionce.ui.bases
 
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task

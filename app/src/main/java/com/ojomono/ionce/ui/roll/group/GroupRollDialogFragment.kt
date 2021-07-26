@@ -10,10 +10,10 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentGroupRollDialogBinding
-import com.ojomono.ionce.utils.bases.BaseDialogFragment
+import com.ojomono.ionce.ui.bases.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
 import com.ojomono.ionce.utils.TAG
-import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.ui.bases.BaseViewModel
 
 /**
  * A [DialogFragment] representing the management screen for a roll group.

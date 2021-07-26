@@ -29,8 +29,8 @@ object TaleRepository {
     //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
 
     // Current user's tales list
-    val userTales: LiveData<MutableList<TaleItemModel>> =
-        Transformations.map(Database.userData) { it?.tales }
+    val userTales: LiveData<MutableList<TaleItemModel>?> =
+        Transformations.map(UserRepository.model) { it?.tales }
 
     /********************/
     /** public methods **/
@@ -40,7 +40,7 @@ object TaleRepository {
      * Get the tale document with id=[id].
      */
     fun getTale(id: String): Task<DocumentSnapshot> =
-        Database.userDocRef?.collection(CP_TALES)?.document(id)?.get()
+        UserRepository.docRef?.collection(CP_TALES)?.document(id)?.get()
             ?.addOnSuccessListener { document ->
                 if (document != null) Log.d(TAG, "DocumentSnapshot data: ${document.data}")
                 else Log.d(TAG, "No such document")
@@ -52,7 +52,7 @@ object TaleRepository {
      * holding the success state and the new tale's document reference.
      */
     fun setTale(tale: TaleModel) =
-        Database.userDocRef?.let { userRef ->
+        UserRepository.docRef?.let { userRef ->
 
             // Get reference for wanted tale - if does not exist create new reference
             val talesCol = userRef.collection(CP_TALES)
@@ -131,7 +131,7 @@ object TaleRepository {
         id: String,
         tales: List<TaleItemModel>?,
         action: WriteBatch.(DocumentReference) -> WriteBatch
-    ) = Database.userDocRef?.let { userRef ->
+    ) = UserRepository.docRef?.let { userRef ->
 
         // Create reference for wanted tale to use inside batch
         val taleRef = userRef.collection(CP_TALES).document(id)

@@ -1,11 +1,11 @@
 package com.ojomono.ionce.ui.roll.group
 
 import com.ojomono.ionce.firebase.repositories.GroupRepository
-import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.ui.bases.BaseViewModel
 
 class GroupRollViewModel : BaseViewModel() {
     // The current group of the user
-    val group = GroupRepository.group
+    val group = GroupRepository.model
 
     // Types of supported events
     sealed class EventType : BaseEventType() {
@@ -18,6 +18,7 @@ class GroupRollViewModel : BaseViewModel() {
 
     fun onJoinClicked() = postEvent(EventType.OpenQRCodeScanner)
     fun onCreateClicked() = GroupRepository.createGroup()
+    fun onLeaveClicked() = GroupRepository.leaveGroup()
 
     /*******************/
     /** logic methods **/

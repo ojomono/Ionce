@@ -1,4 +1,4 @@
-package com.ojomono.ionce.utils.bases
+package com.ojomono.ionce.ui.bases
 
 import android.app.Activity
 import android.os.Bundle

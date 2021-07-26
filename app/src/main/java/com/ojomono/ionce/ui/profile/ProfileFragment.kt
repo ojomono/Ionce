@@ -21,8 +21,8 @@ import com.ojomono.ionce.databinding.FragmentProfileBinding
 import com.ojomono.ionce.ui.dialogs.InputDialog
 import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.*
-import com.ojomono.ionce.utils.bases.BaseFragment
-import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.ui.bases.BaseFragment
+import com.ojomono.ionce.ui.bases.BaseViewModel
 import com.ojomono.ionce.utils.proxies.ImageCompressor
 import java.io.*
 import java.util.concurrent.TimeUnit

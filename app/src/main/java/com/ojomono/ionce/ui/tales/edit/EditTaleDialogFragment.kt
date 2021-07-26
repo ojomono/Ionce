@@ -12,8 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialog
-import com.ojomono.ionce.utils.bases.BaseDialogFragment
-import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.ui.bases.BaseDialogFragment
+import com.ojomono.ionce.ui.bases.BaseViewModel
 import com.ojomono.ionce.utils.StringResource
 import com.ojomono.ionce.utils.proxies.ImageCompressor
 

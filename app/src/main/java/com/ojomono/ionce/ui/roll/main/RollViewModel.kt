@@ -6,11 +6,11 @@ import androidx.lifecycle.Observer
 import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.models.TaleItemModel
-import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.ui.bases.BaseViewModel
 
 class RollViewModel : BaseViewModel() {
     // The user's tales list    // TODO: Use a Repository class
-    val tales: LiveData<MutableList<TaleItemModel>> = TaleRepository.userTales
+    val tales: LiveData<MutableList<TaleItemModel>?> = TaleRepository.userTales
 
     // The rolled tale's title
     private val _rolled = MutableLiveData<TaleItemModel>()
@@ -18,8 +18,8 @@ class RollViewModel : BaseViewModel() {
 
     // Observe tales list in case the rolled tale cover finished upload, and refresh screen
     private val listObserver =
-        Observer<MutableList<TaleItemModel>> { list ->
-            list.find { it.id == rolled.value?.id }
+        Observer<MutableList<TaleItemModel>?> { list ->
+            list?.find { it.id == rolled.value?.id }
                 ?.let { if (rolled.value != it) _rolled.value = it }
         }.also { tales.observeForever(it) }
 

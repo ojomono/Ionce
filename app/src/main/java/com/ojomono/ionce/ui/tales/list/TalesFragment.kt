@@ -13,8 +13,8 @@ import com.ojomono.ionce.databinding.FragmentTalesBinding
 import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.ui.tales.edit.EditTaleDialogFragment
 import com.ojomono.ionce.utils.*
-import com.ojomono.ionce.utils.bases.BaseFragment
-import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.ui.bases.BaseFragment
+import com.ojomono.ionce.ui.bases.BaseViewModel
 
 /**
  * A fragment representing a list of Tales.

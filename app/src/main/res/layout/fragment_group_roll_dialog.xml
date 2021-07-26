@@ -40,7 +40,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:group="@{viewModel.group}"
             app:forExisting="@{false}"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"
@@ -83,7 +83,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:group="@{viewModel.group}"
             app:forExisting="@{true}"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <TextView
                 android:layout_width="match_parent"
@@ -110,6 +110,7 @@
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:text="@string/group_roll_leave_button_text"
                 android:backgroundTint="?attr/colorError"
+                android:onClick="@{() -> viewModel.onLeaveClicked()}"
                 style="?attr/materialButtonStyle" />
 
         </LinearLayout>

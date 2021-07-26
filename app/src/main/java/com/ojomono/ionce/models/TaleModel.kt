@@ -7,7 +7,7 @@ import com.google.firebase.firestore.DocumentId
  * (saved in the 'tales' sub-collection with generated [id]).
  */
 data class TaleModel(
-    @DocumentId val id: String = "",
+    @DocumentId override val id: String = "",
     var title: String = "",
     var media: List<String> = listOf()
-)
+) : BaseModel()

@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentRollBinding
 import com.ojomono.ionce.ui.roll.group.GroupRollDialogFragment
-import com.ojomono.ionce.utils.bases.BaseFragment
-import com.ojomono.ionce.utils.bases.BaseViewModel
+import com.ojomono.ionce.ui.bases.BaseFragment
+import com.ojomono.ionce.ui.bases.BaseViewModel
 import com.ojomono.ionce.utils.TAG
 
 class RollFragment : BaseFragment() {
