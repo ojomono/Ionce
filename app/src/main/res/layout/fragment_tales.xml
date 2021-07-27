@@ -23,7 +23,7 @@
             android:text="@string/tales_hint_text"
             android:gravity="center"
             app:hintTextVisibility="@{viewModel.tales}"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_tales_list"
@@ -36,7 +36,7 @@
             app:talesListVisibility="@{viewModel.tales}"
             tools:context=".ui.tales.list.TalesFragment"
             tools:listitem="@layout/item_tale"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_tale"

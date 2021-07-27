@@ -1,6 +1,5 @@
 package com.ojomono.ionce.ui.tales.list
 
-import androidx.lifecycle.LiveData
 import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.firebase.Utils
@@ -9,9 +8,9 @@ import com.ojomono.ionce.models.TaleModel
 import com.ojomono.ionce.ui.bases.BaseViewModel
 import com.ojomono.ionce.utils.continueIfSuccessful
 
-class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
-    // The user's tales list    // TODO: Use a Repository class
-    val tales: LiveData<MutableList<TaleItemModel>?> = TaleRepository.userTales
+class TalesViewModel : BaseViewModel(), TalesListAdapter.TalesListener {
+    // The user's tales list
+    val tales = TaleRepository.userTales
 
     // The tale currently being deleted
     private var clickedTale: TaleItemModel? = null

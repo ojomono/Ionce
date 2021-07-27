@@ -2,7 +2,6 @@ package com.ojomono.ionce.firebase.repositories
 
 // TODO: Avoid Android imports and move to separated module when needed for more UI platforms
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -29,8 +28,7 @@ object TaleRepository {
     //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
 
     // Current user's tales list
-    val userTales: LiveData<MutableList<TaleItemModel>?> =
-        Transformations.map(UserRepository.model) { it?.tales }
+    val userTales = Transformations.map(UserRepository.model) { it?.tales }
 
     /********************/
     /** public methods **/

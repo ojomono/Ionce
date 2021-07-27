@@ -81,8 +81,9 @@
     <string name="group_roll_no_group_text">You are not in a group currently.</string>
     <string name="group_roll_join_button_text">Join a group</string>
     <string name="group_roll_create_button_text">Create a new group</string>
-    <string name="group_roll_qrcode_content_description">Join group QR code</string>
+    <string name="group_roll_member_list_header_text">You are in a group with:</string>
     <string name="group_roll_qrcode_hint_text">People can join your group by scanning this QR-code!</string>
+    <string name="group_roll_qrcode_content_description">Join group QR code</string>
     <string name="group_roll_leave_button_text">Leave current group</string>
     <string name="group_roll_permission_rationale_message">Camera access is required to scan a group QR-code.</string>
     <string name="group_roll_permission_denied_message">Permission denied. Please grant camera access in order to join a group (scanning a group QR-code is the only supported way right now).</string>

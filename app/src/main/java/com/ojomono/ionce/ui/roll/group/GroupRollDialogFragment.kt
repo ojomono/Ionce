@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentGroupRollDialogBinding
 import com.ojomono.ionce.ui.bases.BaseDialogFragment
@@ -64,6 +65,9 @@ class GroupRollDialogFragment : BaseDialogFragment() {
         // Set the action bar
         setActionBar(binding.toolbar, StringResource(R.string.group_roll_screen_title))
 
+        // Populate the recycler view
+        populateRecyclerView()
+
         return binding.root
     }
 
@@ -91,6 +95,27 @@ class GroupRollDialogFragment : BaseDialogFragment() {
         }
         QRCodeScannerDialogFragment.newInstance(RK_GROUP_ID, BK_GROUP_ID)
             .let { it.show(parentFragmentManager, it.TAG) }
+    }
+
+    /**
+     * Populate the recycler view.
+     */
+    // TODO move to common ListFragment Interface/abstract class
+    private fun populateRecyclerView() {
+        with(binding.recyclerMembersList) {
+            // Choose layout manager
+            layoutManager = LinearLayoutManager(context)
+
+            // Init the adapter
+            val usersAdapter =
+                UsersListAdapter(getString(R.string.group_roll_member_list_header_text))
+            adapter = usersAdapter
+
+            // Observe changes in members list
+            viewModel.members.observe(viewLifecycleOwner, {
+                it?.let { usersAdapter.addHeaderAndSubmitList(it) }
+            })
+        }
     }
 
 }

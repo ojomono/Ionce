@@ -79,6 +79,7 @@ class TalesFragment : BaseFragment() {
     /**
      * Populate the recycler view.
      */
+    // TODO move to common ListFragment Interface/abstract class
     private fun populateRecyclerView() {
         with(binding.recyclerTalesList) {
             // Choose layout manager
@@ -88,7 +89,7 @@ class TalesFragment : BaseFragment() {
             }
 
             // Init the adapter
-            val talesAdapter = TalesAdapter(viewModel)
+            val talesAdapter = TalesListAdapter(getString(R.string.tales_header_text), viewModel)
             adapter = talesAdapter
 
             // For drag n' drop feature
@@ -107,6 +108,7 @@ class TalesFragment : BaseFragment() {
      * Build a [GridLayoutManager] using the wanted [columnCount] but expending header to span
      * across the hole screen.
      */
+    // TODO move to common ListFragment Interface/abstract class
     private fun buildGridLayoutManager(): GridLayoutManager {
         val manager = GridLayoutManager(context, columnCount)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {

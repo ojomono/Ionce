@@ -7,7 +7,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
-import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Database
 import com.ojomono.ionce.models.BaseModel
 import com.ojomono.ionce.utils.TAG

@@ -8,7 +8,7 @@ data class TaleItemModel(
     override val id: String = "",
     val title: String = "",
     val cover: String = ""
-) : BaseModel() {
+) : BaseItemModel() {
     /**
      * Create a [TaleItemModel] from a given full [tale]. Use separate [id] param when it's a new
      * tale and the new generated id is not part of the full [tale].
