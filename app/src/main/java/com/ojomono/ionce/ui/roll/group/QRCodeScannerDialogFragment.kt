@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -205,12 +206,8 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
 
     // TODO move to generic permission handling when made
     private fun handlePermissionDenied() =
-        AlertDialog(
-            message = StringResource(getString(R.string.group_roll_permission_denied_message)),
-            withNegative = false,
-            okButtonText = StringResource(getString(R.string.dialog_ok)),
-            onPositive = ::dismiss
-        ).show(parentFragmentManager, FT_PERMISSIONS)
+        Toast.makeText(context, R.string.group_roll_permission_denied_message, Toast.LENGTH_SHORT)
+            .show()
 
     // TODO move to generic permission handling when made
     private fun View.showSnackbar(

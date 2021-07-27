@@ -90,7 +90,11 @@ object GroupRepository : DocHoldingRepo<GroupModel>(GroupModel::class.java, CP_G
                 if (it.isNotBlank()) it else uid
             } ?: uid
 
-        return UserItemModel(uid, displayName)
+        return UserItemModel(
+            uid,
+            displayName,
+            UserRepository.model.value?.tales ?: mutableListOf()
+        )
     }
 
     /**

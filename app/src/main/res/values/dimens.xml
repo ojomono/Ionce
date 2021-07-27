@@ -14,6 +14,8 @@
     <!-- Roll screen dimens -->
     <dimen name="roll_button_bg_stroke_width">5dp</dimen>
     <dimen name="roll_button_size">150dp</dimen>
+    <dimen name="roll_show_owner_linear_padding">6dp</dimen>
+    <dimen name="roll_show_owner_text_margin_start">6dp</dimen>
 
     <!-- Profile screen dimens -->
     <dimen name="profile_icons_sizes">40dp</dimen>

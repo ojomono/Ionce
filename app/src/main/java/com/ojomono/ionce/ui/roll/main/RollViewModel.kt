@@ -1,26 +1,39 @@
 package com.ojomono.ionce.ui.roll.main
 
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.ojomono.ionce.R
+import com.ojomono.ionce.firebase.repositories.GroupRepository
 import com.ojomono.ionce.firebase.repositories.TaleRepository
+import com.ojomono.ionce.models.BaseItemModel
 import com.ojomono.ionce.models.TaleItemModel
+import com.ojomono.ionce.models.UserItemModel
 import com.ojomono.ionce.ui.bases.BaseViewModel
 
 class RollViewModel : BaseViewModel() {
-    // The user's tales list    // TODO: Use a Repository class
-    val tales: LiveData<MutableList<TaleItemModel>?> = TaleRepository.userTales
 
-    // The rolled tale's title
-    private val _rolled = MutableLiveData<TaleItemModel>()
-    val rolled: LiveData<TaleItemModel> = _rolled
+    // The user's tales list and current group
+    val tales = TaleRepository.userTales
+    val group = GroupRepository.model
+
+    // The rolled tale
+    private val _rolledTale = MutableLiveData<TaleItemModel>()
+    val rolledTale: LiveData<TaleItemModel> = _rolledTale
+
+    // The rolled tale owner (for group rolls)
+    private val _rolledMember = MutableLiveData<UserItemModel>()
+    val rolledMember: LiveData<UserItemModel> = _rolledMember
+
+    // Should show the owner name on the rolled tale card?
+    val ownerShown = ObservableBoolean().apply { set(false) }
 
     // Observe tales list in case the rolled tale cover finished upload, and refresh screen
     private val listObserver =
         Observer<MutableList<TaleItemModel>?> { list ->
-            list?.find { it.id == rolled.value?.id }
-                ?.let { if (rolled.value != it) _rolled.value = it }
+            list?.find { it.id == rolledTale.value?.id }
+                ?.let { if (rolledTale.value != it) _rolledTale.value = it }
         }.also { tales.observeForever(it) }
 
     // Types of supported events
@@ -41,32 +54,66 @@ class RollViewModel : BaseViewModel() {
     /** post event methods **/
     /************************/
 
-    fun onGroup() = postEvent(EventType.ShowRollGroupDialog)
+    fun onGroupFabClicked() = postEvent(EventType.ShowRollGroupDialog)
 
     /*******************/
     /** logic methods **/
     /*******************/
 
     /**
-     * Show a random tale title from the user's tales.
+     * Toggle owner name visibility.
      */
-    fun onRoll() {
+    fun onShowOwnerClicked() = ownerShown.set(!ownerShown.get())
+
+    /**
+     * Roll a random tale, according to the current game.
+     */
+    fun onRollClicked() =
+        if (group.value == null) rollMyTales()
+        else rollGroupRoll()
+
+    /**
+     * Roll a random tale from current user's tales.
+     */
+    private fun rollMyTales() {
         // If the user has no tales yet - show him an error toast
-        if (tales.value.isNullOrEmpty())
-            showMessageByResId(R.string.roll_error_no_tales)
-        // If he has some - get a random one and show it's title
-        else _rolled.value = getRandomTale()
+        tales.value?.let { talesList ->
+            if (talesList.isEmpty()) showMessageByResId(R.string.roll_error_no_tales)
+            // If he has some - get a random one and show it's title
+            else _rolledTale.value = getRandomItem(talesList, rolledTale.value)
+        }
+    }
+
+    /**
+     * Roll a random tale from a random member of the current user's group.
+     */
+    private fun rollGroupRoll() {
+        // Always hide owner name as default
+        ownerShown.set(false)
+
+        // If all users in group has no tales - show an error toast
+        group.value?.members?.let { membersList ->
+            if (membersList.all { it.value.tales.isEmpty() })
+                showMessageByResId(R.string.roll_error_no_tales_in_group)
+            else {
+                _rolledMember.value = getRandomItem(membersList.values.toList(), rolledMember.value)
+                rolledMember.value?.tales?.let { talesList ->
+                    _rolledTale.value = getRandomItem(talesList, rolledTale.value)
+                }
+            }
+        }
     }
 
     /**
      * Get a random tale, excluding the last rolled one (unless user has only one tale).
      */
-    private fun getRandomTale(): TaleItemModel? =
-        tales.value?.run {
-            // If the user has only one tale - get it
-            if (size == 1) get(0)
-            // If he has more, get a random one, excluding the last rolled tale
-            // TODO use "minusElement"
-            else filter { it.id != rolled.value?.id }.random()
+    private fun <T : BaseItemModel> getRandomItem(list: List<T>, exclude: T?): T? =
+        // If the user has only one tale - get it
+        if (list.size == 1) list[0]
+        // If he has more, get a random one, excluding the last rolled tale
+        else {
+            val listMinusExclude = if (exclude != null) list.minusElement(exclude) else list
+            listMinusExclude.minusElement(exclude).random()
         }
+
 }

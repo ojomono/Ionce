@@ -3,11 +3,14 @@ package com.ojomono.ionce.ui.roll.main
 import android.net.Uri
 import android.text.TextUtils
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
+import com.ojomono.ionce.R
+import com.ojomono.ionce.models.GroupModel
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.utils.proxies.ImageLoader
 
@@ -51,4 +54,28 @@ fun ImageView.setCoverSrcAndVisibility(coverUri: String?) {
         ImageLoader.load(context, Uri.parse(coverUri), this)
         View.VISIBLE
     }
+}
+
+@BindingAdapter("currentGameText")
+fun Button.setCurrentGameText(group: GroupModel?) {
+    text = resources.getString(
+        if (group == null) R.string.roll_game_simple_roll else R.string.roll_game_group_roll
+    )
+}
+
+@BindingAdapter("showOwnerLinearVisibility")
+fun LinearLayout.setShowOwnerLinearVisibility(group: GroupModel?) {
+    visibility = if (group != null) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("showOwnerText")
+fun TextView.setShowOwnerText(shown: Boolean) {
+    text = resources.getString(
+        if (shown) R.string.roll_show_owner_shown else R.string.roll_show_owner_not_shown
+    )
+}
+
+@BindingAdapter("ownerNameTextVisibility")
+fun TextView.setOwnerNameTextVisibility(shown: Boolean) {
+    visibility = if (shown) View.VISIBLE else View.GONE
 }
