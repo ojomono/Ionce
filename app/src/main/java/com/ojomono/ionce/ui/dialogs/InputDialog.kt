@@ -18,14 +18,14 @@ import com.ojomono.ionce.utils.StringResource
 /**
  * A simple dialog fragment used for getting a string input from the user.
  */
-class InputDialogFragment<T>(
+class InputDialog<T>(
     title: StringResource = StringResource.EMPTY,
     message: StringResource = StringResource.EMPTY,
     onNegative: (() -> Unit)? = null,
     private val onPositive: ((String) -> T)? = null,
     private val okButtonText: StringResource = StringResource(R.string.dialog_save),
     private val defaultInputText: StringResource = StringResource.EMPTY
-) : BaseDialogFragment(title, message, onNegative) {
+) : BaseDialog(title, message, onNegative) {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)

@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
-import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
+import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.ui.tales.edit.EditTaleDialogFragment
 import com.ojomono.ionce.utils.*
+import com.ojomono.ionce.ui.bases.BaseFragment
+import com.ojomono.ionce.ui.bases.BaseViewModel
 
 /**
  * A fragment representing a list of Tales.
@@ -77,6 +79,7 @@ class TalesFragment : BaseFragment() {
     /**
      * Populate the recycler view.
      */
+    // TODO move to common ListFragment Interface/abstract class
     private fun populateRecyclerView() {
         with(binding.recyclerTalesList) {
             // Choose layout manager
@@ -86,7 +89,7 @@ class TalesFragment : BaseFragment() {
             }
 
             // Init the adapter
-            val talesAdapter = TalesAdapter(viewModel)
+            val talesAdapter = TalesListAdapter(getString(R.string.tales_header_text), viewModel)
             adapter = talesAdapter
 
             // For drag n' drop feature
@@ -105,6 +108,7 @@ class TalesFragment : BaseFragment() {
      * Build a [GridLayoutManager] using the wanted [columnCount] but expending header to span
      * across the hole screen.
      */
+    // TODO move to common ListFragment Interface/abstract class
     private fun buildGridLayoutManager(): GridLayoutManager {
         val manager = GridLayoutManager(context, columnCount)
         manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -126,7 +130,7 @@ class TalesFragment : BaseFragment() {
      * Show dialog for deleting the tale with title [taleTitle].
      */
     private fun showDeleteTaleDialog(taleTitle: String) =
-        AlertDialogFragment(
+        AlertDialog(
             message = StringResource(getString(R.string.tales_delete_dialog_message, taleTitle)),
             onNegative = viewModel::clearClickedTale,
             onPositive = viewModel::deleteTale,

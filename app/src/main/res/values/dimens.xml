@@ -7,13 +7,15 @@
     <!-- Splash screen dimens -->
     <dimen name="splash_logo_item_bottom_offset">240dp</dimen>
 
-    <!-- Tales screen dimens -->
-    <dimen name="tales_fab_elevation">6dp</dimen>
-    <dimen name="tales_fab_layout_margin">20dp</dimen>
+    <!-- Floating action buttons dimens -->
+    <dimen name="fab_elevation">6dp</dimen>
+    <dimen name="fab_layout_margin">20dp</dimen>
 
     <!-- Roll screen dimens -->
     <dimen name="roll_button_bg_stroke_width">5dp</dimen>
     <dimen name="roll_button_size">150dp</dimen>
+    <dimen name="roll_show_owner_linear_padding">6dp</dimen>
+    <dimen name="roll_show_owner_text_margin_start">6dp</dimen>
 
     <!-- Profile screen dimens -->
     <dimen name="profile_icons_sizes">40dp</dimen>
@@ -28,6 +30,10 @@
     <dimen name="edit_tale_icons_sizes">40dp</dimen>
     <dimen name="edit_tale_cover_image_size">140dp</dimen>
     <dimen name="edit_tale_cover_corners_radius">10dp</dimen>
+
+    <!-- Group roll screen dimes -->
+    <dimen name="group_roll_hint_margin_bottom">60dp</dimen>
+    <dimen name="group_roll_qrcode_size">300dp</dimen>
 
     <!-- Dialogs dimens -->
     <dimen name="dialog_margin">20dp</dimen>

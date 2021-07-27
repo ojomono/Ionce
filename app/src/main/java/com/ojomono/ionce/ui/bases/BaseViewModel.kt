@@ -1,7 +1,8 @@
-package com.ojomono.ionce.utils
+package com.ojomono.ionce.ui.bases
 
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
+import com.ojomono.ionce.utils.EventStateHolder
 import java.lang.Exception
 
 /**
@@ -22,6 +23,8 @@ abstract class BaseViewModel : ViewModel() {
     abstract class BaseEventType : EventStateHolder.Event {
         class ShowProgressBar(val task: Task<*>) : BaseEventType()
         class ShowErrorMessage(val e: Exception) : BaseEventType()
+
+        // TODO use StringResource instead of ResId
         class ShowMessageByResId(val messageResId: Int, vararg val args: String) : BaseEventType()
     }
 

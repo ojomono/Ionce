@@ -5,8 +5,27 @@ import com.google.android.gms.tasks.Tasks
 
 object Utils {
 
+    /***************/
+    /** Constants **/
+    /***************/
+
+    // Collection Paths
+    const val CP_USERS = "users"
+    const val CP_GROUPS = "groups"
+
+    /****************/
+    /** Exceptions **/
+    /****************/
+
     object NoSignedInUserException :
         IllegalStateException("This operation requires a signed-in user")
+
+    object UserNotInGroupException :
+        IllegalStateException("This operation requires the user to be in a group")
+
+    /****************/
+    /** Extensions **/
+    /****************/
 
     /**
      * If [task] is not null, run [continuation] as continuation to [task], else run it in new task.

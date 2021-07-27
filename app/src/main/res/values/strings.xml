@@ -59,7 +59,14 @@
     <string name="roll_hint_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
     <string name="roll_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab.</string>
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
+    <string name="roll_error_no_tales_in_group">The group must have at least one tale in order to use this feature.</string>
     <string name="roll_cover_image_content_description">Tale cover</string>
+    <string name="roll_group_fab_content_description">Roll group management</string>
+    <string name="group_roll_current_game_text">current game:</string>
+    <string name="roll_game_simple_roll">My Tales</string>
+    <string name="roll_game_group_roll">Group Roll</string>
+    <string name="roll_show_owner_not_shown">Show owner</string>
+    <string name="roll_show_owner_shown">Hide</string>
 
     <!-- Edit tale screen -->
     <string name="edit_tale_screen_title_new">New Tale</string>
@@ -75,8 +82,24 @@
     <string name="edit_tale_media_icon_content_description">Add image</string>
     <string name="edit_tale_clear_button_text">Clear</string>
 
+    <!-- Group roll screen -->
+    <string name="group_roll_screen_title">Group Roll Management</string>
+    <string name="group_roll_no_group_text">You are not in a group currently.</string>
+    <string name="group_roll_join_button_text">Join a group</string>
+    <string name="group_roll_create_button_text">Create a new group</string>
+    <string name="group_roll_member_list_header_text">You are in a group with:</string>
+    <string name="group_roll_qrcode_hint_text">People can join your group by scanning this QR-code!</string>
+    <string name="group_roll_qrcode_content_description">Join group QR code</string>
+    <string name="group_roll_leave_button_text">Leave current group</string>
+    <string name="group_roll_permission_rationale_message">Camera access is required to scan a group QR-code.</string>
+    <string name="group_roll_permission_denied_message">Permission denied. Please grant camera access in order to join a group (scanning a group QR-code is the only supported way right now).</string>
+
+    <!-- QR-code scanner -->
+    <string name="q_r_code_scanner_title">QR-code scanner</string>
+
     <!-- Dialogs -->
     <string name="dialog_save">Save</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
 
 </resources>

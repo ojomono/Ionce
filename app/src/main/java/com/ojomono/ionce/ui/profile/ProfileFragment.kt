@@ -1,7 +1,6 @@
 package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,9 +10,7 @@ import android.view.*
 import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,9 +18,12 @@ import com.google.firebase.FirebaseException    // TODO avoid importing firebase
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
-import com.ojomono.ionce.ui.dialogs.InputDialogFragment
-import com.ojomono.ionce.ui.dialogs.AlertDialogFragment
+import com.ojomono.ionce.ui.dialogs.InputDialog
+import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.*
+import com.ojomono.ionce.ui.bases.BaseFragment
+import com.ojomono.ionce.ui.bases.BaseViewModel
+import com.ojomono.ionce.utils.proxies.ImageCompressor
 import java.io.*
 import java.util.concurrent.TimeUnit
 
@@ -40,23 +40,14 @@ class ProfileFragment : BaseFragment() {
     override lateinit var progressBar: ProgressBar
 
     // Activity result launchers
-    private val getContent =
+    private val pickImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) {
-            onImagePicked(it)
+            if (it != null) onImagePicked(it)
         }
-
-    // TODO use ActivityResultContracts.StartIntentSenderForResult() instead
     private val linkWithGoogle =
-        registerForActivityResult(
-            object : ActivityResultContract<Void?, Intent>() {
-
-                override fun createIntent(context: Context, input: Void?) =
-                    viewModel.googleSignInClient.signInIntent
-
-                override fun parseResult(resultCode: Int, result: Intent?) =
-                    if (resultCode != Activity.RESULT_OK) null else result
-            }
-        ) { viewModel.handleGoogleResult(it) }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) viewModel.handleGoogleResult(it.data)
+        }
 
     /***********************/
     /** Lifecycle methods **/
@@ -155,7 +146,7 @@ class ProfileFragment : BaseFragment() {
     /**
      * Show the image picker.
      */
-    private fun showImagePicker() = getContent.launch("image/*")
+    private fun showImagePicker() = pickImage.launch("image/*")
 
     /**
      * Compress image from [uri] and set as user photo.
@@ -163,10 +154,10 @@ class ProfileFragment : BaseFragment() {
     private fun onImagePicked(uri: Uri) {
 
         // Put a progress bar in the image view
-//        ImageUtils.load(context, ImageUtils.UPLOADING_IN_PROGRESS, binding.imageProfilePicture)
+//        ImageLoader.load(context, ImageLoader.UPLOADING_IN_PROGRESS, binding.imageProfilePicture)
 
         // Compress image and set it as user photo
-        ImageUtils.compress(context, uri) {
+        ImageCompressor.compress(context, uri) {
             // TODO run in background when refactoring to full use of coroutines
             activity?.runOnUiThread { viewModel.updateUserPicture(it) }
         }
@@ -176,7 +167,7 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for updating the current user's name.
      */
     private fun showNameEditDialog() =
-        InputDialogFragment(
+        InputDialog(
             title = StringResource(R.string.profile_name_edit_dialog_title),
             onPositive = viewModel::updateUserName,
             defaultInputText = StringResource(viewModel.user.value?.displayName ?: "")
@@ -186,7 +177,7 @@ class ProfileFragment : BaseFragment() {
      * Present the user an interface that prompts them to type their email address.
      */
     private fun showEmailAddressDialog() =
-        InputDialogFragment(
+        InputDialog(
             title = StringResource(R.string.profile_email_link_dialog_title),
             onPositive = viewModel::sendSignInLinkToEmail,
             okButtonText = StringResource(R.string.profile_email_link_dialog_button),
@@ -197,7 +188,7 @@ class ProfileFragment : BaseFragment() {
      * Present the user an interface that prompts them to type their phone number.
      */
     private fun showPhoneVerifyDialog() =
-        InputDialogFragment(
+        InputDialog(
             title = StringResource(R.string.profile_phone_verify_dialog_title),
             message = StringResource(R.string.profile_phone_verify_dialog_message),
             onPositive = ::verifyPhoneNumber,
@@ -256,7 +247,7 @@ class ProfileFragment : BaseFragment() {
 
                 // If verified automatically, no need for the manual dialog
                 (parentFragmentManager.findFragmentByTag(FT_PHONE_CODE) as
-                        InputDialogFragment<*>).dismiss()
+                        InputDialog<*>).dismiss()
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -292,7 +283,7 @@ class ProfileFragment : BaseFragment() {
      * message.
      */
     private fun showVerificationCodeDialog() =
-        InputDialogFragment(
+        InputDialog(
             title = StringResource(R.string.profile_phone_verify_dialog_title),
             message = StringResource(
                 getString(
@@ -332,13 +323,14 @@ class ProfileFragment : BaseFragment() {
     /**
      * Show activity for linking with Google.
      */
-    private fun showLinkWithGoogle() = linkWithGoogle.launch()
+    private fun showLinkWithGoogle() =
+        linkWithGoogle.launch(viewModel.googleSignInClient.signInIntent)
 
     /**
      * Show dialog for verifying decision to unlink given [providerNameResId].
      */
     private fun showUnlinkProviderDialog(providerNameResId: Int) =
-        AlertDialogFragment(
+        AlertDialog(
             message = StringResource(
                 getString(
                     R.string.profile_unlink_provider_dialog_message,

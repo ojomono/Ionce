@@ -9,13 +9,14 @@ import com.ojomono.ionce.utils.StringResource
 /**
  * A simple dialog fragment used for noticing the user and let him approve or cancel an action.
  */
-class AlertDialogFragment<T>(
+class AlertDialog<T>(
     title: StringResource = StringResource.EMPTY,
     message: StringResource = StringResource.EMPTY,
     onNegative: (() -> Unit)? = null,
+    withNegative: Boolean = true,
     private val onPositive: (() -> T)? = null,
     private val okButtonText: StringResource = StringResource(R.string.dialog_save),
-) : BaseDialogFragment(title, message, onNegative) {
+) : BaseDialog(title, message, onNegative, withNegative) {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)

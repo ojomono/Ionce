@@ -1,18 +1,16 @@
 package com.ojomono.ionce.ui.tales.list
 
-import androidx.lifecycle.LiveData
-import com.google.android.gms.tasks.Tasks
-import com.ojomono.ionce.firebase.Database
+import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.firebase.Utils
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.models.TaleModel
-import com.ojomono.ionce.utils.BaseViewModel
+import com.ojomono.ionce.ui.bases.BaseViewModel
 import com.ojomono.ionce.utils.continueIfSuccessful
 
-class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
-    // The user's tales list    // TODO: Use a Repository class
-    val tales: LiveData<MutableList<TaleItemModel>> = Database.userTales
+class TalesViewModel : BaseViewModel(), TalesListAdapter.TalesListener {
+    // The user's tales list
+    val tales = TaleRepository.userTales
 
     // The tale currently being deleted
     private var clickedTale: TaleItemModel? = null
@@ -41,7 +39,7 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
 //
 //    override fun onCleared() {
 //        super.onCleared()
-//        if (wasOrderChanged) Database.saveTalesOrder()?.withProgressBar()
+//        if (wasOrderChanged) TaleRepository.saveTalesOrder()?.withProgressBar()
 //    }
 
     /************************/
@@ -70,7 +68,7 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
         Storage.getActiveTaleTasks(taleItem.id).forEach { it.cancel() }
 
         // Get the tale model
-        Database.getTale(taleItem.id).continueIfSuccessful { getTask ->
+        TaleRepository.getTale(taleItem.id).continueIfSuccessful { getTask ->
             getTask.result?.toObject(TaleModel::class.java)?.let { tale ->
 
                 // Delete the tale's media
@@ -78,7 +76,7 @@ class TalesViewModel : BaseViewModel(), TalesAdapter.TalesListener {
 
                 // Delete tale document
                 Utils.continueWithTaskOrInNew(storageTask, true) {
-                    Database.deleteTale(tale.id)
+                    TaleRepository.deleteTale(tale.id)
                 }
             }
         }

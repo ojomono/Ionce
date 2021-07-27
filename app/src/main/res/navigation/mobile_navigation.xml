@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_roll"
-        android:name="com.ojomono.ionce.ui.roll.RollFragment"
+        android:name="com.ojomono.ionce.ui.roll.main.RollFragment"
         android:label="@string/title_roll"
         tools:layout="@layout/fragment_roll" />
 

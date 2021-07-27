@@ -7,6 +7,7 @@ import com.google.firebase.firestore.DocumentId
  * from firebase authentication)
  */
 data class UserModel(
-    @DocumentId val id: String = "",
-    val tales: MutableList<TaleItemModel> = mutableListOf()
-)
+    @DocumentId override val id: String = "",
+    val tales: MutableList<TaleItemModel> = mutableListOf(),
+    val group: String = ""
+) : BaseModel()
