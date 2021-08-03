@@ -93,13 +93,14 @@
     <string name="group_roll_leave_button_text">Leave current group</string>
     <string name="group_roll_permission_rationale_message">Camera access is required to scan a group QR-code.</string>
     <string name="group_roll_permission_denied_message">Permission denied. Please grant camera access in order to join a group (scanning a group QR-code is the only supported way right now).</string>
+    <string name="group_roll_tales_icon_content_description">User tales</string>
 
     <!-- QR-code scanner -->
     <string name="q_r_code_scanner_title">QR-code scanner</string>
 
     <!-- Dialogs -->
-    <string name="dialog_save">Save</string>
-    <string name="dialog_cancel">Cancel</string>
     <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_save">Save</string>
 
 </resources>

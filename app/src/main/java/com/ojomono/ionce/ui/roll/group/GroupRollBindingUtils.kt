@@ -25,7 +25,7 @@ fun ScrollView.setGroupRollScreenVisibility(group: GroupModel?, forExisting: Boo
 @BindingAdapter("groupQRCodeBitmap")
 fun ImageView.setGroupQRCodeBitmap(group: GroupModel?) {
     val imageBitmap =
-        if (group != null) QRCodeGenerator.generateQRCode(group.id)
+        if (group != null) QRCodeGenerator.generate(group.id)
         else Bitmap.createBitmap(
             QRCodeGenerator.QR_CODE_SIZE,
             QRCodeGenerator.QR_CODE_SIZE,

@@ -8,6 +8,10 @@
         <variable
             name="userItem"
             type="com.ojomono.ionce.models.UserItemModel" />
+
+        <variable
+            name="clickListener"
+            type="com.ojomono.ionce.ui.roll.group.UsersListAdapter.UsersListener" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -31,11 +35,23 @@
                 android:id="@+id/text_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/image_tales"
                 android:padding="5dp"
                 android:textAppearance="?android:attr/textAppearanceListItem"
                 android:text="@{userItem.displayName}"
                 tools:text="title" />
 
+            <ImageView
+                android:id="@+id/image_tales"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_baseline_book_24"
+                android:padding="5dp"
+                android:contentDescription="@string/group_roll_tales_icon_content_description"
+                android:background="@drawable/all_oval_ripple"
+                android:onClick="@{() -> clickListener.onTales(userItem)}"
+                android:visibility="gone" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

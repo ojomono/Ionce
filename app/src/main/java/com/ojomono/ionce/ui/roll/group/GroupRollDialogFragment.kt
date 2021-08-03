@@ -79,6 +79,7 @@ class GroupRollDialogFragment : BaseDialogFragment() {
         super.handleEvent(event)
         when (event) {
             is GroupRollViewModel.EventType.OpenQRCodeScanner -> openQRCodeScanner()
+            is GroupRollViewModel.EventType.ShowUserTalesDialog -> showUserTalesDialog(event.uid)
         }
     }
 
@@ -86,6 +87,9 @@ class GroupRollDialogFragment : BaseDialogFragment() {
     /** private methods **/
     /***********************/
 
+    /**
+     * Open the camera for scanning QR-codes.
+     */
     private fun openQRCodeScanner() {
         setFragmentResultListener(RK_GROUP_ID) { _, bundle ->
             val result = bundle.getString(BK_GROUP_ID)
@@ -108,7 +112,7 @@ class GroupRollDialogFragment : BaseDialogFragment() {
 
             // Init the adapter
             val usersAdapter =
-                UsersListAdapter(getString(R.string.group_roll_member_list_header_text))
+                UsersListAdapter(getString(R.string.group_roll_member_list_header_text), viewModel)
             adapter = usersAdapter
 
             // Observe changes in members list
@@ -116,6 +120,13 @@ class GroupRollDialogFragment : BaseDialogFragment() {
                 it?.let { usersAdapter.addHeaderAndSubmitList(it) }
             })
         }
+    }
+
+    /**
+     * Show dialog for selecting tales from the list of the user with [uid].
+     */
+    private fun showUserTalesDialog(uid: String) {
+        TODO()
     }
 
 }

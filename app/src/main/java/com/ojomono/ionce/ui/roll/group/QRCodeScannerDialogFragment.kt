@@ -27,7 +27,6 @@ import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.android.material.snackbar.Snackbar
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentQRCodeScannerDialogBinding
-import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.StringResource
 import com.ojomono.ionce.utils.TAG
 import com.ojomono.ionce.ui.bases.FullScreenDialogFragment

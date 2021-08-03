@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentTalesBinding
-import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.ui.tales.edit.EditTaleDialogFragment
 import com.ojomono.ionce.utils.*
 import com.ojomono.ionce.ui.bases.BaseFragment
 import com.ojomono.ionce.ui.bases.BaseViewModel
+import com.ojomono.ionce.utils.proxies.DialogShower
 
 /**
  * A fragment representing a list of Tales.
@@ -130,21 +130,17 @@ class TalesFragment : BaseFragment() {
      * Show dialog for deleting the tale with title [taleTitle].
      */
     private fun showDeleteTaleDialog(taleTitle: String) =
-        AlertDialog(
-            message = StringResource(getString(R.string.tales_delete_dialog_message, taleTitle)),
-            onNegative = viewModel::clearClickedTale,
-            onPositive = viewModel::deleteTale,
-            okButtonText = StringResource(R.string.tales_delete_dialog_positive_button_text)
-        ).show(parentFragmentManager, FT_DELETE)
+        DialogShower.show(context) {
+            message(text = getString(R.string.tales_delete_dialog_message, taleTitle))
+            positiveButton(R.string.tales_delete_dialog_positive_button_text) { viewModel.deleteTale() }
+            negativeButton(R.string.dialog_cancel) { viewModel.clearClickedTale() }
+        }
 
     /**********************/
     /** Companion object **/
     /**********************/
 
     companion object {
-
-        // Fragment tags
-        const val FT_DELETE = "delete"
 
         // Column count
         const val ARG_COLUMN_COUNT = "column-count"

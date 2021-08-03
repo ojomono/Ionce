@@ -8,4 +8,20 @@ data class UserItemModel(
     override val id: String = "",
     val displayName: String = "",
     val tales: MutableList<TaleItemModel> = mutableListOf()
-) : BaseItemModel()
+) : BaseItemModel() {
+
+    companion object {
+        private const val FALLBACK_NAME_LENGTH = 6
+    }
+
+    /**
+     * Create a [UserItemModel] from a given full [user]. Use separate [displayName] param when it's
+     * given, or a part of the uid if not.
+     */
+    constructor(user: UserModel, displayName: String? = null) :
+            this(
+                user.id,
+                displayName ?: user.id.takeLast(FALLBACK_NAME_LENGTH),
+                user.tales
+            )
+}
