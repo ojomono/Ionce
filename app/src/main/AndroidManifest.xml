@@ -10,11 +10,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.SignInScreen"
+        android:theme="@style/AppTheme"
         android:fullBackupContent="@xml/backup_rules">
         <activity
             android:name=".ui.SplashActivity"
-            android:theme="@style/AppTheme.SplashScreen">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -23,7 +23,6 @@
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan" />
         <!-- setting "adjustPan" to prevent soft keyboard from stretching the bottom navigation -->
     </application>

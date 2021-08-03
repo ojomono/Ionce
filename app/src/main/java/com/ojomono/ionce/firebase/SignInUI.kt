@@ -56,7 +56,7 @@ object SignInUI {
             // Return the built intent
             return signInIntentBuilder.setAvailableProviders(providers)
                 .setLogo(R.drawable.app_logo) // Set logo drawable
-                .setTheme(R.style.AppTheme_SignInScreen) // Set theme
+                .setTheme(R.style.AppTheme) // Set theme
                 .build()
         }
 

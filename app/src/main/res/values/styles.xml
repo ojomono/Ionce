@@ -1,18 +1,7 @@
 <resources>
-    <!-- Base application theme. - SET SEPARATELY ON EACH ACTIVITY IN MANIFEST!
-     because if application theme is child of "Theme.MaterialComponents.*", sign-in screen buttons
-     lose their designs. -->
+    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
-    </style>
-
-    <!-- Sign-in screen theme - SET AS APPLICATION THEME IN MANIFEST!
-    because otherwise sign-in screen buttons lose their designs. -->
-    <style name="AppTheme.SignInScreen" parent="Theme.AppCompat.NoActionBar">
-        <!--        <item name="materialButtonStyle">@style/FirebaseUI.Button</item>-->
-        <item name="colorPrimary">@color/design_dark_default_color_primary</item>
-        <item name="colorPrimaryDark">@color/design_dark_default_color_primary_variant</item>
-        <item name="colorAccent">@color/design_dark_default_color_secondary</item>
     </style>
 
     <!-- Splash screen theme -->
