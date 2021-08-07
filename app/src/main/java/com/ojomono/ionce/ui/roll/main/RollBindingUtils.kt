@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.R
@@ -53,6 +54,17 @@ fun ImageView.setCoverSrcAndVisibility(coverUri: String?) {
     else {
         ImageLoader.load(context, Uri.parse(coverUri), this)
         View.VISIBLE
+    }
+}
+
+@BindingAdapter("rollButtonAppearance")
+fun TextView.setRollButtonAppearance(group: GroupModel?) {
+    if (group == null) {
+        text = resources.getString(R.string.roll_button_text_default)
+        background = getDrawable(context, R.drawable.roll_button_bg_default)
+    } else {
+        text = resources.getString(R.string.roll_button_text_group)
+        background = getDrawable(context, R.drawable.roll_button_bg_group)
     }
 }
 

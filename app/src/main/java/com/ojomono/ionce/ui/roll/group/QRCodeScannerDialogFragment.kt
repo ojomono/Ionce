@@ -44,9 +44,6 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
         private const val ARG_REQUEST_KEY = "request-key"
         private const val ARG_BUNDLE_KEY = "bundle-key"
 
-        // Fragment tags
-        const val FT_PERMISSIONS = "permissions"
-
         /**
          * Use this factory method to create a new instance of this fragment
          */
@@ -179,15 +176,21 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
     // TODO move to generic permission handling when made
     private fun checkPermissionAndInvoke(func: () -> Unit) {
         context?.let {
-            when {
-                ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) ==
-                        PackageManager.PERMISSION_GRANTED -> func.invoke()
-                shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ->
+
+            // If permission is granted - invoke func
+            if (ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED
+            ) func.invoke()
+
+            // If permission is not granted
+            else {
+                // Store function to run when granted
+                actionWaitingForPermission = func
+
+                // Ask for permissions
+                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
                     showRequestPermissionRationale()
-                else -> {
-                    actionWaitingForPermission = func   // Store function to run when granted
-                    requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
+                else requestPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }
