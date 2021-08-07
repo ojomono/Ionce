@@ -71,10 +71,10 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
+        ) { isGranted ->
             if (isGranted) actionWaitingForPermission?.invoke()
             else handlePermissionDenied()
-            actionWaitingForPermission = null   // Anyway, action is not waiting anymore
+            actionWaitingForPermission = null   // Anyway, action is not waiting anymore }
         }
 
     private val processor = object : Detector.Processor<Barcode> {
@@ -146,7 +146,6 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
 
         // Set camera view
         setupCameraView()
-        binding.surfaceView.holder.addCallback(callback)
 
         return binding.root
     }
@@ -166,10 +165,13 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
                 setProcessor(processor)
                 if (!isOperational) {
                     Log.d(TAG, "Native QR detector dependencies not available!")
-                } else
+                } else {
                     cameraSource = CameraSource.Builder(requireContext(), this)
                         .setAutoFocusEnabled(true)
                         .setFacing(CameraSource.CAMERA_FACING_BACK).build()
+                    binding.surfaceView.holder.addCallback(callback)
+                    binding.surfaceView.visibility = View.VISIBLE
+                }
             }
     }
 
