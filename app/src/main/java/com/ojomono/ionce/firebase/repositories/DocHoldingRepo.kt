@@ -48,17 +48,17 @@ abstract class DocHoldingRepo<T : BaseModel>(
             registration?.remove()
 
             // Get the current document reference
-            val docRef = Database.collection(collectionPath).document(id)
+            val newDocRef = Database.collection(collectionPath).document(id)
 
             // Save the document locally
-            task = docRef.get()
+            task = newDocRef.get()
             task.addOnSuccessListener { document.value = it }
                 .addOnFailureListener { exception ->
                     Log.d(TAG, "get failed with ", exception)
                 }
 
             // Listen for changes in the document
-            registration = docRef.addSnapshotListener { snapshot, e ->
+            registration = newDocRef.addSnapshotListener { snapshot, e ->
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else document.value = snapshot
             }
@@ -66,5 +66,14 @@ abstract class DocHoldingRepo<T : BaseModel>(
 
         return task
     }
+
+    /**
+     * Reload the current document data.
+     */
+    fun reloadDocument() =
+        GroupRepository.docRef?.get()?.addOnSuccessListener { document.value = it }
+            ?.addOnFailureListener { exception ->
+                Log.d(TAG, "get failed with ", exception)
+            }
 
 }

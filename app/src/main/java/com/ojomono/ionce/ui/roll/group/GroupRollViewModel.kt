@@ -20,6 +20,7 @@ class GroupRollViewModel : BaseViewModel(), UsersListAdapter.UsersListener {
     /** on click methods **/
     /**********************/
 
+    fun onRefreshClicked() = GroupRepository.reloadDocument()
     fun onJoinClicked() = postEvent(EventType.OpenQRCodeScanner)
     fun onCreateClicked() = GroupRepository.createGroup()
     fun onLeaveClicked() = GroupRepository.leaveGroup()

@@ -60,17 +60,22 @@ object GroupRepository : DocHoldingRepo<GroupModel>(GroupModel::class.java, CP_G
     fun leaveGroup() = UserRepository.docRef?.let { userRef ->
         docRef?.let { groupRef ->
 
-            // In a batch write: clear user's group, and remove the user from the group members
-            runGroupBatch("") {
+            // Get up-to-date members list to avoid deleting a group that another user just joined
+            reloadDocument()?.continueWithTask {
 
-                // If user is the only member - delete the group
-                if (model.value?.members?.any { it.key != userRef.id } == false) delete(groupRef)
-                else update(
-                    groupRef,
-                    "${GroupModel::members.name}.${userRef.id}",
-                    FieldValue.delete()
-                )
+                // In a batch write: clear user's group, and remove the user from the group members
+                runGroupBatch("") {
+
+                    // If user is the only member - delete the group
+                    if (model.value?.members?.any { it.key != userRef.id } == false) delete(groupRef)
+                    else update(
+                        groupRef,
+                        "${GroupModel::members.name}.${userRef.id}",
+                        FieldValue.delete()
+                    )
+                }
             }
+
 
         } ?: throw Utils.UserNotInGroupException
     } ?: throw Utils.NoSignedInUserException

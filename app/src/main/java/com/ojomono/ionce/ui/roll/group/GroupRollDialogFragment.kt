@@ -1,9 +1,7 @@
 package com.ojomono.ionce.ui.roll.group
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ProgressBar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResultListener
@@ -69,6 +67,21 @@ class GroupRollDialogFragment : BaseDialogFragment() {
         populateRecyclerView()
 
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        activity?.menuInflater?.inflate(R.menu.group_roll_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_refresh -> {
+                viewModel.onRefreshClicked()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     /********************************************/
