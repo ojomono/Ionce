@@ -124,6 +124,11 @@
                 android:layout_marginVertical="@dimen/activity_vertical_margin"
                 android:background="?attr/colorBackgroundFloating" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_tale_notice_text" />
+
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

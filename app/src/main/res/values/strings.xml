@@ -82,6 +82,7 @@
     <string name="edit_tale_media_image_content_description">Tale cover</string>
     <string name="edit_tale_media_icon_content_description">Add image</string>
     <string name="edit_tale_clear_button_text">Clear</string>
+    <string name="edit_tale_notice_text"><b>Notice</b>: All tales might come up on a roll, or a group roll, and be seen by users you are rolling with. Thus, the tale should not contain private or intimate details or pictures.</string>
 
     <!-- Group roll screen -->
     <string name="group_roll_screen_title">Group Roll Management</string>
