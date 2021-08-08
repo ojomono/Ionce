@@ -13,7 +13,6 @@ import com.google.firebase.ktx.Firebase
 import com.ojomono.ionce.databinding.ActivitySplashBinding
 import com.ojomono.ionce.firebase.Authentication
 import com.ojomono.ionce.firebase.Authentication.handleCollision
-import com.ojomono.ionce.firebase.Conversions
 import com.ojomono.ionce.firebase.SignInUI
 import com.ojomono.ionce.utils.TAG
 import com.ojomono.ionce.utils.withProgressBar
@@ -23,8 +22,8 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySplashBinding
 
     private val authResultLauncher =
-        registerForActivityResult(SignInUI.authResultContract) { idpResponse ->
-            handleAuthResponse(idpResponse)
+        registerForActivityResult(SignInUI.authResultContract) { res ->
+            handleAuthResponse(res.idpResponse)
         }
 
     /***********************/
@@ -40,7 +39,8 @@ class SplashActivity : AppCompatActivity() {
         setContentView(view)
 
         // If no user is logged in, open sign-in screen
-        if (Authentication.currentUser.value == null) authResultLauncher.launch(intent)
+        if (Authentication.currentUser.value == null)
+            authResultLauncher.launch(SignInUI.buildSignInIntent(intent))
 
         // If a user is already logged in, check dynamic links and open home screen
         else {
@@ -59,7 +59,7 @@ class SplashActivity : AppCompatActivity() {
     private fun handleAuthResponse(idpResponse: IdpResponse?) =
         when {
             // If response is null the user canceled the sign-in flow using the back button.
-            (idpResponse == null) -> Unit   // Do nothing.
+            (idpResponse == null) -> finish()   // Close app.
 
             // Handle error from returned data.
             (idpResponse.error != null) -> idpResponse.error?.let { handleSignInFailed(it) }
@@ -138,12 +138,6 @@ class SplashActivity : AppCompatActivity() {
             .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }
 
     private fun startMainActivity() {
-
-        // TODO remove call to fixUserPhotoUriPathIfNeeded when all user photos has converted ==
-        //  When 'images/' folder in Firestore Storage will get empty.
-        // In v1.0.1, user photos were saved in the path: 'imaged/<UID>'. Fix that.
-        Authentication.currentUser.value?.let { Conversions.fixUserPhotoPathInStorageIfNeeded(it) }
-
         startActivity(Intent(this, MainActivity::class.java))
         finish()    // Avoid coming back here if user presses 'back'
     }

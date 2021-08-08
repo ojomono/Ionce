@@ -41,7 +41,7 @@ abstract class DocHoldingRepo<T : BaseModel>(
             registration?.remove()
             document.value = null
 
-            // If the new id belongs to another document than the one we currently refer to
+            // If the new id belongs to another document then the one we currently refer to
         } else if ((model.value?.id ?: "") != id) {
 
             // If a change listener is registered to the previous document - remove it
