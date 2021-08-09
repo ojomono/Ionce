@@ -17,14 +17,14 @@ import com.ojomono.ionce.utils.proxies.ImageLoader
 
 const val TITLE_LINES_FOR_TALE_WITH_COVER = 2
 
-@BindingAdapter("noTalesTextVisibility")
-fun TextView.setNoTalesTextVisibility(tales: List<TaleItemModel>?) {
-    visibility = if (tales.isNullOrEmpty()) View.VISIBLE else View.GONE
+@BindingAdapter("tales", "group")
+fun TextView.setNoTalesTextVisibility(tales: List<TaleItemModel>?, group: GroupModel?) {
+    visibility = if (tales.isNullOrEmpty() and (group == null)) View.VISIBLE else View.GONE
 }
 
-@BindingAdapter("rollScreenVisibility")
-fun LinearLayout.setRollScreenVisibility(tales: List<TaleItemModel>?) {
-    visibility = if (!tales.isNullOrEmpty()) View.VISIBLE else View.GONE
+@BindingAdapter("tales", "group")
+fun LinearLayout.setRollScreenVisibility(tales: List<TaleItemModel>?, group: GroupModel?) {
+    visibility = if (!tales.isNullOrEmpty() or (group != null)) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("hintTextVisibility")

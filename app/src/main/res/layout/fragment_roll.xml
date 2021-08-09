@@ -23,7 +23,8 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/roll_no_tales_text"
             android:gravity="center"
-            app:noTalesTextVisibility="@{viewModel.tales}"
+            app:tales="@{viewModel.tales}"
+            app:group="@{viewModel.group}"
             tools:visibility="gone" />
 
         <LinearLayout
@@ -31,7 +32,8 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            app:rollScreenVisibility="@{viewModel.tales}"
+            app:tales="@{viewModel.tales}"
+            app:group="@{viewModel.group}"
             tools:context=".ui.roll.main.RollFragment"
             tools:visibility="visible">
 
@@ -157,9 +159,9 @@
                     android:layout_centerHorizontal="true"
                     android:gravity="center"
                     android:onClick="@{() -> viewModel.onRollClicked()}"
+                    android:padding="@dimen/activity_horizontal_margin"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="?attr/colorSecondary"
-                    android:padding="@dimen/activity_horizontal_margin"
                     app:rollButtonAppearance="@{viewModel.group}"
                     tools:background="@drawable/roll_button_bg_default"
                     tools:text="ROLL!" />

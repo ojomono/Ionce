@@ -91,11 +91,16 @@ class RollViewModel : BaseViewModel() {
         // Always hide owner name as default
         ownerShown.set(false)
 
-        // If all users in group has no tales - show an error toast
-        group.value?.members?.let { membersList ->
-            if (membersList.all { it.value.tales.isEmpty() })
+        // Filter out the users that has no tales
+        val membersWithTales = group.value?.members?.filter { it.value.tales.isNotEmpty() }
+        membersWithTales?.let { membersList ->
+
+            // If all users in group has no tales - show an error toast
+            if (membersList.isNullOrEmpty())
                 showMessageByResId(R.string.roll_error_no_tales_in_group)
             else {
+
+                // Roll a random user and a random tale of that user
                 _rolledMember.value = getRandomItem(membersList.values.toList(), rolledMember.value)
                 rolledMember.value?.tales?.let { talesList ->
                     _rolledTale.value = getRandomItem(talesList, rolledTale.value)
@@ -108,12 +113,14 @@ class RollViewModel : BaseViewModel() {
      * Get a random tale, excluding the last rolled one (unless user has only one tale).
      */
     private fun <T : BaseItemModel> getRandomItem(list: List<T>, exclude: T?): T? =
-        // If the user has only one tale - get it
-        if (list.size == 1) list[0]
-        // If he has more, get a random one, excluding the last rolled tale
-        else {
-            val listMinusExclude = if (exclude != null) list.minusElement(exclude) else list
-            listMinusExclude.minusElement(exclude).random()
+        when {
+            list.isNullOrEmpty() -> null    // list is empty - return null
+            list.size == 1 -> list[0]       // return only element of list
+            else -> {
+                // Exclude last rolled item and return a random item
+                val listMinusExclude = if (exclude != null) list.minusElement(exclude) else list
+                listMinusExclude.minusElement(exclude).random()
+            }
         }
 
 }

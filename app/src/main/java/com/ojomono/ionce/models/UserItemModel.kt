@@ -11,7 +11,7 @@ data class UserItemModel(
 ) : BaseItemModel() {
 
     companion object {
-        private const val FALLBACK_NAME_LENGTH = 6
+        private const val FALLBACK_NAME_LENGTH = 8
     }
 
     /**
