@@ -27,7 +27,7 @@ object GroupRepository : DocHoldingRepo<GroupModel>(GroupModel::class.java, CP_G
         val groupRef = Database.collection(CP_GROUPS).document()
 
         // Set the current user as the only user in the group
-        val group = GroupModel(groupRef.id, hashMapOf(userRef.id to buildUserItem(userRef.id)))
+        val group = GroupModel(groupRef.id, hashMapOf(userRef.id to buildUserItem()))
 
         // In a batch write: update user's group and set the new group
         runGroupBatch(groupRef.id) { set(groupRef, group) }
@@ -47,7 +47,7 @@ object GroupRepository : DocHoldingRepo<GroupModel>(GroupModel::class.java, CP_G
             update(
                 groupRef,
                 "${GroupModel::members.name}.${userRef.id}",
-                buildUserItem(userRef.id)
+                buildUserItem()
             )
         }
 
@@ -60,17 +60,22 @@ object GroupRepository : DocHoldingRepo<GroupModel>(GroupModel::class.java, CP_G
     fun leaveGroup() = UserRepository.docRef?.let { userRef ->
         docRef?.let { groupRef ->
 
-            // In a batch write: clear user's group, and remove the user from the group members
-            runGroupBatch("") {
+            // Get up-to-date members list to avoid deleting a group that another user just joined
+            reloadDocument()?.continueWithTask {
 
-                // If user is the only member - delete the group
-                if (model.value?.members?.any { it.key != userRef.id } == false) delete(groupRef)
-                else update(
-                    groupRef,
-                    "${GroupModel::members.name}.${userRef.id}",
-                    FieldValue.delete()
-                )
+                // In a batch write: clear user's group, and remove the user from the group members
+                runGroupBatch("") {
+
+                    // If user is the only member - delete the group
+                    if (model.value?.members?.any { it.key != userRef.id } == false) delete(groupRef)
+                    else update(
+                        groupRef,
+                        "${GroupModel::members.name}.${userRef.id}",
+                        FieldValue.delete()
+                    )
+                }
             }
+
 
         } ?: throw Utils.UserNotInGroupException
     } ?: throw Utils.NoSignedInUserException
@@ -80,22 +85,17 @@ object GroupRepository : DocHoldingRepo<GroupModel>(GroupModel::class.java, CP_G
     /*********************/
 
     /**
-     * Get a [UserItemModel] for the given [uid].
+     * Get a [UserItemModel] for the current user.
      */
-    private fun buildUserItem(uid: String): UserItemModel {
+    private fun buildUserItem() = UserRepository.model.value?.let { userData ->
 
         // TODO avoid referring to Authentication object here - make a UserRepository object
         val displayName =
-            Authentication.currentUser.value?.displayName?.let {
-                if (it.isNotBlank()) it else uid
-            } ?: uid
+            Authentication.currentUser.value?.displayName?.let { if (it.isNotBlank()) it else null }
 
-        return UserItemModel(
-            uid,
-            displayName,
-            UserRepository.model.value?.tales ?: mutableListOf()
-        )
-    }
+        UserItemModel(userData, displayName)
+
+    } ?: throw Utils.NoSignedInUserException
 
     /**
      * In a batch write, run the given [action] and update the current user's group to [id].

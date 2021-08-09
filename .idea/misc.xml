@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/all_gradient_bg.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_button_bg.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_button_group_bg.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/splash_drawable.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/layout/activity_splash.xml" value="0.3390625" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/layout/fragment_edit_tale_dialog.xml" value="0.3390625" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/layout/fragment_roll.xml" value="0.37256719184430026" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/layout/item_tale.xml" value="0.3390625" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/layout/item_user.xml" value="0.325" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/menu/group_roll_menu.xml" value="0.3390625" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

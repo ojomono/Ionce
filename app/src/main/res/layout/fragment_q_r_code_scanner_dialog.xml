@@ -24,10 +24,13 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
+        <!-- Set to invisible, because when permission is granted, setting from invisible to visible
+         refreshes the view and makes the camera show.-->
         <SurfaceView
             android:id="@+id/surface_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="invisible" />
 
     </FrameLayout>
 </layout>

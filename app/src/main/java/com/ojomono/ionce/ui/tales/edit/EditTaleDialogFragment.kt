@@ -11,10 +11,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentEditTaleDialogBinding
-import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.ui.bases.BaseDialogFragment
 import com.ojomono.ionce.ui.bases.BaseViewModel
 import com.ojomono.ionce.utils.StringResource
+import com.ojomono.ionce.utils.proxies.DialogShower
 import com.ojomono.ionce.utils.proxies.ImageCompressor
 
 /**
@@ -29,10 +29,6 @@ class EditTaleDialogFragment : BaseDialogFragment() {
     /**********************/
 
     companion object {
-
-        // Fragment tags
-        const val FT_DISCARD = "discard"
-
         // the fragment initialization parameters
         private const val ARG_TALE_ID = "tale-id"
 
@@ -179,16 +175,17 @@ class EditTaleDialogFragment : BaseDialogFragment() {
         if (!viewModel.didTaleChange()) dismiss()
 
         // Else, ask user to confirm changes discard
-        else {
-            AlertDialog(
-                message = StringResource(
+        else
+            DialogShower.show(context) {
+                message(
                     if (taleId.isNullOrEmpty()) R.string.edit_tale_discard_dialog_message_new
                     else R.string.edit_tale_discard_dialog_message_update
-                ),
-                onPositive = ::dismiss,
-                okButtonText = StringResource(R.string.edit_tale_discard_dialog_positive_button_text)
-            ).show(parentFragmentManager, FT_DISCARD)
-        }
+                )
+                positiveButton(R.string.edit_tale_discard_dialog_positive_button_text) {
+                    this@EditTaleDialogFragment.dismiss()
+                }
+                negativeButton(R.string.dialog_cancel)
+            }
     }
 
     /**

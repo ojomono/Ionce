@@ -1,10 +1,12 @@
 package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.telephony.PhoneNumberUtils
+import android.text.InputType
 import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
@@ -18,11 +20,11 @@ import com.google.firebase.FirebaseException    // TODO avoid importing firebase
 import com.google.firebase.auth.*   // TODO avoid importing firebase packages here
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentProfileBinding
-import com.ojomono.ionce.ui.dialogs.InputDialog
-import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.*
 import com.ojomono.ionce.ui.bases.BaseFragment
 import com.ojomono.ionce.ui.bases.BaseViewModel
+import com.ojomono.ionce.utils.proxies.DialogShower
+import com.ojomono.ionce.utils.proxies.DialogShower.withInput
 import com.ojomono.ionce.utils.proxies.ImageCompressor
 import java.io.*
 import java.util.concurrent.TimeUnit
@@ -48,6 +50,9 @@ class ProfileFragment : BaseFragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) viewModel.handleGoogleResult(it.data)
         }
+
+    // Verification code dialog should be saved in order to dismiss them if verified automatically
+    private var verificationCodeDialog: Dialog? = null
 
     /***********************/
     /** Lifecycle methods **/
@@ -167,34 +172,43 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for updating the current user's name.
      */
     private fun showNameEditDialog() =
-        InputDialog(
-            title = StringResource(R.string.profile_name_edit_dialog_title),
-            onPositive = viewModel::updateUserName,
-            defaultInputText = StringResource(viewModel.user.value?.displayName ?: "")
-        ).show(parentFragmentManager, FT_NAME)
+        DialogShower.show(context) {
+            title(R.string.profile_name_edit_dialog_title)
+            withInput(prefill = viewModel.user.value?.displayName ?: "") { _, text ->
+                viewModel.updateUserName(text.toString())
+            }
+            positiveButton(R.string.dialog_save)
+            negativeButton(R.string.dialog_cancel)
+        }
 
     /**
      * Present the user an interface that prompts them to type their email address.
      */
     private fun showEmailAddressDialog() =
-        InputDialog(
-            title = StringResource(R.string.profile_email_link_dialog_title),
-            onPositive = viewModel::sendSignInLinkToEmail,
-            okButtonText = StringResource(R.string.profile_email_link_dialog_button),
-            defaultInputText = StringResource(viewModel.user.value?.email ?: "")
-        ).show(parentFragmentManager, FT_EMAIL)
+        DialogShower.show(context) {
+            title(R.string.profile_email_link_dialog_title)
+            withInput(
+                prefill = viewModel.user.value?.email ?: "",
+                inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+            ) { _, text -> viewModel.sendSignInLinkToEmail(text.toString()) }
+            positiveButton(R.string.profile_email_link_dialog_button)
+            negativeButton(R.string.dialog_cancel)
+        }
 
     /**
      * Present the user an interface that prompts them to type their phone number.
      */
     private fun showPhoneVerifyDialog() =
-        InputDialog(
-            title = StringResource(R.string.profile_phone_verify_dialog_title),
-            message = StringResource(R.string.profile_phone_verify_dialog_message),
-            onPositive = ::verifyPhoneNumber,
-            okButtonText = StringResource(R.string.profile_phone_verify_dialog_button),
-            defaultInputText = StringResource(viewModel.user.value?.phoneNumber ?: "")
-        ).show(parentFragmentManager, FT_PHONE_NUMBER)
+        DialogShower.show(context) {
+            title(R.string.profile_phone_verify_dialog_title)
+            message(R.string.profile_phone_verify_dialog_message)
+            withInput(
+                prefill = viewModel.user.value?.phoneNumber ?: "",
+                inputType = InputType.TYPE_CLASS_PHONE
+            ) { _, text -> verifyPhoneNumber(text.toString()) }
+            positiveButton(R.string.profile_phone_verify_dialog_button)
+            negativeButton(R.string.dialog_cancel)
+        }
 
     /**
      * Verify the given [phoneNumber].
@@ -246,8 +260,7 @@ class ProfileFragment : BaseFragment() {
                 viewModel.phoneNumberToVerify = ""    // Clear flag
 
                 // If verified automatically, no need for the manual dialog
-                (parentFragmentManager.findFragmentByTag(FT_PHONE_CODE) as
-                        InputDialog<*>).dismiss()
+                verificationCodeDialog?.dismiss()
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
@@ -283,17 +296,20 @@ class ProfileFragment : BaseFragment() {
      * message.
      */
     private fun showVerificationCodeDialog() =
-        InputDialog(
-            title = StringResource(R.string.profile_phone_verify_dialog_title),
-            message = StringResource(
-                getString(
+        DialogShower.show(context) {
+            title(R.string.profile_phone_verify_dialog_title)
+            message(
+                text = getString(
                     R.string.profile_phone_verification_code_dialog_message,
                     viewModel.phoneNumberToVerify
                 )
-            ),
-            onPositive = viewModel::handlePhoneVerificationCode,
-            okButtonText = StringResource(getString(R.string.profile_phone_verify_dialog_button))
-        ).show(parentFragmentManager, FT_PHONE_CODE)
+            )
+            withInput(inputType = InputType.TYPE_CLASS_NUMBER) { _, text ->
+                viewModel.handlePhoneVerificationCode(text.toString())
+            }
+            positiveButton(R.string.profile_phone_verify_dialog_button)
+            negativeButton(R.string.dialog_cancel)
+        }.also { verificationCodeDialog = it }
 
     /**
      * Show activity for linking with Twitter.
@@ -330,16 +346,18 @@ class ProfileFragment : BaseFragment() {
      * Show dialog for verifying decision to unlink given [providerNameResId].
      */
     private fun showUnlinkProviderDialog(providerNameResId: Int) =
-        AlertDialog(
-            message = StringResource(
-                getString(
+        DialogShower.show(context) {
+            message(
+                text = getString(
                     R.string.profile_unlink_provider_dialog_message,
                     getString(providerNameResId)
                 )
-            ),
-            onPositive = { viewModel.unlinkProvider(providerNameResId) },
-            okButtonText = StringResource(getString(R.string.profile_unlink_provider_positive_button_text))
-        ).show(parentFragmentManager, FT_UNLINK)
+            )
+            positiveButton(R.string.profile_unlink_provider_positive_button_text) {
+                viewModel.unlinkProvider(providerNameResId)
+            }
+            negativeButton(R.string.dialog_cancel)
+        }
 
     /***************/
     /** Constants **/
@@ -349,13 +367,6 @@ class ProfileFragment : BaseFragment() {
         // Facebook login button permissions
         const val FP_EMAIL = "email"
         const val FP_PUBLIC_PROFILE = "public_profile"
-
-        // Fragment tags
-        const val FT_NAME = "name"
-        const val FT_EMAIL = "email"
-        const val FT_PHONE_NUMBER = "phone_number"
-        const val FT_PHONE_CODE = "phone_code"
-        const val FT_UNLINK = "unlink"
 
         // others
         const val PHONE_VERIFICATION_TIMEOUT = 60L

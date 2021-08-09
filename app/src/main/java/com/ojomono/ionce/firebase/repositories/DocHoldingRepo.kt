@@ -41,24 +41,24 @@ abstract class DocHoldingRepo<T : BaseModel>(
             registration?.remove()
             document.value = null
 
-            // If the new id belongs to another document than the one we currently refer to
+            // If the new id belongs to another document then the one we currently refer to
         } else if ((model.value?.id ?: "") != id) {
 
             // If a change listener is registered to the previous document - remove it
             registration?.remove()
 
             // Get the current document reference
-            val docRef = Database.collection(collectionPath).document(id)
+            val newDocRef = Database.collection(collectionPath).document(id)
 
             // Save the document locally
-            task = docRef.get()
+            task = newDocRef.get()
             task.addOnSuccessListener { document.value = it }
                 .addOnFailureListener { exception ->
                     Log.d(TAG, "get failed with ", exception)
                 }
 
             // Listen for changes in the document
-            registration = docRef.addSnapshotListener { snapshot, e ->
+            registration = newDocRef.addSnapshotListener { snapshot, e ->
                 if (e != null) Log.w(TAG, "Listen failed.", e)
                 else document.value = snapshot
             }
@@ -66,5 +66,14 @@ abstract class DocHoldingRepo<T : BaseModel>(
 
         return task
     }
+
+    /**
+     * Reload the current document data.
+     */
+    fun reloadDocument() =
+        GroupRepository.docRef?.get()?.addOnSuccessListener { document.value = it }
+            ?.addOnFailureListener { exception ->
+                Log.d(TAG, "get failed with ", exception)
+            }
 
 }

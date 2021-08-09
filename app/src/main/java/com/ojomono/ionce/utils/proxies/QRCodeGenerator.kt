@@ -5,7 +5,6 @@ import android.graphics.Color
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
-import com.ojomono.ionce.R
 
 /**
  * Handles QR-code generating - wrapping zxing.
@@ -19,7 +18,7 @@ object QRCodeGenerator {
     /**
      * Encode the given [contents], and return as QR-code bitmap.
      */
-    fun generateQRCode(contents: String): Bitmap {
+    fun generate(contents: String): Bitmap {
 
         // Make the QR code buffer border narrower
         val hints = hashMapOf<EncodeHintType, Int>().also { it[EncodeHintType.MARGIN] = 1 }

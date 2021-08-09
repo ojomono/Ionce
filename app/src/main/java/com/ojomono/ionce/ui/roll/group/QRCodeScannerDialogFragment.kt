@@ -27,7 +27,6 @@ import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.android.material.snackbar.Snackbar
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentQRCodeScannerDialogBinding
-import com.ojomono.ionce.ui.dialogs.AlertDialog
 import com.ojomono.ionce.utils.StringResource
 import com.ojomono.ionce.utils.TAG
 import com.ojomono.ionce.ui.bases.FullScreenDialogFragment
@@ -44,9 +43,6 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
         // the fragment initialization parameters
         private const val ARG_REQUEST_KEY = "request-key"
         private const val ARG_BUNDLE_KEY = "bundle-key"
-
-        // Fragment tags
-        const val FT_PERMISSIONS = "permissions"
 
         /**
          * Use this factory method to create a new instance of this fragment
@@ -75,10 +71,10 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
+        ) { isGranted ->
             if (isGranted) actionWaitingForPermission?.invoke()
             else handlePermissionDenied()
-            actionWaitingForPermission = null   // Anyway, action is not waiting anymore
+            actionWaitingForPermission = null   // Anyway, action is not waiting anymore }
         }
 
     private val processor = object : Detector.Processor<Barcode> {
@@ -150,7 +146,6 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
 
         // Set camera view
         setupCameraView()
-        binding.surfaceView.holder.addCallback(callback)
 
         return binding.root
     }
@@ -170,25 +165,34 @@ class QRCodeScannerDialogFragment : FullScreenDialogFragment() {
                 setProcessor(processor)
                 if (!isOperational) {
                     Log.d(TAG, "Native QR detector dependencies not available!")
-                } else
+                } else {
                     cameraSource = CameraSource.Builder(requireContext(), this)
                         .setAutoFocusEnabled(true)
                         .setFacing(CameraSource.CAMERA_FACING_BACK).build()
+                    binding.surfaceView.holder.addCallback(callback)
+                    binding.surfaceView.visibility = View.VISIBLE
+                }
             }
     }
 
     // TODO move to generic permission handling when made
     private fun checkPermissionAndInvoke(func: () -> Unit) {
         context?.let {
-            when {
-                ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) ==
-                        PackageManager.PERMISSION_GRANTED -> func.invoke()
-                shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ->
+
+            // If permission is granted - invoke func
+            if (ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED
+            ) func.invoke()
+
+            // If permission is not granted
+            else {
+                // Store function to run when granted
+                actionWaitingForPermission = func
+
+                // Ask for permissions
+                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
                     showRequestPermissionRationale()
-                else -> {
-                    actionWaitingForPermission = func   // Store function to run when granted
-                    requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
+                else requestPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }

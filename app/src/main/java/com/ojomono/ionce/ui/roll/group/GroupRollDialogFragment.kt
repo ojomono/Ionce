@@ -1,9 +1,7 @@
 package com.ojomono.ionce.ui.roll.group
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ProgressBar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResultListener
@@ -71,6 +69,21 @@ class GroupRollDialogFragment : BaseDialogFragment() {
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        activity?.menuInflater?.inflate(R.menu.group_roll_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_refresh -> {
+                viewModel.onRefreshClicked()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     /********************************************/
     /** EventStateHolder.EventObserver methods **/
     /********************************************/
@@ -79,6 +92,7 @@ class GroupRollDialogFragment : BaseDialogFragment() {
         super.handleEvent(event)
         when (event) {
             is GroupRollViewModel.EventType.OpenQRCodeScanner -> openQRCodeScanner()
+            is GroupRollViewModel.EventType.ShowUserTalesDialog -> showUserTalesDialog(event.uid)
         }
     }
 
@@ -86,6 +100,9 @@ class GroupRollDialogFragment : BaseDialogFragment() {
     /** private methods **/
     /***********************/
 
+    /**
+     * Open the camera for scanning QR-codes.
+     */
     private fun openQRCodeScanner() {
         setFragmentResultListener(RK_GROUP_ID) { _, bundle ->
             val result = bundle.getString(BK_GROUP_ID)
@@ -108,7 +125,7 @@ class GroupRollDialogFragment : BaseDialogFragment() {
 
             // Init the adapter
             val usersAdapter =
-                UsersListAdapter(getString(R.string.group_roll_member_list_header_text))
+                UsersListAdapter(getString(R.string.group_roll_member_list_header_text), viewModel)
             adapter = usersAdapter
 
             // Observe changes in members list
@@ -116,6 +133,13 @@ class GroupRollDialogFragment : BaseDialogFragment() {
                 it?.let { usersAdapter.addHeaderAndSubmitList(it) }
             })
         }
+    }
+
+    /**
+     * Show dialog for selecting tales from the list of the user with [uid].
+     */
+    private fun showUserTalesDialog(uid: String) {
+        TODO()
     }
 
 }
