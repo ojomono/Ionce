@@ -21,7 +21,7 @@ data class UserItemModel(
     constructor(user: UserModel, displayName: String? = null) :
             this(
                 user.id,
-                displayName ?: user.id.takeLast(FALLBACK_NAME_LENGTH),
+                displayName ?: user.id.take(FALLBACK_NAME_LENGTH),
                 user.tales
             )
 }

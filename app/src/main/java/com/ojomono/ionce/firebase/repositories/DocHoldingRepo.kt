@@ -71,7 +71,7 @@ abstract class DocHoldingRepo<T : BaseModel>(
      * Reload the current document data.
      */
     fun reloadDocument() =
-        GroupRepository.docRef?.get()?.addOnSuccessListener { document.value = it }
+        docRef?.get()?.addOnSuccessListener { document.value = it }
             ?.addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
             }
