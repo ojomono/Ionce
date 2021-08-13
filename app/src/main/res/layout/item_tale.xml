@@ -57,11 +57,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_baseline_delete_24"
-                android:padding="5dp"
-                android:contentDescription="@string/tales_delete_icon_content_description"
                 android:background="@drawable/all_oval_ripple"
-                android:onClick="@{() -> clickListener.onDelete(taleItem)}" />
+                android:contentDescription="@string/tales_delete_icon_content_description"
+                android:onClick="@{() -> clickListener.onDelete(taleItem)}"
+                android:padding="5dp"
+                android:src="@drawable/ic_baseline_delete_24" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

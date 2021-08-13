@@ -31,6 +31,7 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
     // Types of supported events
     sealed class EventType : BaseEventType() {
         object ShowImagePicker : EventType()
+        object SaveAndDismiss : EventType()
     }
 
     /**********************/
@@ -38,8 +39,8 @@ class EditTaleViewModel(private var taleId: String = "") : BaseViewModel() {
     /**********************/
 
     fun onPictureClicked() = events.postEvent(EventType.ShowImagePicker)
-
     fun onCoverClear() = run { _cover.value = null }
+    fun onSaveClicked() = events.postEvent(EventType.SaveAndDismiss)
 
     /*******************/
     /** logic methods **/
