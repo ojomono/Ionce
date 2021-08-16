@@ -72,13 +72,9 @@ abstract class BaseDialogFragment : FullScreenDialogFragment(),
         return binding
     }
 
-    /***********************/
-    /** private methods **/
-    /***********************/
-
     /**
      * Show the given [message].
      */
-    private fun showMessage(message: String?) =
+    protected fun showMessage(message: String?) =
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }

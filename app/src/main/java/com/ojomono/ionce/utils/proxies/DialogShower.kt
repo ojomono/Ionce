@@ -2,10 +2,13 @@ package com.ojomono.ionce.utils.proxies
 
 import android.content.Context
 import android.text.InputType
+import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.InputCallback
 import com.afollestad.materialdialogs.input.input
+import com.afollestad.materialdialogs.list.MultiChoiceListener
+import com.afollestad.materialdialogs.list.listItemsMultiChoice
 
 /**
  * Handles all dialog showing - wrapping MaterialDialog.
@@ -36,5 +39,23 @@ object DialogShower {
         waitForPositiveButton,
         allowEmpty,
         callback
+    )
+
+    fun MaterialDialog.withListItemsMultiChoice(
+        @ArrayRes res: Int? = null,
+        items: List<CharSequence>? = null,
+        disabledIndices: IntArray? = null,
+        initialSelection: IntArray = IntArray(0),
+        waitForPositiveButton: Boolean = true,
+        allowEmptySelection: Boolean = false,
+        selection: MultiChoiceListener = null
+    ) = listItemsMultiChoice(
+        res,
+        items,
+        disabledIndices,
+        initialSelection,
+        waitForPositiveButton,
+        allowEmptySelection,
+        selection
     )
 }

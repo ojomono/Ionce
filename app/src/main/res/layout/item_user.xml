@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="currentUid"
+            type="String" />
+
+        <variable
             name="userItem"
             type="com.ojomono.ionce.models.UserItemModel" />
 
@@ -46,12 +50,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_baseline_book_24"
-                android:padding="5dp"
-                android:contentDescription="@string/group_roll_tales_icon_content_description"
                 android:background="@drawable/all_oval_ripple"
+                android:contentDescription="@string/group_roll_tales_icon_content_description"
                 android:onClick="@{() -> clickListener.onTales(userItem)}"
-                android:visibility="gone" />
+                android:padding="5dp"
+                android:src="@drawable/ic_baseline_book_24"
+                app:currentUid="@{currentUid}"
+                app:itemUid="@{userItem.id}" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

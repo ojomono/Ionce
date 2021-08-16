@@ -2,7 +2,9 @@ package com.ojomono.ionce.ui.roll.group
 
 import androidx.lifecycle.Transformations
 import com.ojomono.ionce.firebase.repositories.GroupRepository
+import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.firebase.repositories.UserRepository
+import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.models.UserItemModel
 import com.ojomono.ionce.ui.bases.BaseViewModel
 
@@ -10,11 +12,12 @@ class GroupRollViewModel : BaseViewModel(), UsersListAdapter.UsersListener {
     // The current group of the user
     val group = GroupRepository.model
     val members = Transformations.map(group) { it?.members?.values?.toList() }
+    val currentUser = UserRepository.model
 
     // Types of supported events
     sealed class EventType : BaseEventType() {
         object OpenQRCodeScanner : EventType()
-        class ShowUserTalesDialog(val uid: String) : EventType()
+        class ShowUserTalesDialog(val user: UserItemModel) : EventType()
     }
 
     /**********************/
@@ -29,14 +32,20 @@ class GroupRollViewModel : BaseViewModel(), UsersListAdapter.UsersListener {
     fun onJoinClicked() = postEvent(EventType.OpenQRCodeScanner)
     fun onCreateClicked() = GroupRepository.createGroup()
     fun onLeaveClicked() = GroupRepository.leaveGroup()
-
     override fun onTales(userItem: UserItemModel) =
-        postEvent(EventType.ShowUserTalesDialog(userItem.id))
+        postEvent(EventType.ShowUserTalesDialog(userItem))
 
     /*******************/
     /** logic methods **/
     /*******************/
 
     fun joinGroup(groupId: String) = GroupRepository.joinGroup(groupId)
+
+    fun setFriendTales(uid: String, tales: List<TaleItemModel>) =
+        members.value?.find { it.id == uid }?.let {
+            UserRepository.setFriend(
+                UserItemModel(uid, it.displayName, tales as MutableList<TaleItemModel>)
+            )
+        }
 
 }

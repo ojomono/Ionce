@@ -97,6 +97,10 @@
     <string name="group_roll_permission_rationale_message">Camera access is required to scan a group QR-code.</string>
     <string name="group_roll_permission_denied_message">Permission denied. Please grant camera access in order to join a group (scanning a group QR-code is the only supported way right now).</string>
     <string name="group_roll_tales_icon_content_description">User tales</string>
+    <string name="group_roll_member_has_no_tales_message">This user has no tales.</string>
+    <string name="group_roll_tales_dialog_title">Add to collection</string>
+    <string name="group_roll_tales_dialog_message">Select the tales that %1$s already told you and add them to your "heard tales" collection</string>
+    <string name="group_roll_tales_dialog_button_text">Add selected tales to collection</string>
 
     <!-- QR-code scanner -->
     <string name="q_r_code_scanner_title">QR-code scanner</string>

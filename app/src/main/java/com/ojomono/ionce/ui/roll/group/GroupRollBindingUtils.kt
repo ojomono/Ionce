@@ -34,3 +34,8 @@ fun ImageView.setGroupQRCodeBitmap(group: GroupModel?) {
 
     setImageBitmap(imageBitmap)
 }
+
+@BindingAdapter("currentUid", "itemUid")
+fun ImageView.setTalesIconVisibility(currentUid: String, itemUid: String) {
+    visibility = if (currentUid != itemUid) View.VISIBLE else View.GONE
+}
