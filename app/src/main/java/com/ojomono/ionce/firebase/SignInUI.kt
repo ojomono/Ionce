@@ -13,7 +13,8 @@ import com.ojomono.ionce.R
 object SignInUI {
 
     // Constants
-    private const val TOS_URL = "https://i-once.flycricket.io/privacy.html"
+    // TODO use string recourses
+    private const val TOS_URL = "https://i-once.flycricket.io/terms.html"
     private const val PRIVACY_POLICY_URL = "https://i-once.flycricket.io/privacy.html"
 
     val authResultContract = FirebaseAuthUIActivityResultContract()

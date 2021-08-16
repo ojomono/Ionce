@@ -43,6 +43,7 @@
     <string name="profile_unlink_provider_dialog_message">Unlink %1$s account?</string>
     <string name="profile_unlink_provider_positive_button_text">unlink</string>
     <string name="profile_error_last_provider">You must have at least 1 provider.</string>
+    <string name="profile_footer_text">©2021 Omer Levy ● <a href="https://i-once.flycricket.io/terms.html">Terms of Service</a> ● <a href="https://i-once.flycricket.io/privacy.html">Privacy Policy</a></string>
 
     <!-- Tales screen -->
     <string name="tales_hint_text">You don\'t have any tales yet.\nYou can add some with the \'+\' button in the bottom-right corner.</string>
