@@ -3,7 +3,6 @@ package com.ojomono.ionce.ui.roll.main
 import android.net.Uri
 import android.text.TextUtils
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -58,26 +57,28 @@ fun ImageView.setCoverSrcAndVisibility(coverUri: String?) {
 }
 
 @BindingAdapter("rollButtonAppearance")
-fun TextView.setRollButtonAppearance(group: GroupModel?) {
-    if (group == null) {
-        text = resources.getString(R.string.roll_button_text_default)
-        background = getDrawable(context, R.drawable.roll_button_bg_default)
-    } else {
-        text = resources.getString(R.string.roll_button_text_group)
-        background = getDrawable(context, R.drawable.roll_button_bg_group)
+fun TextView.setRollButtonAppearance(game: RollViewModel.Game?) {
+    when (game) {
+        RollViewModel.Game.ROLL ->
+            setTextAndBg(R.string.roll_button_text_default, R.drawable.roll_button_bg_default)
+        RollViewModel.Game.GROUP_ROLL ->
+            setTextAndBg(R.string.roll_button_text_group, R.drawable.roll_button_bg_group)
+        RollViewModel.Game.TRUTH_AND_LIE ->
+            setTextAndBg(R.string.roll_button_text_tal, R.drawable.roll_button_bg_tal)
+        null -> // Default to simple roll
+            setTextAndBg(R.string.roll_button_text_default, R.drawable.roll_button_bg_default)
     }
 }
 
-@BindingAdapter("currentGameText")
-fun Button.setCurrentGameText(group: GroupModel?) {
-    text = resources.getString(
-        if (group == null) R.string.roll_game_simple_roll else R.string.roll_game_group_roll
-    )
+fun TextView.setTextAndBg(stringRes: Int, DrawableRes: Int) {
+    text = resources.getString(stringRes)
+    background = getDrawable(context, DrawableRes)
 }
 
 @BindingAdapter("showOwnerLinearVisibility")
-fun LinearLayout.setShowOwnerLinearVisibility(group: GroupModel?) {
-    visibility = if (group != null) View.VISIBLE else View.GONE
+fun LinearLayout.setShowOwnerLinearVisibility(game: RollViewModel.Game?) {
+    // TODO when changing game while group roll result still shows, we want to keep owner visible
+    visibility = if (game == RollViewModel.Game.GROUP_ROLL) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("showOwnerText")

@@ -14,6 +14,17 @@ import com.ojomono.ionce.ui.bases.BaseViewModel
 
 class RollViewModel : BaseViewModel() {
 
+    // The possible roll games
+    enum class Game {
+        ROLL, GROUP_ROLL, TRUTH_AND_LIE;
+
+        fun next() = values()[(ordinal + 1) % values().size]
+    }
+
+    // The current roll game
+    private val _currentGame = MutableLiveData<Game>().apply { postValue(Game.ROLL) }
+    val currentGame: LiveData<Game> = _currentGame
+
     // The user's tales list and current group
     val tales = TaleRepository.userTales
     val group = GroupRepository.model
@@ -66,47 +77,66 @@ class RollViewModel : BaseViewModel() {
     fun onShowOwnerClicked() = ownerShown.set(!ownerShown.get())
 
     /**
+     * Change current Roll game.
+     */
+    fun onChangeGameClicked() = _currentGame.postValue(currentGame.value?.next())
+
+    /**
      * Roll a random tale, according to the current game.
      */
     fun onRollClicked() =
-        if (group.value == null) rollMyTales()
-        else rollGroupRoll()
+        when (currentGame.value) {
+            Game.ROLL -> rollMyTales()
+            Game.GROUP_ROLL -> rollGroupRoll()
+            Game.TRUTH_AND_LIE -> rollTruthAndLie()
+            else -> rollMyTales()
+        }
 
     /**
      * Roll a random tale from current user's tales.
      */
-    private fun rollMyTales() {
+    private fun rollMyTales() =
         // If the user has no tales yet - show him an error toast
         tales.value?.let { talesList ->
             if (talesList.isEmpty()) showMessageByResId(R.string.roll_error_no_tales)
             // If he has some - get a random one and show it's title
             else _rolledTale.value = getRandomItem(talesList, rolledTale.value)
         }
-    }
 
     /**
      * Roll a random tale from a random member of the current user's group.
      */
     private fun rollGroupRoll() {
-        // Always hide owner name as default
-        ownerShown.set(false)
 
-        // Filter out the users that has no tales
-        val membersWithTales = group.value?.members?.filter { it.value.tales.isNotEmpty() }
-        membersWithTales?.let { membersList ->
+        // If the user is not in a group - show him an error toast
+        if (group.value == null) showMessageByResId(R.string.roll_error_no_group)
+        else {
 
-            // If all users in group has no tales - show an error toast
-            if (membersList.isNullOrEmpty())
-                showMessageByResId(R.string.roll_error_no_tales_in_group)
-            else {
+            // Always hide owner name as default
+            ownerShown.set(false)
 
-                // Roll a random user and a random tale of that user
-                _rolledMember.value = getRandomItem(membersList.values.toList(), rolledMember.value)
-                rolledMember.value?.tales?.let { talesList ->
-                    _rolledTale.value = getRandomItem(talesList, rolledTale.value)
+            // Filter out the users that has no tales
+            val membersWithTales = group.value?.members?.filter { it.value.tales.isNotEmpty() }
+            membersWithTales?.let { membersList ->
+
+                // If all users in group has no tales - show an error toast
+                if (membersList.isNullOrEmpty())
+                    showMessageByResId(R.string.roll_error_no_tales_in_group)
+                else {
+
+                    // Roll a random user and a random tale of that user
+                    _rolledMember.value =
+                        getRandomItem(membersList.values.toList(), rolledMember.value)
+                    rolledMember.value?.tales?.let { talesList ->
+                        _rolledTale.value = getRandomItem(talesList, rolledTale.value)
+                    }
                 }
             }
         }
+    }
+
+    private fun rollTruthAndLie() {
+
     }
 
     /**

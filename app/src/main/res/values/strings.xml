@@ -60,16 +60,16 @@
     <!-- Roll screen -->
     <string name="roll_button_text_default">&roll_button_text;</string>
     <string name="roll_button_text_group">GROUP ROLL!</string>
+    <string name="roll_button_text_tal">TRUTH\n&amp; LIE</string>
     <string name="roll_preface_text">&general_tale_preface;</string>
     <string name="roll_hint_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
     <string name="roll_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab, or join a group.</string>
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
+    <string name="roll_error_no_group">You must be in a group in order to use this feature.</string>
     <string name="roll_error_no_tales_in_group">The group must have at least one tale in order to use this feature.</string>
     <string name="roll_cover_image_content_description">Tale cover</string>
     <string name="roll_group_fab_content_description">Roll group management</string>
-    <string name="group_roll_current_game_text">current game:</string>
-    <string name="roll_game_simple_roll">My Tales</string>
-    <string name="roll_game_group_roll">Group Roll</string>
+    <string name="roll_change_game_button_text">Change\nGame</string>
     <string name="roll_show_owner_not_shown">Show owner</string>
     <string name="roll_show_owner_shown">Hide</string>
 

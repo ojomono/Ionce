@@ -101,7 +101,7 @@
                     android:layout_gravity="bottom|end"
                     android:padding="@dimen/roll_show_owner_linear_padding"
                     android:background="?attr/colorBackgroundFloating"
-                    app:showOwnerLinearVisibility="@{viewModel.group}">
+                    app:showOwnerLinearVisibility="@{viewModel.currentGame}">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -126,31 +126,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/activity_vertical_margin">
 
-                <LinearLayout
+                <Button
+                    style="?attr/materialButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@id/text_roll"
-                    android:layout_alignParentStart="true"
-                    android:layout_toStartOf="@id/text_roll"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/group_roll_current_game_text"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                    <Button
-                        style="?attr/materialButtonStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        app:currentGameText="@{viewModel.group}" />
-
-                </LinearLayout>
+                    android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                    android:onClick="@{() -> viewModel.onChangeGameClicked()}"
+                    android:text="@string/roll_change_game_button_text"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
                 <TextView
                     android:id="@+id/text_roll"
@@ -162,7 +146,7 @@
                     android:padding="@dimen/activity_horizontal_margin"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="?attr/colorSecondary"
-                    app:rollButtonAppearance="@{viewModel.group}"
+                    app:rollButtonAppearance="@{viewModel.currentGame}"
                     tools:background="@drawable/roll_button_bg_default"
                     tools:text="ROLL!" />
 

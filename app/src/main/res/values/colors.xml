@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="roll_button_highlight_group">#DAC603</color>
+    <color name="roll_button_highlight_tal">#C603DA</color>
 </resources>
