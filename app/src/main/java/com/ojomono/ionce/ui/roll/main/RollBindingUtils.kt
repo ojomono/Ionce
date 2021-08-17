@@ -12,6 +12,7 @@ import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.R
 import com.ojomono.ionce.models.GroupModel
 import com.ojomono.ionce.models.TaleItemModel
+import com.ojomono.ionce.models.UserItemModel
 import com.ojomono.ionce.utils.proxies.ImageLoader
 
 const val TITLE_LINES_FOR_TALE_WITH_COVER = 2
@@ -47,13 +48,14 @@ fun TextView.setTitleTextLinesAndEllipsize(coverUri: String?) {
     }
 }
 
-@BindingAdapter("coverSrcAndVisibility")
-fun ImageView.setCoverSrcAndVisibility(coverUri: String?) {
-    visibility = if (coverUri.isNullOrEmpty()) View.GONE
-    else {
-        ImageLoader.load(context, Uri.parse(coverUri), this)
-        View.VISIBLE
-    }
+@BindingAdapter("coverUri", "currentGame")
+fun ImageView.setCoverSrcAndVisibility(coverUri: String?, game: RollViewModel.Game?) {
+    visibility =
+        if (coverUri.isNullOrEmpty() or (game == RollViewModel.Game.TRUTH_AND_LIE)) View.GONE
+        else {
+            ImageLoader.load(context, Uri.parse(coverUri), this)
+            View.VISIBLE
+        }
 }
 
 @BindingAdapter("rollButtonAppearance")
@@ -76,9 +78,8 @@ fun TextView.setTextAndBg(stringRes: Int, DrawableRes: Int) {
 }
 
 @BindingAdapter("showOwnerLinearVisibility")
-fun LinearLayout.setShowOwnerLinearVisibility(game: RollViewModel.Game?) {
-    // TODO when changing game while group roll result still shows, we want to keep owner visible
-    visibility = if (game == RollViewModel.Game.GROUP_ROLL) View.VISIBLE else View.GONE
+fun LinearLayout.setShowOwnerLinearVisibility(owner: UserItemModel?) {
+    visibility = if (owner != null) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("showOwnerText")

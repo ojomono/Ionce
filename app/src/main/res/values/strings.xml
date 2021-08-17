@@ -66,6 +66,7 @@
     <string name="roll_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab, or join a group.</string>
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
     <string name="roll_error_no_group">You must be in a group in order to use this feature.</string>
+    <string name="roll_error_no_heard_tales">You must have at least one heard tale in order to use this feature.</string>
     <string name="roll_error_no_tales_in_group">The group must have at least one tale in order to use this feature.</string>
     <string name="roll_cover_image_content_description">Tale cover</string>
     <string name="roll_group_fab_content_description">Roll group management</string>

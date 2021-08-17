@@ -23,17 +23,17 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/roll_no_tales_text"
             android:gravity="center"
-            app:tales="@{viewModel.tales}"
+            app:tales="@{viewModel.userTales}"
             app:group="@{viewModel.group}"
             tools:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center_horizontal"
-            app:tales="@{viewModel.tales}"
+            android:orientation="vertical"
             app:group="@{viewModel.group}"
+            app:tales="@{viewModel.userTales}"
             tools:context=".ui.roll.main.RollFragment"
             tools:visibility="visible">
 
@@ -42,19 +42,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/activity_vertical_margin"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/roll_preface_text" />
+                android:text="@string/roll_preface_text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/text_roll_hint"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginVertical="@dimen/activity_vertical_margin"
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginVertical="@dimen/activity_vertical_margin"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/roll_hint_text"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 app:hintTextVisibility="@{viewModel.rolledTale}"
                 tools:visibility="gone" />
 
@@ -62,9 +62,9 @@
                 android:id="@+id/card_rolled"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginVertical="@dimen/activity_vertical_margin"
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginVertical="@dimen/activity_vertical_margin"
+                android:layout_weight="1"
                 app:rolledCardVisibility="@{viewModel.rolledTale}"
                 tools:visibility="visible">
 
@@ -77,10 +77,10 @@
                         android:id="@+id/text_tale"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginVertical="@dimen/activity_vertical_margin"
                         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:layout_marginVertical="@dimen/activity_vertical_margin"
                         android:text="@{viewModel.rolledTale.title}"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
                         app:titleTextLinesAndEllipsize="@{viewModel.rolledTale.cover}"
                         tools:text="I went there!" />
 
@@ -89,9 +89,10 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
-                        android:scaleType="centerCrop"
                         android:contentDescription="@string/roll_cover_image_content_description"
-                        app:coverSrcAndVisibility="@{viewModel.rolledTale.cover}" />
+                        android:scaleType="centerCrop"
+                        app:coverUri="@{viewModel.rolledTale.cover}"
+                        app:currentGame="@{viewModel.currentGame}" />
 
                 </LinearLayout>
 
@@ -99,9 +100,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
-                    android:padding="@dimen/roll_show_owner_linear_padding"
                     android:background="?attr/colorBackgroundFloating"
-                    app:showOwnerLinearVisibility="@{viewModel.currentGame}">
+                    android:padding="@dimen/roll_show_owner_linear_padding"
+                    app:showOwnerLinearVisibility="@{viewModel.rolledMember}">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -113,9 +114,39 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/roll_show_owner_text_margin_start"
-                        android:textColor="?android:attr/textColorLink"
                         android:onClick="@{() -> viewModel.onShowOwnerClicked()}"
+                        android:textColor="?android:attr/textColorLink"
                         app:showOwnerText="@{viewModel.ownerShown}" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_rolled_lie"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginVertical="@dimen/activity_vertical_margin"
+                android:layout_weight="1"
+                app:rolledCardVisibility="@{viewModel.rolledLie}"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text_tale_lie"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                        android:layout_marginVertical="@dimen/activity_vertical_margin"
+                        android:text="@{viewModel.rolledLie.title}"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        app:titleTextLinesAndEllipsize="@{viewModel.rolledLie.cover}"
+                        tools:text="I went there!" />
 
                 </LinearLayout>
 

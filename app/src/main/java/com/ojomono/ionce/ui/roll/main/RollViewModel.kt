@@ -26,16 +26,21 @@ class RollViewModel : BaseViewModel() {
     val currentGame: LiveData<Game> = _currentGame
 
     // The user's tales list and current group
-    val tales = TaleRepository.userTales
+    val userTales = TaleRepository.userTales
+    val heardTales = TaleRepository.heardTales
     val group = GroupRepository.model
 
     // The rolled tale
     private val _rolledTale = MutableLiveData<TaleItemModel>()
     val rolledTale: LiveData<TaleItemModel> = _rolledTale
 
+    // The rolled lie tale
+    private val _rolledLie = MutableLiveData<TaleItemModel?>()
+    val rolledLie: LiveData<TaleItemModel?> = _rolledLie
+
     // The rolled tale owner (for group rolls)
-    private val _rolledMember = MutableLiveData<UserItemModel>()
-    val rolledMember: LiveData<UserItemModel> = _rolledMember
+    private val _rolledMember = MutableLiveData<UserItemModel?>()
+    val rolledMember: LiveData<UserItemModel?> = _rolledMember
 
     // Should show the owner name on the rolled tale card?
     val ownerShown = ObservableBoolean().apply { set(false) }
@@ -45,7 +50,7 @@ class RollViewModel : BaseViewModel() {
         Observer<MutableList<TaleItemModel>?> { list ->
             list?.find { it.id == rolledTale.value?.id }
                 ?.let { if (rolledTale.value != it) _rolledTale.value = it }
-        }.also { tales.observeForever(it) }
+        }.also { userTales.observeForever(it) }
 
     // Types of supported events
     sealed class EventType : BaseEventType() {
@@ -58,7 +63,7 @@ class RollViewModel : BaseViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        tales.removeObserver(listObserver)
+        userTales.removeObserver(listObserver)
     }
 
     /************************/
@@ -97,10 +102,14 @@ class RollViewModel : BaseViewModel() {
      */
     private fun rollMyTales() =
         // If the user has no tales yet - show him an error toast
-        tales.value?.let { talesList ->
+        userTales.value?.let { talesList ->
             if (talesList.isEmpty()) showMessageByResId(R.string.roll_error_no_tales)
             // If he has some - get a random one and show it's title
-            else _rolledTale.value = getRandomItem(talesList, rolledTale.value)
+            else {
+                _rolledMember.value = null  // Hide owner
+                _rolledTale.value = getRandomItem(talesList, rolledTale.value)
+                _rolledLie.value = null     // Hide second card
+            }
         }
 
     /**
@@ -130,19 +139,39 @@ class RollViewModel : BaseViewModel() {
                     rolledMember.value?.tales?.let { talesList ->
                         _rolledTale.value = getRandomItem(talesList, rolledTale.value)
                     }
+                    _rolledLie.value = null // Hide second card
                 }
             }
         }
     }
 
-    private fun rollTruthAndLie() {
+    /**
+     * Roll a random tale from current user's tales, and another one from the user's heard tales.
+     */
+    private fun rollTruthAndLie() =
+        // If the user has no tales yet - show him an error toast
+        userTales.value?.let { userTales ->
+            if (userTales.isEmpty()) showMessageByResId(R.string.roll_error_no_tales)
+            // If the user has no heard tales yet - show him an error toast
+            heardTales.value?.let { heardTales ->
+                if (heardTales.isEmpty()) showMessageByResId(R.string.roll_error_no_heard_tales)
 
-    }
+                // If he has both - get a random one from each list and shuffle them
+                // Attention! the "lie" isn't always in shown in the "rolledLie" card
+                else {
+                    val rolled =
+                        setOf(getRandomItem(userTales), getRandomItem(heardTales)).shuffled()
+                    _rolledMember.value = null  // Hide owner
+                    _rolledTale.value = rolled[0]
+                    _rolledLie.value = rolled[1]
+                }
+            }
+        }
 
     /**
      * Get a random tale, excluding the last rolled one (unless user has only one tale).
      */
-    private fun <T : BaseItemModel> getRandomItem(list: List<T>, exclude: T?): T? =
+    private fun <T : BaseItemModel> getRandomItem(list: List<T>, exclude: T? = null): T? =
         when {
             list.isNullOrEmpty() -> null    // list is empty - return null
             list.size == 1 -> list[0]       // return only element of list

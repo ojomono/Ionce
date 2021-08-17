@@ -2,7 +2,6 @@ package com.ojomono.ionce.ui.roll.group
 
 import androidx.lifecycle.Transformations
 import com.ojomono.ionce.firebase.repositories.GroupRepository
-import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.firebase.repositories.UserRepository
 import com.ojomono.ionce.models.TaleItemModel
 import com.ojomono.ionce.models.UserItemModel
