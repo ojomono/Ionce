@@ -4,15 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="currentUid"
             type="String" />
-
         <variable
             name="userItem"
             type="com.ojomono.ionce.models.UserItemModel" />
-
         <variable
             name="clickListener"
             type="com.ojomono.ionce.ui.roll.group.UsersListAdapter.UsersListener" />

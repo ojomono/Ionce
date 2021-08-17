@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY title_tales "My Tales"><!ENTITY roll_button_text "ROLL!"><!ENTITY general_tale_preface "That one time when…">]>
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY title_tales "Tales"><!ENTITY roll_button_text "ROLL!"><!ENTITY general_tale_preface "That one time when…">]>
 
 <resources>
     <!-- Application -->
@@ -46,7 +46,10 @@
     <string name="profile_footer_text">©2021 Omer Levy ● <a href="https://i-once.flycricket.io/terms.html">Terms of Service</a> ● <a href="https://i-once.flycricket.io/privacy.html">Privacy Policy</a></string>
 
     <!-- Tales screen -->
-    <string name="tales_hint_text">You don\'t have any tales yet.\nYou can add some with the \'+\' button in the bottom-right corner.</string>
+    <string name="tales_toggle_button_text_my">My Tales</string>
+    <string name="tales_toggle_button_text_heard">Heard Tales</string>
+    <string name="tales_hint_text_my">You don\'t have any tales yet.\nYou can add some with the \'+\' button in the bottom-right corner.</string>
+    <string name="tales_hint_text_heard">You don\'t have any heard tales yet.\nYou can get some by joining a Roll Group and adding tales to your collection.</string>
     <string name="tales_header_text">&general_tale_preface;</string>
     <string name="tales_edit_icon_content_description">Edit tale</string>
     <string name="tales_delete_icon_content_description">Delete tale</string>

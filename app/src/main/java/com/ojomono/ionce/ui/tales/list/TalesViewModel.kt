@@ -1,5 +1,10 @@
 package com.ojomono.ionce.ui.tales.list
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.Transformations
+import com.ojomono.ionce.R
 import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.firebase.Utils
@@ -10,7 +15,28 @@ import com.ojomono.ionce.utils.continueIfSuccessful
 
 class TalesViewModel : BaseViewModel(), TalesListAdapter.TalesListener {
     // The user's tales list
-    val tales = TaleRepository.userTales
+    private val userTales = TaleRepository.userTales
+    private val heardTales = TaleRepository.heardTales
+
+    // The currently shown tales list (determined by the toggle)
+    private val _shownList =
+        MutableLiveData<Int>().apply {
+            userTales.observeForever { postValue(value) }
+            heardTales.observeForever { postValue(value) }
+        }
+    val shownList: LiveData<Int> = _shownList
+    val shownTales = Transformations.map(shownList) {
+        when (it) {
+            R.id.button_my_tales -> userTales
+            R.id.button_heard_tales -> heardTales
+            else -> userTales
+        }.value
+    }
+
+    // Observe the tales lists in order to refresh the shown list for any change
+    private val listsObserver =
+        Observer<MutableList<TaleItemModel>?> { _shownList.postValue(_shownList.value) }
+            .also { userTales.observeForever(it) }.also { heardTales.observeForever(it) }
 
     // The tale currently being deleted
     private var clickedTale: TaleItemModel? = null
@@ -42,6 +68,16 @@ class TalesViewModel : BaseViewModel(), TalesListAdapter.TalesListener {
 //        if (wasOrderChanged) TaleRepository.saveTalesOrder()?.withProgressBar()
 //    }
 
+    /***********************/
+    /** Lifecycle methods **/
+    /***********************/
+
+    override fun onCleared() {
+        super.onCleared()
+        userTales.removeObserver(listsObserver)
+        heardTales.removeObserver(listsObserver)
+    }
+
     /************************/
     /** post event methods **/
     /************************/
@@ -60,6 +96,7 @@ class TalesViewModel : BaseViewModel(), TalesListAdapter.TalesListener {
     /** logic methods **/
     /*******************/
 
+    fun setShownList(checkedId: Int) = _shownList.postValue(checkedId)
     fun clearClickedTale() = run { clickedTale = null }
 
     fun deleteTale() = clickedTale?.let { taleItem ->
