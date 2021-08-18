@@ -27,7 +27,7 @@ class RollViewModel : BaseViewModel() {
 
     // The user's tales list and current group
     val userTales = TaleRepository.userTales
-    val heardTales = TaleRepository.heardTales
+    private val heardTales = TaleRepository.heardTales
     val group = GroupRepository.model
 
     // The rolled tale
@@ -42,8 +42,11 @@ class RollViewModel : BaseViewModel() {
     private val _rolledMember = MutableLiveData<UserItemModel?>()
     val rolledMember: LiveData<UserItemModel?> = _rolledMember
 
-    // Should show the owner name on the rolled tale card?
-    val ownerShown = ObservableBoolean().apply { set(false) }
+    // Should show the owner name on the rolled tale card? (for group rolls)
+    val showOwner = ObservableBoolean().apply { set(false) }
+
+    // Should color the rolled cards to indicate which is true? (for truth and lie)
+    val showResult = ObservableBoolean().apply { set(false) }
 
     // Observe tales list in case the rolled tale cover finished upload, and refresh screen
     private val listObserver =
@@ -66,29 +69,14 @@ class RollViewModel : BaseViewModel() {
         userTales.removeObserver(listObserver)
     }
 
-    /************************/
-    /** post event methods **/
-    /************************/
+    /*********************/
+    /** onClick methods **/
+    /*********************/
 
     fun onGroupFabClicked() = postEvent(EventType.ShowRollGroupDialog)
-
-    /*******************/
-    /** logic methods **/
-    /*******************/
-
-    /**
-     * Toggle owner name visibility.
-     */
-    fun onShowOwnerClicked() = ownerShown.set(!ownerShown.get())
-
-    /**
-     * Change current Roll game.
-     */
+    fun onShowOwnerClicked() = showOwner.set(!showOwner.get())
     fun onChangeGameClicked() = _currentGame.postValue(currentGame.value?.next())
-
-    /**
-     * Roll a random tale, according to the current game.
-     */
+    fun onTalResultClicked() = showResult.set(!showResult.get())
     fun onRollClicked() =
         when (currentGame.value) {
             Game.ROLL -> rollMyTales()
@@ -96,6 +84,10 @@ class RollViewModel : BaseViewModel() {
             Game.TRUTH_AND_LIE -> rollTruthAndLie()
             else -> rollMyTales()
         }
+
+    /*******************/
+    /** logic methods **/
+    /*******************/
 
     /**
      * Roll a random tale from current user's tales.
@@ -106,9 +98,8 @@ class RollViewModel : BaseViewModel() {
             if (talesList.isEmpty()) showMessageByResId(R.string.roll_error_no_tales)
             // If he has some - get a random one and show it's title
             else {
-                _rolledMember.value = null  // Hide owner
+                cleanRollResult()
                 _rolledTale.value = getRandomItem(talesList, rolledTale.value)
-                _rolledLie.value = null     // Hide second card
             }
         }
 
@@ -120,9 +111,7 @@ class RollViewModel : BaseViewModel() {
         // If the user is not in a group - show him an error toast
         if (group.value == null) showMessageByResId(R.string.roll_error_no_group)
         else {
-
-            // Always hide owner name as default
-            ownerShown.set(false)
+            cleanRollResult()
 
             // Filter out the users that has no tales
             val membersWithTales = group.value?.members?.filter { it.value.tales.isNotEmpty() }
@@ -153,15 +142,15 @@ class RollViewModel : BaseViewModel() {
         userTales.value?.let { userTales ->
             if (userTales.isEmpty()) showMessageByResId(R.string.roll_error_no_tales)
             // If the user has no heard tales yet - show him an error toast
-            heardTales.value?.let { heardTales ->
+            else heardTales.value?.let { heardTales ->
                 if (heardTales.isEmpty()) showMessageByResId(R.string.roll_error_no_heard_tales)
 
                 // If he has both - get a random one from each list and shuffle them
                 // Attention! the "lie" isn't always in shown in the "rolledLie" card
                 else {
+                    cleanRollResult()
                     val rolled =
                         setOf(getRandomItem(userTales), getRandomItem(heardTales)).shuffled()
-                    _rolledMember.value = null  // Hide owner
                     _rolledTale.value = rolled[0]
                     _rolledLie.value = rolled[1]
                 }
@@ -182,4 +171,13 @@ class RollViewModel : BaseViewModel() {
             }
         }
 
+    /**
+     * Return all LiveData to their default state.
+     */
+    private fun cleanRollResult() {
+        showOwner.set(false)        // Hide owner name
+        showResult.set(false)       // Reset card colors
+        _rolledMember.value = null  // Hide "show owner" option
+        _rolledLie.value = null     // Hide second card
+    }
 }

@@ -73,6 +73,7 @@
     <string name="roll_change_game_button_text">Change\nGame</string>
     <string name="roll_show_owner_not_shown">Show owner</string>
     <string name="roll_show_owner_shown">Hide</string>
+    <string name="roll_tal_result_button_text">Which is mine?</string>
 
     <!-- Edit tale screen -->
     <string name="edit_tale_screen_title_new">New Tale</string>

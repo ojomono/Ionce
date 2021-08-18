@@ -2,4 +2,6 @@
 <resources>
     <color name="roll_button_highlight_group">#DAC603</color>
     <color name="roll_button_highlight_tal">#C603DA</color>
+    <color name="roll_tal_result_truth">#17DA03</color>
+    <color name="roll_tal_result_lie">#DA0317</color>
 </resources>

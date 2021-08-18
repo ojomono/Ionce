@@ -2,12 +2,15 @@ package com.ojomono.ionce.ui.roll.main
 
 import android.net.Uri
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.R
 import com.ojomono.ionce.models.GroupModel
@@ -32,9 +35,21 @@ fun TextView.setHintTextVisibility(rolledTale: TaleItemModel?) {
     visibility = if (rolledTale == null) View.VISIBLE else View.GONE
 }
 
-@BindingAdapter("rolledCardVisibility")
-fun CardView.setRolledCardVisibility(rolledTale: TaleItemModel?) {
+@BindingAdapter("tales", "rolledTale", "showResult")
+fun CardView.setRolledCardVisibilityAndTint(
+    tales: List<TaleItemModel>?,
+    rolledTale: TaleItemModel?,
+    showResult: Boolean,
+) {
     visibility = if (rolledTale == null) View.GONE else View.VISIBLE
+
+    background.setTintList(null)
+    if (showResult) if (tales != null) if (rolledTale != null) {
+        val colorRes = if (rolledTale in tales) R.color.roll_tal_result_truth
+        else R.color.roll_tal_result_lie
+
+        background.setTint(ContextCompat.getColor(context, colorRes))
+    }
 }
 
 @BindingAdapter("titleTextLinesAndEllipsize")
@@ -92,4 +107,9 @@ fun TextView.setShowOwnerText(shown: Boolean) {
 @BindingAdapter("ownerNameTextVisibility")
 fun TextView.setOwnerNameTextVisibility(shown: Boolean) {
     visibility = if (shown) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("resultButtonVisibility")
+fun Button.setResultButtonVisibility(rolledTale: TaleItemModel?) {
+    visibility = if (rolledTale == null) View.GONE else View.VISIBLE
 }
