@@ -2,7 +2,6 @@ package com.ojomono.ionce.ui.roll.main
 
 import android.net.Uri
 import android.text.TextUtils
-import android.util.TypedValue
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView

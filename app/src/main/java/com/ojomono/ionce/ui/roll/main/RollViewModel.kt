@@ -14,6 +14,10 @@ import com.ojomono.ionce.ui.bases.BaseViewModel
 
 class RollViewModel : BaseViewModel() {
 
+    /*************/
+    /** Classes **/
+    /*************/
+
     // The possible roll games
     enum class Game {
         ROLL, GROUP_ROLL, TRUTH_AND_LIE;
@@ -21,13 +25,21 @@ class RollViewModel : BaseViewModel() {
         fun next() = values()[(ordinal + 1) % values().size]
     }
 
+    // Types of supported events
+    sealed class EventType : BaseEventType() {
+        object ShowRollGroupDialog : EventType()
+    }
+
+    /**************/
+    /** LiveData **/
+    /**************/
+
     // The current roll game
     private val _currentGame = MutableLiveData<Game>().apply { postValue(Game.ROLL) }
     val currentGame: LiveData<Game> = _currentGame
 
     // The user's tales list and current group
     val userTales = TaleRepository.userTales
-    private val heardTales = TaleRepository.heardTales
     val group = GroupRepository.model
 
     // The rolled tale
@@ -48,6 +60,10 @@ class RollViewModel : BaseViewModel() {
     // Should color the rolled cards to indicate which is true? (for truth and lie)
     val showResult = ObservableBoolean().apply { set(false) }
 
+    /***************/
+    /** Observers **/
+    /***************/
+
     // Observe tales list in case the rolled tale cover finished upload, and refresh screen
     private val listObserver =
         Observer<MutableList<TaleItemModel>?> { list ->
@@ -55,10 +71,10 @@ class RollViewModel : BaseViewModel() {
                 ?.let { if (rolledTale.value != it) _rolledTale.value = it }
         }.also { userTales.observeForever(it) }
 
-    // Types of supported events
-    sealed class EventType : BaseEventType() {
-        object ShowRollGroupDialog : EventType()
-    }
+    // Put a dummy observer on the heardTales LiveData or it's value will stay null
+    private val dummyObserver =
+        Observer<MutableList<TaleItemModel>?> { }
+            .also { TaleRepository.heardTales.observeForever(it) }
 
     /***********************/
     /** Lifecycle methods **/
@@ -67,6 +83,7 @@ class RollViewModel : BaseViewModel() {
     override fun onCleared() {
         super.onCleared()
         userTales.removeObserver(listObserver)
+        TaleRepository.heardTales.removeObserver(dummyObserver)
     }
 
     /*********************/
@@ -142,7 +159,7 @@ class RollViewModel : BaseViewModel() {
         userTales.value?.let { userTales ->
             if (userTales.isEmpty()) showMessageByResId(R.string.roll_error_no_tales)
             // If the user has no heard tales yet - show him an error toast
-            else heardTales.value?.let { heardTales ->
+            else TaleRepository.heardTales.value?.let { heardTales ->
                 if (heardTales.isEmpty()) showMessageByResId(R.string.roll_error_no_heard_tales)
 
                 // If he has both - get a random one from each list and shuffle them
