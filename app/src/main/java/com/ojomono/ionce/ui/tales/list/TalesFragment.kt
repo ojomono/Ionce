@@ -45,13 +45,16 @@ class TalesFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         viewModel = ViewModelProvider(this).get(TalesViewModel::class.java)
         binding = getDataBinding(inflater, container)
         binding.viewModel = viewModel
         progressBar = binding.progressBar
         observeEvents()
+
+        // Listen to the toggle button at the top, to know what list to show
+        initToggleButton()
 
         // Populate the recycler view
         populateRecyclerView()
@@ -77,6 +80,28 @@ class TalesFragment : BaseFragment() {
     /*********************/
 
     /**
+     * Set the viewModel's LiveData to reflect the chosen toggle button.
+     */
+    private fun initToggleButton() {
+        viewModel.setShownList(binding.toggleButton.checkedButtonId)
+        binding.toggleButton.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) viewModel.setShownList(viewIdToResourceId(checkedId))
+        }
+    }
+
+    // TODO This is a workaround because the ViewModel can't access the view id.
+    //  Find a better solution!
+    private fun viewIdToResourceId(viewId: Int): Int {
+        val resId = when (viewId) {
+            binding.buttonMyTales.id -> R.id.button_my_tales
+            binding.buttonHeardTales.id -> R.id.button_heard_tales
+            else -> R.id.button_my_tales
+        }
+        return resId
+    }
+
+
+    /**
      * Populate the recycler view.
      */
     // TODO move to common ListFragment Interface/abstract class
@@ -89,8 +114,12 @@ class TalesFragment : BaseFragment() {
             }
 
             // Init the adapter
-            val talesAdapter = TalesListAdapter(getString(R.string.tales_header_text), viewModel)
-            adapter = talesAdapter
+            val talesAdapter =
+                TalesListAdapter(
+                    getString(R.string.tales_header_text),
+                    viewModel,
+                    viewModel.shownList
+                ).also { adapter = it }
 
             // For drag n' drop feature
 //            // Add  Item touch helper to the recycler view
@@ -98,7 +127,7 @@ class TalesFragment : BaseFragment() {
 //            itemTouchHelper.attachToRecyclerView(this)
 
             // Observe changes in tales list
-            viewModel.tales.observe(viewLifecycleOwner, {
+            viewModel.shownTales.observe(viewLifecycleOwner, {
                 it?.let { talesAdapter.addHeaderAndSubmitList(it) }
             })
         }

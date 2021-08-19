@@ -9,5 +9,6 @@ import com.google.firebase.firestore.DocumentId
 data class UserModel(
     @DocumentId override val id: String = "",
     val tales: MutableList<TaleItemModel> = mutableListOf(),
-    val group: String = ""
+    val group: String = "",
+    val friends: HashMap<String, UserItemModel> = hashMapOf()
 ) : BaseModel()

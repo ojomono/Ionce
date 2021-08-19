@@ -25,6 +25,7 @@
     <dimen name="profile_name_padding_bottom">20dp</dimen>
     <dimen name="profile_providers_padding_horizontal">30dp</dimen>
     <dimen name="profile_providers_padding_top">20dp</dimen>
+    <dimen name="profile_footage_margin_bottom">4dp</dimen>
 
     <!-- Edit tale screen dimens -->
     <dimen name="edit_tale_icons_sizes">40dp</dimen>

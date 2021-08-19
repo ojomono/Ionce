@@ -27,8 +27,13 @@ object TaleRepository {
     // TODO replace liveData with callbackFlow / StateFlow when they become non-experimental
     //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
 
-    // Current user's tales list
+    // Current user's tales list, and heard tales list
     val userTales = Transformations.map(UserRepository.model) { it?.tales }
+    val heardTales = Transformations.map(UserRepository.model) {
+        mutableListOf<TaleItemModel>().apply {
+            it?.friends?.values?.let { friends -> for (friend in friends) addAll(friend.tales) }
+        }
+    }
 
     /********************/
     /** public methods **/

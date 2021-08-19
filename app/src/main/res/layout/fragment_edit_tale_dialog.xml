@@ -129,6 +129,20 @@
                 android:layout_height="wrap_content"
                 android:text="@string/edit_tale_notice_text" />
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:text="@string/dialog_save"
+                android:onClick="@{() -> viewModel.onSaveClicked()}"
+                style="?attr/materialButtonStyle" />
+
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

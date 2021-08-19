@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY title_tales "My Tales"><!ENTITY roll_button_text "ROLL!"><!ENTITY general_tale_preface "That one time when…">]>
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY title_tales "Tales"><!ENTITY roll_button_text "ROLL!"><!ENTITY general_tale_preface "That one time when…">]>
 
 <resources>
     <!-- Application -->
@@ -43,9 +43,13 @@
     <string name="profile_unlink_provider_dialog_message">Unlink %1$s account?</string>
     <string name="profile_unlink_provider_positive_button_text">unlink</string>
     <string name="profile_error_last_provider">You must have at least 1 provider.</string>
+    <string name="profile_footer_text">©2021 Omer Levy ● <a href="https://i-once.flycricket.io/terms.html">Terms of Service</a> ● <a href="https://i-once.flycricket.io/privacy.html">Privacy Policy</a></string>
 
     <!-- Tales screen -->
-    <string name="tales_hint_text">You don\'t have any tales yet.\nYou can add some with the \'+\' button in the bottom-right corner.</string>
+    <string name="tales_toggle_button_text_my">My Tales</string>
+    <string name="tales_toggle_button_text_heard">Heard Tales</string>
+    <string name="tales_hint_text_my">You don\'t have any tales yet.\nYou can add some with the \'+\' button in the bottom-right corner.</string>
+    <string name="tales_hint_text_heard">You don\'t have any heard tales yet.\nYou can get some by joining a Roll Group and adding tales to your collection.</string>
     <string name="tales_header_text">&general_tale_preface;</string>
     <string name="tales_edit_icon_content_description">Edit tale</string>
     <string name="tales_delete_icon_content_description">Delete tale</string>
@@ -56,18 +60,20 @@
     <!-- Roll screen -->
     <string name="roll_button_text_default">&roll_button_text;</string>
     <string name="roll_button_text_group">GROUP ROLL!</string>
+    <string name="roll_button_text_tal">TRUTH\n&amp; LIE</string>
     <string name="roll_preface_text">&general_tale_preface;</string>
     <string name="roll_hint_text">Hit \'&roll_button_text;\' to get one of your unique tales!</string>
     <string name="roll_no_tales_text">You don\'t have any tales yet.\nAdd your first tale in the \'&title_tales;\' tab, or join a group.</string>
     <string name="roll_error_no_tales">You must have at least one tale in order to use this feature.</string>
+    <string name="roll_error_no_group">You must be in a group in order to use this feature.</string>
+    <string name="roll_error_no_heard_tales">You must have at least one heard tale in order to use this feature.</string>
     <string name="roll_error_no_tales_in_group">The group must have at least one tale in order to use this feature.</string>
     <string name="roll_cover_image_content_description">Tale cover</string>
     <string name="roll_group_fab_content_description">Roll group management</string>
-    <string name="group_roll_current_game_text">current game:</string>
-    <string name="roll_game_simple_roll">My Tales</string>
-    <string name="roll_game_group_roll">Group Roll</string>
+    <string name="roll_change_game_button_text">Change\nGame</string>
     <string name="roll_show_owner_not_shown">Show owner</string>
     <string name="roll_show_owner_shown">Hide</string>
+    <string name="roll_tal_result_button_text">Which is mine?</string>
 
     <!-- Edit tale screen -->
     <string name="edit_tale_screen_title_new">New Tale</string>
@@ -97,6 +103,10 @@
     <string name="group_roll_permission_rationale_message">Camera access is required to scan a group QR-code.</string>
     <string name="group_roll_permission_denied_message">Permission denied. Please grant camera access in order to join a group (scanning a group QR-code is the only supported way right now).</string>
     <string name="group_roll_tales_icon_content_description">User tales</string>
+    <string name="group_roll_member_has_no_tales_message">This user has no tales.</string>
+    <string name="group_roll_tales_dialog_title">Add to collection</string>
+    <string name="group_roll_tales_dialog_message">Select the tales that %1$s already told you and add them to your "heard tales" collection</string>
+    <string name="group_roll_tales_dialog_button_text">Add selected tales to collection</string>
 
     <!-- QR-code scanner -->
     <string name="q_r_code_scanner_title">QR-code scanner</string>

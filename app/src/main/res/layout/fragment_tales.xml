@@ -13,27 +13,55 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggle_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:gravity="center"
+            app:checkedButton="@+id/button_my_tales"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+
+            <Button
+                android:id="@+id/button_my_tales"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tales_toggle_button_text_my" />
+
+            <Button
+                android:id="@+id/button_heard_tales"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tales_toggle_button_text_heard" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
         <TextView
             android:id="@+id/text_tales_hint"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:layout_below="@+id/toggle_button"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/tales_hint_text"
             android:gravity="center"
-            app:hintTextVisibility="@{viewModel.tales}"
-            tools:visibility="gone" />
+            app:hintTextVisibility="@{viewModel.shownTales}"
+            app:hintText="@{viewModel.shownList}"
+            tools:visibility="gone"
+            tools:text="@string/tales_hint_text_my" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_tales_list"
             android:name="com.ojomono.ionce.ui.tales.TaleFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/toggle_button"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             app:layoutManager="LinearLayoutManager"
-            app:talesListVisibility="@{viewModel.tales}"
+            app:talesListVisibility="@{viewModel.shownTales}"
             tools:context=".ui.tales.list.TalesFragment"
             tools:listitem="@layout/item_tale"
             tools:visibility="visible" />
@@ -42,14 +70,18 @@
             android:id="@+id/fab_add_tale"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_add_24"
-            android:layout_gravity="bottom|end"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_margin="@dimen/fab_layout_margin"
-            android:onClick="@{() -> viewModel.onAdd()}"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom|end"
+            android:layout_marginStart="@dimen/fab_layout_margin"
+            android:layout_marginTop="@dimen/fab_layout_margin"
+            android:layout_marginEnd="@dimen/fab_layout_margin"
+            android:layout_marginBottom="@dimen/fab_layout_margin"
             android:contentDescription="@string/tales_add_fab_content_description"
-            app:elevation="@dimen/fab_elevation" />
+            android:onClick="@{() -> viewModel.onAdd()}"
+            android:src="@drawable/ic_baseline_add_24"
+            app:elevation="@dimen/fab_elevation"
+            app:addTaleFabVisibility="@{viewModel.shownList}" />
 
         <ProgressBar
             android:id="@+id/progress_bar"

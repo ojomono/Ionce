@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.telephony.PhoneNumberUtils
 import android.text.InputType
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
@@ -75,6 +76,9 @@ class ProfileFragment : BaseFragment() {
         // Initialize providers requirements
         initFacebookLoginButton()
         initGoogleSignInClient()
+
+        // Setup the hyper links in the footer
+        binding.textFooter.movementMethod = LinkMovementMethod.getInstance()
 
         return binding.root
     }

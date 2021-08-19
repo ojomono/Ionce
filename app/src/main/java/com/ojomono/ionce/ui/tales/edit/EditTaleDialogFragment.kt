@@ -128,6 +128,7 @@ class EditTaleDialogFragment : BaseDialogFragment() {
         super.handleEvent(event)
         when (event) {
             is EditTaleViewModel.EventType.ShowImagePicker -> showImagePicker()
+            is EditTaleViewModel.EventType.SaveAndDismiss -> saveAndDismiss()
         }
     }
 

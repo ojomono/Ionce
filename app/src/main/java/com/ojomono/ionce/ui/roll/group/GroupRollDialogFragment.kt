@@ -9,10 +9,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ojomono.ionce.R
 import com.ojomono.ionce.databinding.FragmentGroupRollDialogBinding
+import com.ojomono.ionce.models.UserItemModel
 import com.ojomono.ionce.ui.bases.BaseDialogFragment
 import com.ojomono.ionce.utils.StringResource
 import com.ojomono.ionce.utils.TAG
 import com.ojomono.ionce.ui.bases.BaseViewModel
+import com.ojomono.ionce.utils.proxies.DialogShower
+import com.ojomono.ionce.utils.proxies.DialogShower.withListItemsMultiChoice
 
 /**
  * A [DialogFragment] representing the management screen for a roll group.
@@ -92,7 +95,7 @@ class GroupRollDialogFragment : BaseDialogFragment() {
         super.handleEvent(event)
         when (event) {
             is GroupRollViewModel.EventType.OpenQRCodeScanner -> openQRCodeScanner()
-            is GroupRollViewModel.EventType.ShowUserTalesDialog -> showUserTalesDialog(event.uid)
+            is GroupRollViewModel.EventType.ShowUserTalesDialog -> showUserTalesDialog(event.user)
         }
     }
 
@@ -124,22 +127,60 @@ class GroupRollDialogFragment : BaseDialogFragment() {
             layoutManager = LinearLayoutManager(context)
 
             // Init the adapter
-            val usersAdapter =
-                UsersListAdapter(getString(R.string.group_roll_member_list_header_text), viewModel)
-            adapter = usersAdapter
+            viewModel.currentUser.value?.let { currentUser ->
+                val usersAdapter =
+                    UsersListAdapter(
+                        getString(R.string.group_roll_member_list_header_text),
+                        viewModel,
+                        currentUser.id
+                    )
+                adapter = usersAdapter
 
-            // Observe changes in members list
-            viewModel.members.observe(viewLifecycleOwner, {
-                it?.let { usersAdapter.addHeaderAndSubmitList(it) }
-            })
+                // Observe changes in members list
+                viewModel.members.observe(viewLifecycleOwner, {
+                    it?.let { usersAdapter.addHeaderAndSubmitList(it) }
+                })
+            }
         }
     }
 
     /**
-     * Show dialog for selecting tales from the list of the user with [uid].
+     * Show dialog for selecting tales from the list of the [user].
      */
-    private fun showUserTalesDialog(uid: String) {
-        TODO()
+    private fun showUserTalesDialog(user: UserItemModel) {
+
+        // The given user's tales
+        val tales = viewModel.members.value?.find { it.id == user.id }?.tales
+
+        // If the user has no tales, show error message
+        if (tales.isNullOrEmpty())
+            showMessage(getString(R.string.group_roll_member_has_no_tales_message))
+        else {
+
+            // Preselect the tales that are already in the logged-in user's collection
+            val initialSelection =
+                viewModel.currentUser.value?.friends?.get(user.id)?.tales?.map { tales.indexOf(it) }
+                    ?.toIntArray()
+
+            // Show the dialog
+            DialogShower.show(context) {
+                title(R.string.group_roll_tales_dialog_title)
+                message(
+                    text = getString(R.string.group_roll_tales_dialog_message, user.displayName)
+                )
+                withListItemsMultiChoice(
+                    items = tales.map { it.title },
+                    initialSelection = initialSelection ?: IntArray(0),
+                    allowEmptySelection = true
+                ) { _, indices, _ ->
+                    viewModel.setFriendTales(
+                        user.id,
+                        tales.filterIndexed { index, _ -> index in indices })
+                }
+                positiveButton(R.string.group_roll_tales_dialog_button_text)
+                negativeButton(R.string.dialog_cancel)
+            }
+        }
     }
 
 }
