@@ -12,6 +12,7 @@
     <dimen name="fab_layout_margin">20dp</dimen>
 
     <!-- Roll screen dimens -->
+    <dimen name="roll_card_bg_stroke_width">5dp</dimen>
     <dimen name="roll_button_bg_stroke_width">5dp</dimen>
     <dimen name="roll_button_size">150dp</dimen>
     <dimen name="roll_show_owner_linear_padding">6dp</dimen>

@@ -5,8 +5,13 @@
       <map>
         <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/all_gradient_bg.xml" value="0.35520833333333335" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_button_bg.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_button_bg_default.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_button_bg_group.xml" value="0.35520833333333335" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_button_bg_truth_and_lie.xml" value="0.35520833333333335" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_button_group_bg.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_card_bg_default.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_card_bg_lie.xml" value="0.35520833333333335" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/roll_card_bg_truth.xml" value="0.35520833333333335" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/drawable/splash_drawable.xml" value="0.35520833333333335" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/layout/activity_splash.xml" value="0.3390625" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Projects/Ionce/app/src/main/res/layout/fragment_edit_tale_dialog.xml" value="0.3390625" />

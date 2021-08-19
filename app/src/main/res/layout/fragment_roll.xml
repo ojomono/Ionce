@@ -56,7 +56,7 @@
                 android:text="@string/roll_hint_text"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 app:hintTextVisibility="@{viewModel.rolledTale}"
-                tools:visibility="visible" />
+                tools:visibility="gone" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_rolled"
@@ -65,15 +65,17 @@
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                 android:layout_marginVertical="@dimen/activity_vertical_margin"
                 android:layout_weight="1"
-                app:rolledTale="@{viewModel.rolledTale}"
-                app:showResult="@{viewModel.showResult}"
-                app:tales="@{viewModel.userTales}"
-                tools:visibility="gone">
+                app:rolledCardVisibility="@{viewModel.rolledTale}"
+                tools:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:background="@android:color/transparent"
+                    app:userTales="@{viewModel.userTales}"
+                    app:rolledTale="@{viewModel.rolledTale}"
+                    app:showResult="@{viewModel.showResult}">
 
                     <TextView
                         android:id="@+id/text_tale"
@@ -131,15 +133,16 @@
                 android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:layout_weight="1"
-                app:rolledTale="@{viewModel.rolledLie}"
-                app:showResult="@{viewModel.showResult}"
-                app:tales="@{viewModel.userTales}"
+                app:rolledCardVisibility="@{viewModel.rolledLie}"
                 tools:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:userTales="@{viewModel.userTales}"
+                    app:rolledTale="@{viewModel.rolledLie}"
+                    app:showResult="@{viewModel.showResult}">
 
                     <TextView
                         android:id="@+id/text_tale_lie"
