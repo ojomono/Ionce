@@ -83,21 +83,18 @@ class TalesFragment : BaseFragment() {
      * Set the viewModel's LiveData to reflect the chosen toggle button.
      */
     private fun initToggleButton() {
-        viewModel.setShownList(binding.toggleButton.checkedButtonId)
+        viewModel.setShownList(viewIdToListType(binding.toggleButton.checkedButtonId))
         binding.toggleButton.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) viewModel.setShownList(viewIdToResourceId(checkedId))
+            if (isChecked) viewModel.setShownList(viewIdToListType(checkedId))
         }
     }
 
     // TODO This is a workaround because the ViewModel can't access the view id.
     //  Find a better solution!
-    private fun viewIdToResourceId(viewId: Int): Int {
-        val resId = when (viewId) {
-            binding.buttonMyTales.id -> R.id.button_my_tales
-            binding.buttonHeardTales.id -> R.id.button_heard_tales
-            else -> R.id.button_my_tales
-        }
-        return resId
+    private fun viewIdToListType(viewId: Int) = when (viewId) {
+        binding.buttonMyTales.id -> TalesViewModel.ListType.MY_TALES
+        binding.buttonHeardTales.id -> TalesViewModel.ListType.HEARD_TALES
+        else -> TalesViewModel.ListType.MY_TALES    // Default to my tales
     }
 
 
@@ -120,11 +117,6 @@ class TalesFragment : BaseFragment() {
                     viewModel,
                     viewModel.shownList
                 ).also { adapter = it }
-
-            // For drag n' drop feature
-//            // Add  Item touch helper to the recycler view
-//            val itemTouchHelper = ItemTouchHelper(TalesTouchCallback(talesAdapter))
-//            itemTouchHelper.attachToRecyclerView(this)
 
             // Observe changes in tales list
             viewModel.shownTales.observe(viewLifecycleOwner, {

@@ -15,12 +15,12 @@ fun TextView.setHintTextVisibility(tales: List<TaleItemModel>?) {
 }
 
 @BindingAdapter("hintText")
-fun TextView.setHintText(shownList: Int) {
+fun TextView.setHintText(shownList: TalesViewModel.ListType?) {
     text = resources.getString(
         when (shownList) {
-            R.id.button_my_tales -> R.string.tales_hint_text_my
-            R.id.button_heard_tales -> R.string.tales_hint_text_heard
-            else -> R.string.tales_hint_text_my
+            TalesViewModel.ListType.MY_TALES -> R.string.tales_hint_text_my
+            TalesViewModel.ListType.HEARD_TALES -> R.string.tales_hint_text_heard
+            else -> R.string.tales_hint_text_my // Default to my tales
         }
     )
 }
@@ -31,11 +31,16 @@ fun RecyclerView.setTalesListVisibility(tales: List<TaleItemModel>?) {
 }
 
 @BindingAdapter("addTaleFabVisibility")
-fun FloatingActionButton.setAddTaleFabVisibility(shownList: Int) {
-    visibility = if (shownList == R.id.button_my_tales) View.VISIBLE else View.GONE
+fun FloatingActionButton.setAddTaleFabVisibility(shownList: TalesViewModel.ListType?) {
+    visibility = if (shownList == TalesViewModel.ListType.MY_TALES) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("itemIconsVisibility")
-fun ImageView.setItemIconsVisibility(shownList: Int) {
-    visibility = if (shownList == R.id.button_my_tales) View.VISIBLE else View.GONE
+fun ImageView.setItemIconsVisibility(shownList: TalesViewModel.ListType?) {
+    visibility = if (shownList == TalesViewModel.ListType.MY_TALES) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("itemOwnerVisibility")
+fun TextView.setItemOwnerVisibility(shownList: TalesViewModel.ListType?) {
+    visibility = if (shownList == TalesViewModel.ListType.MY_TALES) View.GONE else View.VISIBLE
 }

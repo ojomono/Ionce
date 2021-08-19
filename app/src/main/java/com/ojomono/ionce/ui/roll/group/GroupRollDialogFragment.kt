@@ -159,8 +159,10 @@ class GroupRollDialogFragment : BaseDialogFragment() {
 
             // Preselect the tales that are already in the logged-in user's collection
             val initialSelection =
-                viewModel.currentUser.value?.friends?.get(user.id)?.tales?.map { tales.indexOf(it) }
-                    ?.toIntArray()
+                viewModel.currentUser.value?.friends?.get(user.id)?.tales?.map { heardTale ->
+                    // "indexOf(element: Any)" doesn't use the object's "equals(other: Any?)"
+                    tales.indexOfFirst { friendTale -> friendTale.id == heardTale.id }
+                }?.toIntArray()
 
             // Show the dialog
             DialogShower.show(context) {

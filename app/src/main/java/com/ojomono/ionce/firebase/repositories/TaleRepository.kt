@@ -31,7 +31,17 @@ object TaleRepository {
     val userTales = Transformations.map(UserRepository.model) { it?.tales }
     val heardTales = Transformations.map(UserRepository.model) {
         mutableListOf<TaleItemModel>().apply {
-            it?.friends?.values?.let { friends -> for (friend in friends) addAll(friend.tales) }
+            it?.friends?.values?.let { friends ->
+                for (friend in friends)
+                    addAll(
+                        friend.tales.map {
+                            it.apply {
+                                ownerId = friend.id
+                                ownerName = friend.displayName
+                            }
+                        }
+                    )
+            }
         }
     }
 
@@ -85,6 +95,22 @@ object TaleRepository {
     }
 
     /**
+     * Remove the given [tale] heard tales list.
+     */
+    fun removeFriendTale(tale: TaleItemModel): Task<Void>? {
+
+        // Remove the tale from the tales list
+        val tales =
+            UserRepository.model.value?.friends?.get(tale.ownerId)?.tales?.apply { remove(tale) }
+
+        // Update the friend's tales list
+        return UserRepository.docRef?.update(
+            "${UserModel::friends.name}.${tale.ownerId}.${UserItemModel::tales.name}",
+            tales
+        )
+    }
+
+    /**
      * Update the tale document with id=[id] to have the given [media] list.
      */
     fun updateTaleMedia(id: String, media: List<String>): Task<DocumentReference> {
@@ -121,7 +147,7 @@ object TaleRepository {
      */
     private fun buildUpdatedTalesList(
         id: String,
-        update: MutableList<TaleItemModel>.(Int) -> Unit
+        update: MutableList<TaleItemModel>.(Int) -> Unit,
     ) =
         userTales.value?.apply { update(indexOfFirst { item -> item.id == id }) }
             ?: throw Utils.NoSignedInUserException
@@ -133,7 +159,7 @@ object TaleRepository {
     private fun runTaleBatch(
         id: String,
         tales: List<TaleItemModel>?,
-        action: WriteBatch.(DocumentReference) -> WriteBatch
+        action: WriteBatch.(DocumentReference) -> WriteBatch,
     ) = UserRepository.docRef?.let { userRef ->
 
         // Create reference for wanted tale to use inside batch
