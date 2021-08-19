@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.ojomono.ionce.R
 import com.ojomono.ionce.models.GroupModel
@@ -34,21 +33,23 @@ fun TextView.setHintTextVisibility(rolledTale: TaleItemModel?) {
     visibility = if (rolledTale == null) View.VISIBLE else View.GONE
 }
 
-@BindingAdapter("tales", "rolledTale", "showResult")
-fun CardView.setRolledCardVisibilityAndTint(
-    tales: List<TaleItemModel>?,
+@BindingAdapter("rolledCardVisibility")
+fun CardView.setRolledCardVisibility(rolledTale: TaleItemModel?) {
+    visibility = if (rolledTale == null) View.GONE else View.VISIBLE
+}
+
+@BindingAdapter("userTales", "rolledTale", "showResult")
+fun LinearLayout.setRolledCardBg(
+    userTales: List<TaleItemModel>?,
     rolledTale: TaleItemModel?,
     showResult: Boolean,
 ) {
-    visibility = if (rolledTale == null) View.GONE else View.VISIBLE
-
-    background.setTintList(null)
-    if (showResult) if (tales != null) if (rolledTale != null) {
-        val colorRes = if (rolledTale in tales) R.color.roll_tal_result_truth
-        else R.color.roll_tal_result_lie
-
-        background.setTint(ContextCompat.getColor(context, colorRes))
+    var bgRes = R.color.fui_transparent
+    if (showResult) if (userTales != null) if (rolledTale != null) {
+        bgRes = if (rolledTale in userTales) R.drawable.roll_card_bg_truth
+        else R.drawable.roll_card_bg_lie
     }
+    background = getDrawable(context, bgRes)
 }
 
 @BindingAdapter("titleTextLinesAndEllipsize")
@@ -86,9 +87,9 @@ fun TextView.setRollButtonAppearance(game: RollViewModel.Game?) {
     }
 }
 
-fun TextView.setTextAndBg(stringRes: Int, DrawableRes: Int) {
+fun TextView.setTextAndBg(stringRes: Int, drawableRes: Int) {
     text = resources.getString(stringRes)
-    background = getDrawable(context, DrawableRes)
+    background = getDrawable(context, drawableRes)
 }
 
 @BindingAdapter("showOwnerLinearVisibility")
