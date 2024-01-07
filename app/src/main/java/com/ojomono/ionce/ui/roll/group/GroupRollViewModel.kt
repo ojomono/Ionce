@@ -1,6 +1,6 @@
 package com.ojomono.ionce.ui.roll.group
 
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.ojomono.ionce.firebase.repositories.GroupRepository
 import com.ojomono.ionce.firebase.repositories.UserRepository
 import com.ojomono.ionce.models.TaleItemModel
@@ -10,7 +10,7 @@ import com.ojomono.ionce.ui.bases.BaseViewModel
 class GroupRollViewModel : BaseViewModel(), UsersListAdapter.UsersListener {
     // The current group of the user
     val group = GroupRepository.model
-    val members = Transformations.map(group) { it?.members?.values?.toList() }
+    val members = group.map { it?.members?.values?.toList() }
     val currentUser = UserRepository.model
 
     // Types of supported events

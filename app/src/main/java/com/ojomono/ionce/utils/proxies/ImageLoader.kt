@@ -20,14 +20,14 @@ object ImageLoader {
 
     // Available loading customization fields
     private var errorResId: Int = R.drawable.ic_baseline_broken_image_24
-    private var fallbackResId: Int = R.color.fui_transparent
+    private var fallbackResId: Int = com.firebase.ui.auth.R.color.fui_transparent
     private var transformation: Transformation<Bitmap>? = null
 
     // Available loading customization
     object Loader {
         fun default() {
             errorResId = R.drawable.ic_baseline_broken_image_24
-            fallbackResId = R.color.fui_transparent
+            fallbackResId = com.firebase.ui.auth.R.color.fui_transparent
             transformation = null
         }
 
@@ -70,7 +70,12 @@ object ImageLoader {
     private fun getCircularProgressDrawable(view: ImageView) =
         androidx.swiperefreshlayout.widget.CircularProgressDrawable(view.context).apply {
             setStyle(androidx.swiperefreshlayout.widget.CircularProgressDrawable.LARGE)
-            setColorSchemeColors(MaterialColors.getColor(view, R.attr.colorSecondary))
+            setColorSchemeColors(
+                MaterialColors.getColor(
+                    view,
+                    com.firebase.ui.auth.R.attr.colorSecondary
+                )
+            )
             start()
         }
 

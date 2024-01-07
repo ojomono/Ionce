@@ -5,12 +5,11 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.facebook.AccessToken
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.actionCodeSettings
-import com.ojomono.ionce.BuildConfig
 import com.ojomono.ionce.R
 import com.ojomono.ionce.utils.TAG
 
@@ -50,24 +49,24 @@ object Authentication {
     val currentUser: LiveData<FirebaseUser?> = _currentUser
 
     // Current user's providers data
-    val googleUserInfo: LiveData<UserInfo> =
-        Transformations.map(currentUser) {
+    val googleUserInfo: LiveData<UserInfo?> =
+        currentUser.map {
             it?.providerData?.find { data -> data.providerId == GoogleAuthProvider.PROVIDER_ID }
         }
-    val facebookUserInfo: LiveData<UserInfo> =
-        Transformations.map(currentUser) {
+    val facebookUserInfo: LiveData<UserInfo?> =
+        currentUser.map {
             it?.providerData?.find { data -> data.providerId == FacebookAuthProvider.PROVIDER_ID }
         }
-    val twitterUserInfo: LiveData<UserInfo> =
-        Transformations.map(currentUser) {
+    val twitterUserInfo: LiveData<UserInfo?> =
+        currentUser.map {
             it?.providerData?.find { data -> data.providerId == TwitterAuthProvider.PROVIDER_ID }
         }
-    val emailUserInfo: LiveData<UserInfo> =
-        Transformations.map(currentUser) {
+    val emailUserInfo: LiveData<UserInfo?> =
+        currentUser.map {
             it?.providerData?.find { data -> data.providerId == EmailAuthProvider.PROVIDER_ID }
         }
-    val phoneUserInfo: LiveData<UserInfo> =
-        Transformations.map(currentUser) {
+    val phoneUserInfo: LiveData<UserInfo?> =
+        currentUser.map {
             it?.providerData?.find { data -> data.providerId == PhoneAuthProvider.PROVIDER_ID }
         }
 
@@ -104,13 +103,13 @@ object Authentication {
     /**
      * Send a sign-in link to the given [email].
      */
-    fun sendSignInLinkToEmail(email: String): Task<Void> =
+    fun sendSignInLinkToEmail(email: String, packageName: String): Task<Void> =
         if (email.isNotEmpty()) {
             emailToVerify = email   // Store for use when actually linking the email
             val actionCodeSettings = actionCodeSettings {
                 url = DL_URL_DOMAIN + DL_LINK_WITH_EMAIL
                 handleCodeInApp = true  // This must be true
-                setAndroidPackageName(BuildConfig.APPLICATION_ID, true, null)
+                setAndroidPackageName(packageName, true, null)
             }
             auth.sendSignInLinkToEmail(email, actionCodeSettings)
                 .addOnCompleteListener { if (it.isSuccessful) Log.d(TAG, "Email sent.") }

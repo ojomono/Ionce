@@ -40,7 +40,7 @@ class SplashActivity : AppCompatActivity() {
 
         // If no user is logged in, open sign-in screen
         if (Authentication.currentUser.value == null)
-            authResultLauncher.launch(SignInUI.buildSignInIntent(intent))
+            authResultLauncher.launch(SignInUI.buildSignInIntent(intent, packageName))
 
         // If a user is already logged in, check dynamic links and open home screen
         else {
