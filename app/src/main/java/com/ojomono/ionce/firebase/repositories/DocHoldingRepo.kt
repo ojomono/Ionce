@@ -2,7 +2,7 @@ package com.ojomono.ionce.firebase.repositories
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -24,7 +24,7 @@ abstract class DocHoldingRepo<T : BaseModel>(
     private var registration: ListenerRegistration? = null
 
     // Public access to structured data
-    val model = Transformations.map(document) { it?.toObject(modelClass) }
+    val model = document.map { it?.toObject(modelClass) }
     val docRef: DocumentReference?
         get() = model.value?.id?.let { Database.collection(collectionPath).document(it) }
 

@@ -33,11 +33,11 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     val user: LiveData<FirebaseUser?> = Authentication.currentUser  // TODO: Use a Repository class
 
     // User info of the different providers                         // TODO: Use a Repository class
-    val emailUserInfo: LiveData<UserInfo> = Authentication.emailUserInfo
-    val phoneUserInfo: LiveData<UserInfo> = Authentication.phoneUserInfo
-    val twitterUserInfo: LiveData<UserInfo> = Authentication.twitterUserInfo
-    val facebookUserInfo: LiveData<UserInfo> = Authentication.facebookUserInfo
-    val googleUserInfo: LiveData<UserInfo> = Authentication.googleUserInfo
+    val emailUserInfo: LiveData<UserInfo?> = Authentication.emailUserInfo
+    val phoneUserInfo: LiveData<UserInfo?> = Authentication.phoneUserInfo
+    val twitterUserInfo: LiveData<UserInfo?> = Authentication.twitterUserInfo
+    val facebookUserInfo: LiveData<UserInfo?> = Authentication.facebookUserInfo
+    val googleUserInfo: LiveData<UserInfo?> = Authentication.googleUserInfo
 
     // Fields needed for linking with providers
     var phoneNumberToVerify: String = ""
@@ -177,9 +177,9 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
     /**
      * Send a sign-in link to the given [email].
      */
-    fun sendSignInLinkToEmail(email: String) {
+    fun sendSignInLinkToEmail(email: String, packageName: String) {
         if (email.isValidEmail())
-            Authentication.sendSignInLinkToEmail(email)
+            Authentication.sendSignInLinkToEmail(email, packageName)
                 .addOnCompleteListener {
                     if (it.isSuccessful)
                         showMessageByResId(
@@ -266,7 +266,7 @@ class ProfileViewModel : BaseViewModel(), PopupMenu.OnMenuItemClickListener {
      * (using the common unlink event with [nameResId]), and check if possible.
      */
     private fun determineEventForProviderClick(
-        providerData: LiveData<UserInfo>,
+        providerData: LiveData<UserInfo?>,
         linkEvent: EventType,
         nameResId: Int
     ) =

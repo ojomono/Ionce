@@ -44,7 +44,7 @@ fun LinearLayout.setRolledCardBg(
     rolledTale: TaleItemModel?,
     showResult: Boolean,
 ) {
-    var bgRes = R.color.fui_transparent
+    var bgRes = com.firebase.ui.auth.R.color.fui_transparent
     if (showResult) if (userTales != null) if (rolledTale != null) {
         bgRes = if (rolledTale in userTales) R.drawable.roll_card_bg_truth
         else R.drawable.roll_card_bg_lie

@@ -27,7 +27,6 @@ import com.ojomono.ionce.ui.bases.BaseViewModel
 import com.ojomono.ionce.utils.proxies.DialogShower
 import com.ojomono.ionce.utils.proxies.DialogShower.withInput
 import com.ojomono.ionce.utils.proxies.ImageCompressor
-import java.io.*
 import java.util.concurrent.TimeUnit
 
 class ProfileFragment : BaseFragment() {
@@ -194,7 +193,7 @@ class ProfileFragment : BaseFragment() {
             withInput(
                 prefill = viewModel.user.value?.email ?: "",
                 inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            ) { _, text -> viewModel.sendSignInLinkToEmail(text.toString()) }
+            ) { _, text -> viewModel.sendSignInLinkToEmail(text.toString(), context.packageName) }
             positiveButton(R.string.profile_email_link_dialog_button)
             negativeButton(R.string.dialog_cancel)
         }
