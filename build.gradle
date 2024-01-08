@@ -19,6 +19,23 @@ buildscript {
     }
 }
 
+ext {
+    storeFile = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    storePassword = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    keyAlias = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    keyPassword = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    storeFile = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    storeFile = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    storeFile = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    keyAlias = 'C:\\Users\\User\\StudioProjects\\Ionce\\keystore.properties'
+    myValue = 'C:\\Users\\User\\StudioProjects\\Ionce\\keystore.properties'
+    storeFile = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    myValue1 = 'C:\\Users\\User\\StudioProjects\\Ionce\\gradle.properties'
+    storePassword = storePassword
+    keyAlias = keyAlias
+    keyPassword = keyPassword
+}
+
 allprojects {
     repositories {
         google()
