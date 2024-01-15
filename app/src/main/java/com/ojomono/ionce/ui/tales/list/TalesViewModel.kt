@@ -3,7 +3,7 @@ package com.ojomono.ionce.ui.tales.list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.ojomono.ionce.firebase.repositories.TaleRepository
 import com.ojomono.ionce.firebase.Storage
 import com.ojomono.ionce.firebase.Utils
@@ -42,11 +42,10 @@ class TalesViewModel : BaseViewModel(), TalesListAdapter.TalesListener {
             heardTales.observeForever { postValue(value) }
         }
     val shownList: LiveData<ListType> = _shownList
-    val shownTales = Transformations.map(shownList) {
+    val shownTales = shownList.map {
         when (it) {
             ListType.MY_TALES -> userTales
             ListType.HEARD_TALES -> heardTales
-            else -> userTales   // Default to user tales
         }.value
     }
 

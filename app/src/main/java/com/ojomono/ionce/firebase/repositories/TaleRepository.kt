@@ -2,7 +2,7 @@ package com.ojomono.ionce.firebase.repositories
 
 // TODO: Avoid Android imports and move to separated module when needed for more UI platforms
 import android.util.Log
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
@@ -28,8 +28,8 @@ object TaleRepository {
     //  https://medium.com/firebase-tips-tricks/how-to-use-kotlin-flows-with-firestore-6c7ee9ae12f3
 
     // Current user's tales list, and heard tales list
-    val userTales = Transformations.map(UserRepository.model) { it?.tales }
-    val heardTales = Transformations.map(UserRepository.model) {
+    val userTales = UserRepository.model.map { it?.tales }
+    val heardTales = UserRepository.model.map {
         mutableListOf<TaleItemModel>().apply {
             it?.friends?.values?.let { friends ->
                 for (friend in friends)

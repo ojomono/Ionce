@@ -4,7 +4,6 @@ import android.content.Intent
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.google.firebase.auth.ActionCodeSettings
-import com.ojomono.ionce.BuildConfig
 import com.ojomono.ionce.R
 
 /**
@@ -24,7 +23,7 @@ object SignInUI {
      * the APPLICATION_ID (main package). If the function is called after the email link
      * was clicked, the link should be given as the [input] model.
      */
-    fun buildSignInIntent(input: Intent?): Intent {
+    fun buildSignInIntent(input: Intent?, packageName: String): Intent {
 
         // Start building the sign-in Intent and email builders
         val signInIntentBuilder = AuthUI.getInstance().createSignInIntentBuilder()
@@ -40,7 +39,7 @@ object SignInUI {
         // Enable email link sign in
         val actionCodeSettings: ActionCodeSettings =
             ActionCodeSettings.newBuilder()
-                .setAndroidPackageName(BuildConfig.APPLICATION_ID, true, null)
+                .setAndroidPackageName(packageName, true, null)
                 .setHandleCodeInApp(true) // This must be set to true
                 .setUrl(Authentication.DL_URL_DOMAIN + Authentication.DL_FINISH_SIGN_UP) // This URL needs to be whitelisted
                 .build()
