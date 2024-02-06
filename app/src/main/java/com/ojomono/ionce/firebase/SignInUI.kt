@@ -48,7 +48,7 @@ object SignInUI {
         // Choose authentication providers
         val providers = arrayListOf(
             AuthUI.IdpConfig.GoogleBuilder().build(),
-            AuthUI.IdpConfig.FacebookBuilder().build(),
+//            AuthUI.IdpConfig.FacebookBuilder().build(),
             AuthUI.IdpConfig.TwitterBuilder().build(),
             emailBuilder.build(),
             AuthUI.IdpConfig.PhoneBuilder().build()

@@ -39,9 +39,10 @@ android {
         applicationId "com.ojomono.ionce"
         minSdkVersion 21
         targetSdkVersion 34
+        compileSdk 34
+
         versionCode 16
         versionName "1.3.2"
-        compileSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
