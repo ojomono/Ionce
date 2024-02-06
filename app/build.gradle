@@ -121,7 +121,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:11.2.0'
 
     // Cloud Firestore
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.10.0'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.10.1'
 
     // Cloud Storage
     implementation 'com.google.firebase:firebase-storage-ktx:20.3.0'

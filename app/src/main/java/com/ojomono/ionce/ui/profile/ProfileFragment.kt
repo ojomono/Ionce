@@ -2,7 +2,6 @@ package com.ojomono.ionce.ui.profile
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.telephony.PhoneNumberUtils
@@ -82,12 +81,12 @@ class ProfileFragment : BaseFragment() {
         return binding.root
     }
 
-    // TODO use registerForActivityResult when Facebook API will update
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // Pass the activity result back to the Facebook SDK
-        viewModel.facebookCallbackManager.onActivityResult(requestCode, resultCode, data)
-    }
+//    // TODO use registerForActivityResult when Facebook API will update
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        // Pass the activity result back to the Facebook SDK
+//        viewModel.facebookCallbackManager.onActivityResult(requestCode, resultCode, data)
+//    }
 
     /**************************/
     /** BaseFragment methods **/
