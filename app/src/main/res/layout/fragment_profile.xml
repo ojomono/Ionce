@@ -307,7 +307,8 @@
                     android:orientation="horizontal"
                     android:paddingHorizontal="@dimen/profile_providers_padding_horizontal"
                     android:paddingTop="@dimen/profile_providers_padding_top"
-                    android:paddingBottom="@dimen/activity_vertical_margin">
+                    android:paddingBottom="@dimen/activity_vertical_margin"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -355,7 +356,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="@dimen/profile_providers_padding_horizontal"
-                    android:background="?attr/colorBackgroundFloating" />
+                    android:background="?attr/colorBackgroundFloating"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/linear_google_provider"
