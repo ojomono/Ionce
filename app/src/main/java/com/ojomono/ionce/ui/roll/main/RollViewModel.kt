@@ -43,8 +43,8 @@ class RollViewModel : BaseViewModel() {
     val group = GroupRepository.model
 
     // The rolled tale
-    private val _rolledTale = MutableLiveData<TaleItemModel>()
-    val rolledTale: LiveData<TaleItemModel> = _rolledTale
+    private val _rolledTale = MutableLiveData<TaleItemModel?>()
+    val rolledTale: LiveData<TaleItemModel?> = _rolledTale
 
     // The rolled lie tale
     private val _rolledLie = MutableLiveData<TaleItemModel?>()
