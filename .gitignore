@@ -15,3 +15,5 @@
 /keystore.properties
 /app/release/app-release.aab
 /.idea/shelf/
+/app/release/app-release.apk
+/app/release/output-metadata.json
